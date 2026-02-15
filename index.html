@@ -8,15 +8,7 @@
   <!-- Telegram WebApp SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <!-- Supabase client SDK (для чтения каталога и создания заявки "pending") -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <style>
-    /* ============================================================
-       AI MARKET — Premium Corporate / Fintech UI (Dark/Light)
-       Один файл, современная минималистика, удобная типографика.
-       ============================================================ */
-
     :root{
       --maxw: 980px;
       --tap: 44px;
@@ -24,7 +16,6 @@
       --r20: 20px;
       --r24: 24px;
 
-      /* DARK tokens (default) */
       --bg: #070A12;
       --bg2: #0A1022;
       --surface: rgba(255,255,255,.05);
@@ -38,9 +29,8 @@
       --shadow: 0 18px 55px rgba(0,0,0,.48);
       --shadow2: 0 10px 30px rgba(0,0,0,.38);
 
-      /* Fintech accents */
-      --accent: #5AE6FF;  /* cyan */
-      --accent2:#7C5CFF;  /* violet */
+      --accent: #5AE6FF;
+      --accent2:#7C5CFF;
       --ok: #29D3A1;
       --warn: #FFB020;
       --danger:#FF4D6D;
@@ -96,7 +86,6 @@
       padding: 14px 14px 24px;
     }
 
-    /* ---------- AppBar (sticky) ---------- */
     .appbar{
       position: sticky;
       top: 0;
@@ -124,6 +113,7 @@
       align-items:center;
       gap: 10px;
       min-width: 150px;
+      user-select:none;
     }
 
     .logoMark{
@@ -180,15 +170,12 @@
       color: #050812;
       font-weight: 800;
     }
-    .btn.ghost{
-      background: transparent;
-    }
+    .btn.ghost{ background: transparent; }
     .btn.danger{
       border-color: rgba(255,77,109,.30);
       background: rgba(255,77,109,.10);
     }
 
-    /* ---------- Search (top) ---------- */
     .searchWrap{
       max-width: var(--maxw);
       margin: 0 auto;
@@ -227,13 +214,12 @@
     }
     .searchBox input::placeholder{ color: var(--muted2); }
 
-    /* ---------- Section ---------- */
     .sectionHead{
       display:flex;
       align-items: baseline;
       justify-content: space-between;
       gap: 10px;
-      margin: 14px 2px 10px;
+      margin: 14px 2px 8px;
     }
     .sectionHead h2{
       margin:0;
@@ -245,9 +231,16 @@
     .sectionHead small{
       color: var(--muted2);
       font-size: 12px;
+      white-space: nowrap;
     }
 
-    /* ---------- Grid ---------- */
+    .debug{
+      margin: 0 2px 10px;
+      font-size: 11px;
+      color: var(--muted2);
+      line-height: 1.35;
+    }
+
     .grid{
       display:grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -267,15 +260,6 @@
       display:flex;
       flex-direction: column;
       gap: 10px;
-      transition: transform .12s ease, border-color .18s ease, background .18s ease;
-    }
-    .card:hover{
-      transform: translateY(-1px);
-      border-color: rgba(90,230,255,.22);
-      background: rgba(255,255,255,.055);
-    }
-    [data-theme="light"] .card:hover{
-      background: rgba(255,255,255,.92);
     }
 
     .cardTop{
@@ -302,18 +286,6 @@
       object-fit: cover;
     }
 
-    .pName{
-      margin: 0;
-      font-size: 14px;
-      letter-spacing: .25px;
-    }
-
-    .pPrice{
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
     .pill{
       font-size: 11px;
       padding: 4px 9px;
@@ -324,6 +296,22 @@
       white-space: nowrap;
     }
 
+    .pName{
+      margin: 0;
+      font-size: 14px;
+      letter-spacing: .25px;
+    }
+
+    .pDesc{
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow:hidden;
+    }
+
     .cardFooter{
       margin-top: auto;
       display:flex;
@@ -331,7 +319,6 @@
     }
     .cardFooter .btn{ width: 100%; justify-content:center; }
 
-    /* ---------- Modal ---------- */
     .overlay{
       position: fixed;
       inset: 0;
@@ -363,9 +350,6 @@
       border-bottom: 1px solid var(--border);
       background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0));
     }
-    [data-theme="light"] .modalHead{
-      background: linear-gradient(180deg, rgba(11,16,32,.03), rgba(11,16,32,0));
-    }
 
     .modalTitle{
       display:flex;
@@ -396,20 +380,13 @@
       gap: 12px;
     }
 
-    .desc{
-      margin:0;
-      font-size: 13px;
-      line-height: 1.4;
-      color: var(--muted);
-    }
-
     .seg{
       display:grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 8px;
     }
     .segBtn{
-      height: 44px;
+      height: 46px;
       border-radius: 16px;
       border: 1px solid var(--border);
       background: rgba(255,255,255,.04);
@@ -419,20 +396,17 @@
       place-items:center;
       user-select:none;
       -webkit-tap-highlight-color: transparent;
-      transition: border-color .15s ease, background .15s ease;
       font-size: 13px;
+      line-height: 1.1;
+      transition: border-color .15s ease, background .15s ease;
+      text-align:center;
+      padding: 6px 6px;
     }
     .segBtn.active{
       border-color: rgba(90,230,255,.38);
       background: linear-gradient(135deg, rgba(90,230,255,.12), rgba(124,92,255,.10));
       box-shadow: 0 0 0 3px rgba(90,230,255,.06) inset;
     }
-
-    .buyRow{
-      display:flex;
-      gap: 10px;
-    }
-    .buyRow .btn{ width: 100%; justify-content:center; }
 
     .hint{
       margin:0;
@@ -441,7 +415,7 @@
       color: var(--muted2);
     }
 
-    /* ---------- Admin ---------- */
+    /* Admin */
     .admin{
       display:none;
       margin-top: 14px;
@@ -463,11 +437,7 @@
       background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0));
     }
 
-    .tabs{
-      display:flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
+    .tabs{ display:flex; gap: 8px; flex-wrap: wrap; }
     .tab{
       height: 38px;
       border-radius: 14px;
@@ -478,7 +448,6 @@
       cursor:pointer;
       display:flex;
       align-items:center;
-      gap: 8px;
       user-select:none;
     }
     .tab.active{
@@ -487,25 +456,7 @@
       background: linear-gradient(135deg, rgba(90,230,255,.10), rgba(124,92,255,.08));
     }
 
-    .adminBody{
-      padding: 12px;
-      display:grid;
-      gap: 12px;
-    }
-
-    .toolbar{
-      display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items:center;
-      justify-content: space-between;
-    }
-
-    .table{
-      display:grid;
-      gap: 10px;
-    }
-
+    .adminBody{ padding: 12px; display:grid; gap: 12px; }
     .row{
       border: 1px solid var(--border);
       border-radius: 18px;
@@ -516,18 +467,8 @@
       justify-content: space-between;
       gap: 10px;
     }
-    [data-theme="light"] .row{ background: rgba(11,16,32,.02); }
-
-    .rowLeft{
-      display:flex;
-      gap: 10px;
-      min-width:0;
-    }
-    .rowLeft b{
-      display:block;
-      font-size: 13px;
-      margin-bottom: 3px;
-    }
+    .rowLeft{ display:flex; gap: 10px; min-width:0; }
+    .rowLeft b{ display:block; font-size: 13px; margin-bottom: 3px; }
     .rowLeft small{
       display:block;
       font-size: 12px;
@@ -537,26 +478,12 @@
       text-overflow: ellipsis;
       max-width: 520px;
     }
-    .rowActions{
-      display:flex;
-      gap: 8px;
-      flex: 0 0 auto;
-    }
+    .rowActions{ display:flex; gap: 8px; flex:0 0 auto; }
 
-    /* Form modal */
-    .formGrid{
-      display:grid;
-      gap: 10px;
-    }
-    .field{
-      display:flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .label{
-      font-size: 12px;
-      color: var(--muted);
-    }
+    .formGrid{ display:grid; gap: 10px; }
+    .field{ display:flex; flex-direction:column; gap:6px; }
+    .label{ font-size:12px; color: var(--muted); }
+
     input, textarea{
       border: 1px solid var(--border);
       outline:none;
@@ -567,10 +494,6 @@
       font-size: 14px;
     }
     textarea{ min-height: 92px; resize: vertical; }
-    [data-theme="light"] input,
-    [data-theme="light"] textarea{
-      background: rgba(11,16,32,.03);
-    }
 
     .prices{
       display:grid;
@@ -602,33 +525,27 @@
 
 <body data-theme="dark">
   <div class="safe">
-
-    <!-- AppBar -->
     <div class="appbar">
       <div class="appbar-inner">
-        <div class="brand">
+        <div class="brand" id="brand">
           <div class="logoMark">AI</div>
           <div class="brandText">
             <b>AI MARKET</b>
-            <span>Мини-приложение</span>
+            <span>Mini App</span>
           </div>
         </div>
 
         <div class="actions">
-          <button class="btn ghost" id="btnAdmin" title="Админ панель" style="display:none;">
-            🛠️ Админ
-          </button>
-          <button class="btn" id="btnTheme" title="Тема">
-            🌓 Тема
-          </button>
+          <!-- Админ теперь всегда виден, а доступ проверяем внутри -->
+          <button class="btn ghost" id="btnAdmin" title="Админ панель">🛠️ Админ</button>
+          <button class="btn" id="btnTheme" title="Тема">🌓 Тема</button>
         </div>
       </div>
 
-      <!-- Search always on top -->
       <div class="searchWrap">
         <div class="searchBox">
           <div class="searchIcon">🔎</div>
-          <input id="q" type="text" placeholder="Поиск по AI-инструментам (например: ChatGPT, Midjourney…)" />
+          <input id="q" type="text" placeholder="Поиск по AI-инструментам (например: ChatGPT…)" />
         </div>
       </div>
     </div>
@@ -639,9 +556,10 @@
         <small id="countLabel">—</small>
       </div>
 
+      <div class="debug" id="debugLine">Загрузка…</div>
+
       <div class="grid" id="grid"></div>
 
-      <!-- Admin Panel -->
       <div class="admin" id="adminPanel">
         <div class="adminHead">
           <div style="display:flex;flex-direction:column;gap:2px;">
@@ -656,35 +574,27 @@
         </div>
 
         <div class="adminBody">
-          <!-- PRODUCTS -->
           <div id="panelProducts">
-            <div class="toolbar">
-              <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                <button class="btn primary" id="btnAddProduct">+ Добавить товар</button>
-                <button class="btn" id="btnReload">⟳ Обновить</button>
-              </div>
-              <small class="hint">Редактирование через Edge Function (безопасно). В демо можно включить local режим.</small>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <button class="btn primary" id="btnAddProduct">+ Добавить товар</button>
+              <button class="btn" id="btnReload">⟳ Обновить</button>
             </div>
-            <div class="table" id="adminProductsList"></div>
+            <div style="height:10px;"></div>
+            <div id="adminProductsList"></div>
           </div>
 
-          <!-- ORDERS -->
           <div id="panelOrders" style="display:none;">
-            <div class="toolbar">
-              <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                <button class="btn" id="btnLoadPaid">⟳ Загрузить оплаченные</button>
-              </div>
-              <small class="hint">Список оплаченных заявок доступен только админу (через Edge Function).</small>
-            </div>
-            <div class="table" id="adminOrdersList"></div>
+            <button class="btn" id="btnLoadPaid">⟳ Загрузить оплаченные</button>
+            <div style="height:10px;"></div>
+            <div id="adminOrdersList"></div>
+            <p class="hint">
+              Чтобы работало по-настоящему: нужен сервер/Edge Function (проверка Telegram initData + чтение orders через service_role).
+            </p>
           </div>
 
-          <!-- SETTINGS -->
           <div id="panelSettings" style="display:none;">
             <p class="hint">
-              ⚠️ Безопасность:
-              <br>• <b>Supabase service_role</b> ключ нельзя хранить в HTML.
-              <br>• Проверка <b>Telegram initData</b> должна быть на сервере/Edge Function.
+              Важно: <b>service_role</b> ключ НЕЛЬЗЯ вставлять в HTML. Только в Edge Functions/сервер.
             </p>
 
             <div class="formGrid">
@@ -694,20 +604,30 @@
                   <button class="btn" id="btnModeSupabase">Supabase</button>
                   <button class="btn" id="btnModeLocal">Local (demo)</button>
                 </div>
-                <small class="hint">Supabase — продакшен. Local — удобно для теста без БД.</small>
               </div>
 
               <div class="field">
                 <div class="label">Админ Telegram ID</div>
                 <input id="adminIdInput" type="text" />
-                <small class="hint">Админка будет доступна только этому Telegram ID.</small>
               </div>
 
               <div class="field">
-                <div class="label">Текст сообщения пользователю после успешной оплаты</div>
+                <div class="label">Сообщение пользователю после подтверждения оплаты</div>
                 <textarea id="paidMessageInput"></textarea>
-                <small class="hint">Это сообщение отправит бот после подтверждения оплаты (авто через webhook или вручную админом).</small>
               </div>
+
+              <div class="field">
+                <div class="label">YooMoney (рубли) — куда вставлять</div>
+                <p class="hint">
+                  В коде ищите: <b>CONFIG.YOOMONEY_WALLET</b> и вставьте номер кошелька/receiver.
+                  <br>После этого кнопка “Оплатить” будет вести на QuickPay.
+                </p>
+              </div>
+
+              <p class="hint">
+                Если вы открываете Mini App в <b>web.telegram.org</b> и Telegram user не определяется,
+                админка может быть недоступна. Надёжнее для админки использовать <b>Telegram Desktop</b> на Windows.
+              </p>
             </div>
           </div>
 
@@ -731,25 +651,23 @@
       </div>
 
       <div class="modalBody">
-        <p class="desc" id="mDesc">—</p>
+        <p class="hint" id="mDesc">—</p>
 
         <div>
-          <div class="label">План подписки</div>
+          <div class="label">План</div>
           <div class="seg" id="mPlans"></div>
         </div>
 
-        <div class="buyRow">
-          <button class="btn primary" id="mPay">Оплатить</button>
-        </div>
+        <button class="btn primary" id="mPay">Оплатить</button>
 
-        <p class="hint" id="mHint">
-          Оплата в рублях через YooMoney. После подтверждения оплаты мы начнём создание аккаунта и уведомим вас в боте.
+        <p class="hint">
+          Оплата в рублях через YooMoney. После подтверждения оплаты мы начинаем создание аккаунта и уведомим вас в боте.
         </p>
       </div>
     </div>
   </div>
 
-  <!-- Admin Product Form Modal -->
+  <!-- Admin Form Modal -->
   <div class="overlay" id="formOverlay" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="modalHead">
@@ -766,7 +684,7 @@
       <div class="modalBody">
         <div class="formGrid">
           <div class="field">
-            <div class="label">ID (уникальный, латиница/цифры)</div>
+            <div class="label">ID (уникальный)</div>
             <input id="fId" type="text" placeholder="например: chatgpt" />
           </div>
 
@@ -800,8 +718,8 @@
           </div>
 
           <p class="hint">
-            В Supabase-режиме сохранение/удаление делается через <b>Edge Function</b>,
-            чтобы не светить сервисные ключи в клиенте.
+            В режиме Supabase для полноценного CRUD лучше использовать Edge Functions (безопасно).
+            В режиме Local всё работает прямо в браузере.
           </p>
         </div>
       </div>
@@ -811,88 +729,71 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    /* ============================================================
-       AI MARKET — логика (один файл, понятные комментарии)
-       ============================================================ */
-
-    /* ======================
-       1) CONFIG (настройки)
-       ====================== */
-
+    /* =========================
+       CONFIG — ВАЖНО
+       ========================= */
     const CONFIG = {
-      // Вставьте сюда URL проекта Supabase (Settings → API → Project URL)
-      SUPABASE_URL: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpbG5mbGpseXVid2hvb3h1dW9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExMjMyNDIsImV4cCI6MjA4NjY5OTI0Mn0.030FmUuyL6Ht-C4WlEvA0jL29rvx_m1JH8rQ1V8W6oQ",
+      // Вставьте Project URL из Supabase → Settings → API → Project URL
+      SUPABASE_URL: "https://cilnfljlyubwhooxuuob.supabase.co",
 
-      // Вставьте сюда ANON KEY (Settings → API → anon public) — безопасно для клиента при правильных RLS
-      SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpbG5mbGpseXVid2hvb3h1dW9iIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MTEyMzI0MiwiZXhwIjoyMDg2Njk5MjQyfQ.blxBmD-7eSDp6HPXjmW0Nm7UzekL5UlkJmbOWtrgkQI",
+      // Вставьте ANON KEY из Supabase → Settings → API → anon public
+      SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpbG5mbGpseXVid2hvb3h1dW9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExMjMyNDIsImV4cCI6MjA4NjY5OTI0Mn0.030FmUuyL6Ht-C4WlEvA0jL29rvx_m1JH8rQ1V8W6oQ",
 
-      // service_role НЕЛЬЗЯ вставлять в HTML.
-      // Его нужно положить в переменные окружения Edge Function / сервера.
+      // Режим данных:
+      // local — всегда покажет товары (без БД)
+      // supabase — грузит каталог из Supabase через REST
+      DATA_MODE: "local",
 
-      // Админ Telegram ID (вы указали свой):
+      // Ваш Telegram ID (админ)
       ADMIN_TELEGRAM_ID: 5017229451,
 
-      // Режим данных: "supabase" (прод) или "local" (демо)
-      DATA_MODE: "supabase",
-
-      // YooMoney (оплата в рублях)
-      // Вставьте номер кошелька YooMoney (или receiver)
+      // YooMoney (рубли)
       YOOMONEY_WALLET: "PASTE_YOOMONEY_WALLET_HERE",
+      YOOMONEY_SUCCESS_URL: "",
 
-      // Куда вернётся пользователь после оплаты (должен быть https)
-      // Например: https://username.github.io/repo/
-      YOOMONEY_SUCCESS_URL: "PASTE_SUCCESS_URL_HERE",
-
-      // Текст, который бот отправляет пользователю после подтверждения оплаты
       PAID_MESSAGE:
         "Спасибо! Оплату получили ✅\n" +
-        "Сейчас мы начинаем создание вашего аккаунта — обычно это занимает от 30 минут до 2 часов.\n" +
+        "Мы запускаем процесс создания вашего аккаунта — обычно это занимает от 30 минут до 2 часов.\n" +
         "В редких случаях процесс может занять до 3 дней. Мы напишем вам сразу, как всё будет готово."
     };
 
-    // Локальные ключи для настроек
     const LS = {
-      THEME: "ai_market_theme_v2",
-      MODE: "ai_market_mode_v2",
-      ADMIN_ID: "ai_market_admin_id_v2",
-      PAID_MSG: "ai_market_paid_msg_v2",
-      LOCAL_PRODUCTS: "ai_market_local_products_v2"
+      THEME: "ai_market_theme_v3",
+      MODE: "ai_market_mode_v3",
+      ADMIN_ID: "ai_market_admin_id_v3",
+      PAID_MSG: "ai_market_paid_msg_v3",
+      LOCAL_PRODUCTS: "ai_market_local_products_v3"
     };
 
-    /* ============================================================
-       2) Telegram WebApp (для темы и initData)
-       ============================================================ */
-    const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
-
-    function getTelegramUser(){
+    /* =========================
+       Safe storage (не падаем, если localStorage ограничен)
+       ========================= */
+    const storage = (() => {
       try{
-        return tg?.initDataUnsafe?.user || null;
+        localStorage.setItem("__t","1");
+        localStorage.removeItem("__t");
+        return localStorage;
       }catch(e){
         return null;
       }
-    }
+    })();
 
-    function getInitData(){
-      // initData нужно отправлять на сервер/Edge Function, где проверяется подпись бот-токеном
-      try{
-        return tg?.initData || "";
-      }catch(e){
-        return "";
-      }
-    }
+    function sGet(key){ try{ return storage ? storage.getItem(key) : null; }catch(e){ return null; } }
+    function sSet(key,val){ try{ if(storage) storage.setItem(key,val); }catch(e){} }
+    function sDel(key){ try{ if(storage) storage.removeItem(key); }catch(e){} }
 
+    /* =========================
+       Telegram WebApp
+       ========================= */
+    const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+    function getTelegramUser(){ try{ return tg?.initDataUnsafe?.user || null; }catch(e){ return null; } }
+    function getInitData(){ try{ return tg?.initData || ""; }catch(e){ return ""; } }
     function initTelegram(){
       if(!tg) return;
-      try{
-        tg.ready();
-        tg.expand();
-      }catch(e){}
-
-      // Если тема не выбрана вручную — синхронизируем с Telegram
-      if(!localStorage.getItem(LS.THEME)){
+      try{ tg.ready(); tg.expand(); }catch(e){}
+      if(!sGet(LS.THEME)){
         setTheme(tg.colorScheme === "light" ? "light" : "dark");
       }
-      // BackButton для модалок
       try{
         tg.BackButton.onClick(() => {
           if(state.modalOpen) closeModal();
@@ -901,33 +802,18 @@
       }catch(e){}
     }
 
-    /* ============================================================
-       3) Supabase client (только anon key)
-       ============================================================ */
-    let supabase = null;
-
-    function canUseSupabase(){
-      return CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY &&
-             !CONFIG.SUPABASE_URL.includes("PASTE_") &&
-             !CONFIG.SUPABASE_ANON_KEY.includes("PASTE_");
-    }
-
-    function initSupabase(){
-      if(!canUseSupabase()) return null;
-      return window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-    }
-
-    /* ============================================================
-       4) UI refs
-       ============================================================ */
+    /* =========================
+       UI refs
+       ========================= */
     const el = {
+      brand: document.getElementById("brand"),
       btnTheme: document.getElementById("btnTheme"),
       btnAdmin: document.getElementById("btnAdmin"),
-      adminPanel: document.getElementById("adminPanel"),
 
       q: document.getElementById("q"),
       grid: document.getElementById("grid"),
       countLabel: document.getElementById("countLabel"),
+      debugLine: document.getElementById("debugLine"),
 
       overlay: document.getElementById("overlay"),
       mClose: document.getElementById("mClose"),
@@ -938,10 +824,25 @@
       mPlans: document.getElementById("mPlans"),
       mPay: document.getElementById("mPay"),
 
+      adminPanel: document.getElementById("adminPanel"),
+      adminHint: document.getElementById("adminHint"),
+      tabProducts: document.getElementById("tabProducts"),
+      tabOrders: document.getElementById("tabOrders"),
+      tabSettings: document.getElementById("tabSettings"),
+      panelProducts: document.getElementById("panelProducts"),
+      panelOrders: document.getElementById("panelOrders"),
+      panelSettings: document.getElementById("panelSettings"),
+
+      btnAddProduct: document.getElementById("btnAddProduct"),
+      btnReload: document.getElementById("btnReload"),
+      btnLoadPaid: document.getElementById("btnLoadPaid"),
+
+      adminProductsList: document.getElementById("adminProductsList"),
+      adminOrdersList: document.getElementById("adminOrdersList"),
+
       formOverlay: document.getElementById("formOverlay"),
       fClose: document.getElementById("fClose"),
       fTitle: document.getElementById("fTitle"),
-      fSub: document.getElementById("fSub"),
       fId: document.getElementById("fId"),
       fName: document.getElementById("fName"),
       fDesc: document.getElementById("fDesc"),
@@ -952,36 +853,17 @@
       fSave: document.getElementById("fSave"),
       fDelete: document.getElementById("fDelete"),
 
-      toast: document.getElementById("toast"),
-
-      // Admin tabs/panels
-      tabProducts: document.getElementById("tabProducts"),
-      tabOrders: document.getElementById("tabOrders"),
-      tabSettings: document.getElementById("tabSettings"),
-
-      panelProducts: document.getElementById("panelProducts"),
-      panelOrders: document.getElementById("panelOrders"),
-      panelSettings: document.getElementById("panelSettings"),
-
-      adminProductsList: document.getElementById("adminProductsList"),
-      adminOrdersList: document.getElementById("adminOrdersList"),
-
-      btnAddProduct: document.getElementById("btnAddProduct"),
-      btnReload: document.getElementById("btnReload"),
-      btnLoadPaid: document.getElementById("btnLoadPaid"),
-
-      adminHint: document.getElementById("adminHint"),
-
-      // Settings inputs
       btnModeSupabase: document.getElementById("btnModeSupabase"),
       btnModeLocal: document.getElementById("btnModeLocal"),
       adminIdInput: document.getElementById("adminIdInput"),
-      paidMessageInput: document.getElementById("paidMessageInput")
+      paidMessageInput: document.getElementById("paidMessageInput"),
+
+      toast: document.getElementById("toast")
     };
 
-    /* ============================================================
-       5) Helpers
-       ============================================================ */
+    /* =========================
+       Helpers
+       ========================= */
     const PLAN_LABELS = { "1m":"1 месяц", "6m":"6 месяцев", "12m":"12 месяцев" };
 
     function toast(msg){
@@ -993,7 +875,7 @@
 
     function setTheme(theme){
       document.body.setAttribute("data-theme", theme);
-      localStorage.setItem(LS.THEME, theme);
+      sSet(LS.THEME, theme);
     }
 
     function formatRUB(n){
@@ -1005,10 +887,6 @@
       return String(s ?? "").replace(/[<>&'"]/g, c => ({
         "<":"&lt;","&":"&amp;",">":"&gt;","'":"&apos;",'"':"&quot;"
       }[c]));
-    }
-
-    function minPlanPriceRub(p){
-      return Math.min(...(p.plans||[]).map(x => Number(x.price_rub||0)));
     }
 
     function makeLogoDataURI(text){
@@ -1029,9 +907,92 @@
       return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
     }
 
-    /* ============================================================
-       6) State
-       ============================================================ */
+    function minPlanPriceRub(p){
+      return Math.min(...(p.plans||[]).map(x => Number(x.price_rub||0)));
+    }
+
+    function supabaseConfigured(){
+      return CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY &&
+             !CONFIG.SUPABASE_URL.includes("PASTE_") &&
+             !CONFIG.SUPABASE_ANON_KEY.includes("PASTE_");
+    }
+
+    /* =========================
+       Supabase REST client (без SDK)
+       ========================= */
+    async function sbFetch(path, { method="GET", body=null, headers={} } = {}){
+      const base = CONFIG.SUPABASE_URL.replace(/\/$/,"") + "/rest/v1/";
+      const url = base + path;
+
+      const h = {
+        "apikey": CONFIG.SUPABASE_ANON_KEY,
+        "Authorization": "Bearer " + CONFIG.SUPABASE_ANON_KEY,
+        "Content-Type": "application/json",
+        ...headers
+      };
+
+      const res = await fetch(url, {
+        method,
+        headers: h,
+        body: body ? JSON.stringify(body) : null
+      });
+
+      const text = await res.text();
+      let json = null;
+      try{ json = text ? JSON.parse(text) : null; }catch(e){}
+
+      if(!res.ok){
+        const msg = json?.message || json?.error || text || ("HTTP " + res.status);
+        throw new Error(msg);
+      }
+      return json;
+    }
+
+    /* =========================
+       Local seed
+       ========================= */
+    function seedProducts(){
+      return [
+        { id:"chatgpt", name:"ChatGPT", description:"AI помощник для задач, писем, идей, анализа и автоматизации.", logo_url: makeLogoDataURI("ChatGPT"), is_active:true,
+          plans:[{duration:"1m",price_rub:1990},{duration:"6m",price_rub:9990},{duration:"12m",price_rub:17990}] },
+        { id:"gemini", name:"Google Gemini", description:"Мультимодальный ИИ для текста, кода и контента.", logo_url: makeLogoDataURI("Gemini"), is_active:true,
+          plans:[{duration:"1m",price_rub:1790},{duration:"6m",price_rub:8990},{duration:"12m",price_rub:15990}] },
+        { id:"midjourney", name:"Midjourney", description:"Генерация изображений для дизайна, маркетинга и контента.", logo_url: makeLogoDataURI("Midjourney"), is_active:true,
+          plans:[{duration:"1m",price_rub:2490},{duration:"6m",price_rub:12490},{duration:"12m",price_rub:21990}] },
+        { id:"cursor", name:"Cursor AI", description:"AI-IDE для ускорения разработки: подсказки, рефакторинг, автокод.", logo_url: makeLogoDataURI("Cursor"), is_active:true,
+          plans:[{duration:"1m",price_rub:1890},{duration:"6m",price_rub:9490},{duration:"12m",price_rub:16990}] },
+        { id:"perplexity", name:"Perplexity AI", description:"Поиск с источниками: быстрые ответы и ресёрч.", logo_url: makeLogoDataURI("Perplexity"), is_active:true,
+          plans:[{duration:"1m",price_rub:1490},{duration:"6m",price_rub:7490},{duration:"12m",price_rub:13490}] },
+        { id:"claude", name:"Claude AI", description:"Аккуратный ассистент для документов, текстов и задач.", logo_url: makeLogoDataURI("Claude"), is_active:true,
+          plans:[{duration:"1m",price_rub:2090},{duration:"6m",price_rub:10490},{duration:"12m",price_rub:18990}] },
+        { id:"grok", name:"Grok AI", description:"Ассистент для быстрых ответов и идей. (Моковые данные)", logo_url: makeLogoDataURI("Grok"), is_active:true,
+          plans:[{duration:"1m",price_rub:1690},{duration:"6m",price_rub:8490},{duration:"12m",price_rub:15490}] }
+      ];
+    }
+
+    function loadLocalProducts(){
+      const raw = sGet(LS.LOCAL_PRODUCTS);
+      if(!raw){
+        const seeded = seedProducts();
+        sSet(LS.LOCAL_PRODUCTS, JSON.stringify(seeded));
+        return seeded;
+      }
+      try{
+        const parsed = JSON.parse(raw);
+        if(Array.isArray(parsed) && parsed.length) return parsed;
+      }catch(e){}
+      const seeded = seedProducts();
+      sSet(LS.LOCAL_PRODUCTS, JSON.stringify(seeded));
+      return seeded;
+    }
+
+    function saveLocalProducts(products){
+      sSet(LS.LOCAL_PRODUCTS, JSON.stringify(products));
+    }
+
+    /* =========================
+       State
+       ========================= */
     const state = {
       products: [],
       view: [],
@@ -1046,175 +1007,57 @@
       editingProductId: null
     };
 
-    /* ============================================================
-       7) Data sources
-       ============================================================ */
-
-    // Local demo seed
-    function seedProducts(){
-      return [
-        {
-          id: "chatgpt",
-          name: "ChatGPT",
-          description: "AI помощник для задач, писем, идей, анализа и автоматизации.",
-          logo_url: makeLogoDataURI("ChatGPT"),
-          is_active: true,
-          plans: [
-            { duration:"1m", price_rub: 1990 },
-            { duration:"6m", price_rub: 9990 },
-            { duration:"12m", price_rub: 17990 }
-          ]
-        },
-        {
-          id: "gemini",
-          name: "Google Gemini",
-          description: "Мультимодальный ИИ для текста, кода и контента.",
-          logo_url: makeLogoDataURI("Gemini"),
-          is_active: true,
-          plans: [
-            { duration:"1m", price_rub: 1790 },
-            { duration:"6m", price_rub: 8990 },
-            { duration:"12m", price_rub: 15990 }
-          ]
-        },
-        {
-          id: "midjourney",
-          name: "Midjourney",
-          description: "Генерация изображений для дизайна, маркетинга и контента.",
-          logo_url: makeLogoDataURI("Midjourney"),
-          is_active: true,
-          plans: [
-            { duration:"1m", price_rub: 2490 },
-            { duration:"6m", price_rub: 12490 },
-            { duration:"12m", price_rub: 21990 }
-          ]
-        },
-        {
-          id: "cursor",
-          name: "Cursor AI",
-          description: "AI-IDE для ускорения разработки: подсказки, рефакторинг, автокод.",
-          logo_url: makeLogoDataURI("Cursor"),
-          is_active: true,
-          plans: [
-            { duration:"1m", price_rub: 1890 },
-            { duration:"6m", price_rub: 9490 },
-            { duration:"12m", price_rub: 16990 }
-          ]
-        },
-        {
-          id: "perplexity",
-          name: "Perplexity AI",
-          description: "Поиск с источниками: быстрые ответы и ресёрч.",
-          logo_url: makeLogoDataURI("Perplexity"),
-          is_active: true,
-          plans: [
-            { duration:"1m", price_rub: 1490 },
-            { duration:"6m", price_rub: 7490 },
-            { duration:"12m", price_rub: 13490 }
-          ]
-        },
-        {
-          id: "claude",
-          name: "Claude AI",
-          description: "Аккуратный ассистент для документов, текстов и задач.",
-          logo_url: makeLogoDataURI("Claude"),
-          is_active: true,
-          plans: [
-            { duration:"1m", price_rub: 2090 },
-            { duration:"6m", price_rub: 10490 },
-            { duration:"12m", price_rub: 18990 }
-          ]
-        },
-        {
-          id: "grok",
-          name: "Grok AI",
-          description: "Ассистент для быстрых ответов и идей. (Моковые данные)",
-          logo_url: makeLogoDataURI("Grok"),
-          is_active: true,
-          plans: [
-            { duration:"1m", price_rub: 1690 },
-            { duration:"6m", price_rub: 8490 },
-            { duration:"12m", price_rub: 15490 }
-          ]
-        }
-      ];
-    }
-
-    function loadLocalProducts(){
-      const raw = localStorage.getItem(LS.LOCAL_PRODUCTS);
-      if(!raw){
-        const seeded = seedProducts();
-        localStorage.setItem(LS.LOCAL_PRODUCTS, JSON.stringify(seeded));
-        return seeded;
-      }
-      try{
-        const parsed = JSON.parse(raw);
-        if(Array.isArray(parsed)) return parsed;
-      }catch(e){}
-      const seeded = seedProducts();
-      localStorage.setItem(LS.LOCAL_PRODUCTS, JSON.stringify(seeded));
-      return seeded;
-    }
-
-    function saveLocalProducts(products){
-      localStorage.setItem(LS.LOCAL_PRODUCTS, JSON.stringify(products));
-    }
-
+    /* =========================
+       Catalog load
+       ========================= */
     async function loadProducts(){
-      // Определяем режим (если пользователь переключал)
-      const storedMode = localStorage.getItem(LS.MODE);
+      const storedMode = sGet(LS.MODE);
       if(storedMode) CONFIG.DATA_MODE = storedMode;
 
-      // Если supabase не настроен — автоматически fallback на local
-      if(CONFIG.DATA_MODE === "supabase" && !canUseSupabase()){
+      // Supabase mode: если не настроен — fallback на local
+      if(CONFIG.DATA_MODE === "supabase" && !supabaseConfigured()){
         CONFIG.DATA_MODE = "local";
+        sSet(LS.MODE, "local");
       }
 
+      // Local mode: всегда показывает товары
       if(CONFIG.DATA_MODE === "local"){
         state.products = loadLocalProducts().filter(p => p.is_active !== false);
         return;
       }
 
-      // Supabase mode
-      if(!supabase) supabase = initSupabase();
-      if(!supabase){
-        CONFIG.DATA_MODE = "local";
+      // Supabase REST: products + embedded product_plans
+      try{
+        const select = encodeURIComponent("id,slug,name,description,logo_url,is_active,product_plans(duration,price_rub)");
+        const rows = await sbFetch(`products?select=${select}&is_active=eq.true`, { method:"GET" });
+
+        state.products = (rows || []).map(p => ({
+          id: p.slug || String(p.id),
+          name: p.name,
+          description: p.description || "",
+          logo_url: p.logo_url || makeLogoDataURI(p.name),
+          is_active: p.is_active,
+          plans: (p.product_plans || []).map(pl => ({
+            duration: pl.duration,
+            price_rub: Number(pl.price_rub)
+          })).sort((a,b) => (a.duration > b.duration ? 1 : -1))
+        }));
+
+        // Если таблицы пустые — fallback (чтобы не было “пусто”)
+        if(!state.products.length){
+          state.products = loadLocalProducts().filter(p => p.is_active !== false);
+        }
+
+      }catch(err){
+        console.warn("Supabase error:", err);
+        toast("Supabase недоступен — показаны demo товары");
         state.products = loadLocalProducts().filter(p => p.is_active !== false);
-        return;
       }
-
-      // Чтение каталога из Supabase (products + product_plans)
-      // Требование: RLS должен разрешать SELECT активных products/plans всем.
-      const { data, error } = await supabase
-        .from("products")
-        .select("id,name,description,logo_url,is_active,product_plans(duration,price_rub)")
-        .eq("is_active", true);
-
-      if(error){
-        console.warn("Supabase load error:", error);
-        toast("Ошибка загрузки каталога (Supabase). Включаю local demo.");
-        CONFIG.DATA_MODE = "local";
-        localStorage.setItem(LS.MODE, "local");
-        state.products = loadLocalProducts().filter(p => p.is_active !== false);
-        return;
-      }
-
-      state.products = (data || []).map(p => ({
-        id: p.id,
-        name: p.name,
-        description: p.description,
-        logo_url: p.logo_url || makeLogoDataURI(p.name),
-        is_active: p.is_active,
-        plans: (p.product_plans || []).map(pl => ({
-          duration: pl.duration,
-          price_rub: Number(pl.price_rub)
-        })).sort((a,b) => (a.duration > b.duration ? 1 : -1))
-      }));
     }
 
-    /* ============================================================
-       8) Render catalog
-       ============================================================ */
+    /* =========================
+       Render catalog
+       ========================= */
     function render(){
       const query = (el.q.value || "").trim().toLowerCase();
       const list = query
@@ -1237,7 +1080,7 @@
             </div>
             <div>
               <h3 class="pName">${escapeHtml(p.name)}</h3>
-              <div class="pPrice">${escapeHtml(p.description || "")}</div>
+              <div class="pDesc">${escapeHtml(p.description || "")}</div>
             </div>
             <div class="cardFooter">
               <button class="btn primary" data-open="${escapeHtml(p.id)}">Подробнее</button>
@@ -1251,9 +1094,9 @@
       });
     }
 
-    /* ============================================================
-       9) Product modal + Payment
-       ============================================================ */
+    /* =========================
+       Product modal + YooMoney
+       ========================= */
     function openModal(id){
       const p = state.products.find(x => x.id === id);
       if(!p) return;
@@ -1291,8 +1134,6 @@
 
       if(state.selectedPlan){
         el.mPay.textContent = `Оплатить ${formatRUB(state.selectedPlan.price_rub)}`;
-      } else {
-        el.mPay.textContent = "Оплатить";
       }
 
       el.overlay.classList.add("open");
@@ -1315,117 +1156,80 @@
     });
 
     async function startPayment(product, plan){
-      /*
-        YooMoney flow (MVP):
-        1) Создаём заявку в Supabase orders со статусом 'pending'
-        2) Открываем ссылку YooMoney QuickPay на сумму (рубли), label = order_id
-        3) После успешной оплаты:
-           - Идеально: YooMoney отправляет webhook на ваш сервер/Edge Function → выставляем статус 'paid'
-           - Затем бот отправляет сообщение пользователю (CONFIG.PAID_MESSAGE)
-        4) Без webhook можно временно подтверждать оплату вручную в админке.
-      */
-
       const user = getTelegramUser();
       if(!user){
-        alert("Откройте приложение внутри Telegram, чтобы можно было привязать заявку к вашему аккаунту.");
+        alert("Откройте мини-приложение внутри Telegram Desktop/Mobile, чтобы привязать оплату к вашему аккаунту.");
         return;
       }
 
-      // 1) Создаём order в БД (если Supabase), иначе — демо
+      // Создаём заявку (в Supabase — если включен режим supabase и настроен)
       let orderId = "local_" + Date.now();
-      try{
-        if(CONFIG.DATA_MODE === "supabase" && supabase){
-          const payload = {
-            telegram_user_id: user.id,
-            product_id: product.id,
-            plan_duration: plan.duration,
-            amount_rub: Number(plan.price_rub),
-            status: "pending",
-            payment_provider: "yoomoney"
-          };
 
-          const { data, error } = await supabase.from("orders").insert(payload).select("id").single();
-          if(error) throw error;
-          orderId = data.id;
+      if(CONFIG.DATA_MODE === "supabase" && supabaseConfigured()){
+        try{
+          const inserted = await sbFetch("orders", {
+            method: "POST",
+            headers: { "Prefer":"return=representation" },
+            body: {
+              telegram_user_id: user.id,
+              product_id: null,           // если у вас FK на bigint — заполняется через Edge Function
+              plan_duration: plan.duration,
+              amount_rub: Number(plan.price_rub),
+              currency: "RUB",
+              status: "pending",
+              payment_provider: "yoomoney"
+            }
+          });
+          // inserted — массив строк (return=representation)
+          orderId = inserted?.[0]?.id || orderId;
+        }catch(e){
+          console.warn(e);
+          toast("Не удалось создать заявку в Supabase — продолжу как demo");
         }
-      }catch(e){
-        console.warn("Order insert failed:", e);
-        toast("Не удалось создать заявку в БД. Проверьте Supabase и RLS.");
-        return;
       }
 
-      // 2) Формируем ссылку YooMoney QuickPay
-      // Куда вставлять:
-      // - CONFIG.YOOMONEY_WALLET — ваш кошелёк YooMoney (receiver)
-      // - CONFIG.YOOMONEY_SUCCESS_URL — URL возврата (если хотите)
       if(!CONFIG.YOOMONEY_WALLET || CONFIG.YOOMONEY_WALLET.includes("PASTE_")){
-        alert("YooMoney ещё не настроен. В коде найдите CONFIG.YOOMONEY_WALLET и вставьте номер кошелька.");
+        alert("YooMoney ещё не настроен. В CONFIG вставьте YOOMONEY_WALLET (номер кошелька/receiver).");
         return;
       }
 
       const sum = Number(plan.price_rub);
-      const label = encodeURIComponent(orderId); // по этому label потом легко найти оплату
+      const label = encodeURIComponent(orderId);
       const targets = encodeURIComponent(`AI MARKET · ${product.name} · ${PLAN_LABELS[plan.duration]}`);
-      const success = CONFIG.YOOMONEY_SUCCESS_URL && !CONFIG.YOOMONEY_SUCCESS_URL.includes("PASTE_")
-        ? `&successURL=${encodeURIComponent(CONFIG.YOOMONEY_SUCCESS_URL)}`
-        : "";
+      const success = CONFIG.YOOMONEY_SUCCESS_URL ? `&successURL=${encodeURIComponent(CONFIG.YOOMONEY_SUCCESS_URL)}` : "";
 
-      // Ссылка QuickPay (упрощённый вариант без API ключей)
       const payUrl =
         `https://yoomoney.ru/quickpay/confirm.xml` +
         `?receiver=${encodeURIComponent(CONFIG.YOOMONEY_WALLET)}` +
         `&quickpay-form=shop` +
         `&targets=${targets}` +
-        `&paymentType=AC` +              // тип оплаты (можно менять)
+        `&paymentType=AC` +
         `&sum=${encodeURIComponent(sum)}` +
         `&label=${label}` +
         success;
 
-      // 3) Открываем оплату (в Telegram откроется браузер)
       window.open(payUrl, "_blank");
-      toast("Открываю YooMoney для оплаты…");
-
-      // Можно закрыть модалку
+      toast("Открываю YooMoney…");
       closeModal();
     }
 
-    /* ============================================================
-       10) Admin: доступ, вкладки, продукты, заявки
-       ============================================================ */
-
+    /* =========================
+       Admin access + UI
+       ========================= */
     function isAdminNow(){
       const u = getTelegramUser();
-      const storedAdminId = localStorage.getItem(LS.ADMIN_ID);
+      const storedAdminId = sGet(LS.ADMIN_ID);
       const adminId = storedAdminId ? Number(storedAdminId) : CONFIG.ADMIN_TELEGRAM_ID;
       return !!u && u.id === adminId;
     }
 
-    function updateAdminVisibility(){
-      state.isAdmin = isAdminNow();
-      el.btnAdmin.style.display = state.isAdmin ? "flex" : "none";
-
+    function updateDebug(){
       const u = getTelegramUser();
-      if(state.isAdmin){
-        el.adminHint.textContent = `Доступ: админ · ${u?.first_name || ""} (id ${u?.id})`;
-      } else {
-        el.adminHint.textContent = `Доступ ограничен. Админка доступна только Telegram ID администратора.`;
-      }
+      const tgInfo = u ? `Telegram user: ${u.id}` : `Telegram user: недоступен (web.telegram.org бывает ограничен)`;
+      const mode = `mode: ${CONFIG.DATA_MODE}`;
+      const sb = supabaseConfigured() ? "supabase: ok" : "supabase: not set";
+      el.debugLine.textContent = `${mode} · ${sb} · ${tgInfo}`;
     }
-
-    el.btnAdmin.addEventListener("click", () => {
-      state.adminOpen = !state.adminOpen;
-      el.adminPanel.classList.toggle("open", state.adminOpen);
-      if(state.adminOpen){
-        if(!state.isAdmin){
-          toast("Нет доступа к админке");
-          el.adminPanel.classList.remove("open");
-          state.adminOpen = false;
-          return;
-        }
-        openTab("products");
-        renderAdminProducts();
-      }
-    });
 
     function openTab(tab){
       state.activeTab = tab;
@@ -1438,25 +1242,7 @@
       el.panelSettings.style.display = tab === "settings" ? "block" : "none";
     }
 
-    el.tabProducts.addEventListener("click", () => { openTab("products"); renderAdminProducts(); });
-    el.tabOrders.addEventListener("click", () => { openTab("orders"); });
-    el.tabSettings.addEventListener("click", () => { openTab("settings"); renderSettings(); });
-
-    el.btnReload.addEventListener("click", async () => {
-      await loadProducts();
-      render();
-      if(state.adminOpen && state.activeTab === "products") renderAdminProducts();
-      toast("Обновлено");
-    });
-
-    el.btnAddProduct.addEventListener("click", () => {
-      openForm(null);
-    });
-
-    // ===== Admin: Products list =====
     function renderAdminProducts(){
-      if(!state.isAdmin) return;
-
       el.adminProductsList.innerHTML = state.products.map(p => {
         const from = minPlanPriceRub(p);
         return `
@@ -1486,119 +1272,61 @@
       });
     }
 
-    // ===== Admin: Orders (paid) =====
-    el.btnLoadPaid.addEventListener("click", async () => {
-      await loadPaidOrders();
+    function renderAdminAccessHint(){
+      const u = getTelegramUser();
+      if(state.isAdmin){
+        el.adminHint.textContent = `Доступ: админ (id ${u.id})`;
+      } else {
+        el.adminHint.textContent = u
+          ? `Доступ запрещён. Ваш id ${u.id}, админ id ${CONFIG.ADMIN_TELEGRAM_ID}`
+          : `Telegram user не определяется. Откройте в Telegram Desktop (Windows) для админки.`;
+      }
+    }
+
+    el.btnAdmin.addEventListener("click", () => {
+      state.isAdmin = isAdminNow();
+      renderAdminAccessHint();
+
+      state.adminOpen = !state.adminOpen;
+      el.adminPanel.classList.toggle("open", state.adminOpen);
+
+      // Показываем админку даже если доступа нет — чтобы было понятно почему
+      if(state.adminOpen){
+        openTab("products");
+        if(state.isAdmin) renderAdminProducts();
+        else el.adminProductsList.innerHTML = `<p class="hint">Нет доступа к редактированию. ${escapeHtml(el.adminHint.textContent)}</p>`;
+      }
     });
 
-    async function loadPaidOrders(){
-      /*
-        ВАЖНО:
-        - Заказы (orders) нельзя безопасно читать из клиента без auth.
-        - Поэтому список "оплаченных заявок" читаем через Edge Function, которая:
-          1) проверяет Telegram initData на сервере
-          2) проверяет что user.id == ADMIN_TELEGRAM_ID
-          3) читает orders через service_role
-      */
+    el.tabProducts.addEventListener("click", () => {
+      openTab("products");
+      if(state.isAdmin) renderAdminProducts();
+      else el.adminProductsList.innerHTML = `<p class="hint">Нет доступа. ${escapeHtml(el.adminHint.textContent)}</p>`;
+    });
+    el.tabOrders.addEventListener("click", () => {
+      openTab("orders");
+    });
+    el.tabSettings.addEventListener("click", () => {
+      openTab("settings");
+      renderSettings();
+    });
 
-      const initData = getInitData();
-      const user = getTelegramUser();
-      if(!user || !initData){
-        alert("Откройте админку внутри Telegram.");
-        return;
-      }
+    el.btnReload.addEventListener("click", async () => {
+      await loadProducts();
+      render();
+      if(state.adminOpen && state.isAdmin && state.activeTab === "products") renderAdminProducts();
+      updateDebug();
+      toast("Обновлено");
+    });
 
-      // URL Edge Function — сюда вы вставите свою функцию
-      // Пример формата: https://<project-ref>.functions.supabase.co/admin_orders_list
-      const EDGE_ADMIN_ORDERS_URL = "PASTE_EDGE_FUNCTION_URL_ADMIN_ORDERS_LIST";
-
-      if(EDGE_ADMIN_ORDERS_URL.includes("PASTE_")){
-        toast("Edge Function не настроена. См. ниже пример кода.");
-        el.adminOrdersList.innerHTML = `<p class="hint">Нужно настроить Edge Function admin_orders_list (см. ниже в ответе).</p>`;
-        return;
-      }
-
-      try{
-        const res = await fetch(EDGE_ADMIN_ORDERS_URL, {
-          method: "POST",
-          headers: { "Content-Type":"application/json" },
-          body: JSON.stringify({ initData })
-        });
-
-        const json = await res.json();
-        if(!res.ok) throw new Error(json?.error || "Ошибка Edge Function");
-
-        const orders = json.orders || [];
-        el.adminOrdersList.innerHTML = orders.map(o => `
-          <div class="row">
-            <div class="rowLeft">
-              <div class="logoMark" style="width:42px;height:42px;border-radius:16px;">₽</div>
-              <div style="min-width:0;">
-                <b>${escapeHtml(o.product_name || o.product_id)} <span style="color:var(--muted);font-weight:700;">· ${formatRUB(o.amount_rub)}</span></b>
-                <small>План: ${PLAN_LABELS[o.plan_duration] || o.plan_duration} · Пользователь: ${o.telegram_user_id}</small>
-                <small>Статус: <b>${escapeHtml(o.status)}</b> · Order: ${escapeHtml(o.id)}</small>
-              </div>
-            </div>
-            <div class="rowActions">
-              <button class="btn primary" data-notify="${escapeHtml(o.id)}">Отправить сообщение</button>
-            </div>
-          </div>
-        `).join("") || `<p class="hint">Оплаченных заявок пока нет.</p>`;
-
-        el.adminOrdersList.querySelectorAll("[data-notify]").forEach(b => {
-          b.addEventListener("click", async () => {
-            await adminNotifyPaid(b.getAttribute("data-notify"));
-          });
-        });
-
-      }catch(e){
-        console.warn(e);
-        toast("Ошибка загрузки заявок");
-      }
-    }
-
-    async function adminNotifyPaid(orderId){
-      /*
-        Edge Function admin_notify_paid:
-        - проверяет initData
-        - проверяет админа
-        - отправляет сообщение пользователю через Telegram Bot API sendMessage
-        - отмечает order.notified_at
-      */
-
-      const initData = getInitData();
-      const user = getTelegramUser();
-      if(!user || !initData) return;
-
-      const EDGE_NOTIFY_URL = "PASTE_EDGE_FUNCTION_URL_ADMIN_NOTIFY_PAID";
-      if(EDGE_NOTIFY_URL.includes("PASTE_")){
-        toast("Не настроена Edge Function для отправки сообщений.");
-        return;
-      }
-
-      const msg = localStorage.getItem(LS.PAID_MSG) || CONFIG.PAID_MESSAGE;
-
-      try{
-        const res = await fetch(EDGE_NOTIFY_URL, {
-          method: "POST",
-          headers: { "Content-Type":"application/json" },
-          body: JSON.stringify({ initData, orderId, message: msg })
-        });
-        const json = await res.json();
-        if(!res.ok) throw new Error(json?.error || "Ошибка отправки");
-
-        toast("Сообщение отправлено ✅");
-      }catch(e){
-        console.warn(e);
-        toast("Не удалось отправить сообщение");
-      }
-    }
-
-    /* ============================================================
-       11) Admin product form modal (удобная форма)
-       ============================================================ */
+    /* =========================
+       Admin product form (Local CRUD работает сразу)
+       ========================= */
     function openForm(product){
-      if(!state.isAdmin) return;
+      if(!state.isAdmin){
+        toast("Нет доступа");
+        return;
+      }
 
       state.formOpen = true;
       try{ tg && tg.BackButton.show(); }catch(e){}
@@ -1608,7 +1336,6 @@
         state.editingProductId = null;
         el.fTitle.textContent = "Новый товар";
         el.fDelete.style.display = "none";
-
         el.fId.value = "";
         el.fName.value = "";
         el.fDesc.value = "";
@@ -1628,12 +1355,9 @@
       el.fDesc.value = product.description || "";
       el.fLogo.value = product.logo_url || "";
 
-      const p1 = (product.plans || []).find(x => x.duration === "1m")?.price_rub ?? "";
-      const p6 = (product.plans || []).find(x => x.duration === "6m")?.price_rub ?? "";
-      const p12 = (product.plans || []).find(x => x.duration === "12m")?.price_rub ?? "";
-      el.p1.value = p1;
-      el.p6.value = p6;
-      el.p12.value = p12;
+      el.p1.value = (product.plans||[]).find(x=>x.duration==="1m")?.price_rub ?? "";
+      el.p6.value = (product.plans||[]).find(x=>x.duration==="6m")?.price_rub ?? "";
+      el.p12.value = (product.plans||[]).find(x=>x.duration==="12m")?.price_rub ?? "";
     }
 
     function closeForm(){
@@ -1645,6 +1369,8 @@
     el.fClose.addEventListener("click", closeForm);
     el.formOverlay.addEventListener("click", (e) => { if(e.target === el.formOverlay) closeForm(); });
 
+    el.btnAddProduct.addEventListener("click", () => openForm(null));
+
     el.fSave.addEventListener("click", async () => {
       if(!state.isAdmin) return;
 
@@ -1653,6 +1379,7 @@
         name: el.fName.value.trim(),
         description: el.fDesc.value.trim(),
         logo_url: el.fLogo.value.trim() || makeLogoDataURI(el.fName.value.trim() || "AI"),
+        is_active: true,
         plans: [
           { duration:"1m", price_rub: Number(el.p1.value || 0) },
           { duration:"6m", price_rub: Number(el.p6.value || 0) },
@@ -1669,131 +1396,90 @@
         return;
       }
 
-      // LOCAL mode: сохраняем прямо в localStorage
-      if(CONFIG.DATA_MODE === "local"){
-        const cur = loadLocalProducts();
-        const idx = cur.findIndex(x => x.id === (state.editingProductId || payload.id));
-        if(idx >= 0) cur[idx] = { ...cur[idx], ...payload, is_active:true };
-        else cur.unshift({ ...payload, is_active:true });
-        saveLocalProducts(cur);
-        await loadProducts();
-        render();
-        renderAdminProducts();
-        toast("Сохранено (local)");
-        closeForm();
-        return;
-      }
+      // Сейчас надёжно работает Local CRUD (сразу видно результат)
+      // Supabase CRUD лучше делать через Edge Functions (безопасно).
+      const cur = loadLocalProducts();
+      const idx = cur.findIndex(x => x.id === (state.editingProductId || payload.id));
+      if(idx >= 0) cur[idx] = payload;
+      else cur.unshift(payload);
+      saveLocalProducts(cur);
 
-      // SUPABASE mode: через Edge Function (чтобы не светить service_role)
-      const EDGE_UPSERT_URL = "PASTE_EDGE_FUNCTION_URL_ADMIN_PRODUCTS_UPSERT";
-      if(EDGE_UPSERT_URL.includes("PASTE_")){
-        toast("Не настроена Edge Function для сохранения товара.");
-        return;
-      }
+      CONFIG.DATA_MODE = "local";
+      sSet(LS.MODE, "local");
 
-      try{
-        const res = await fetch(EDGE_UPSERT_URL, {
-          method: "POST",
-          headers: { "Content-Type":"application/json" },
-          body: JSON.stringify({ initData: getInitData(), product: payload })
-        });
-        const json = await res.json();
-        if(!res.ok) throw new Error(json?.error || "Ошибка сохранения");
-
-        await loadProducts();
-        render();
-        renderAdminProducts();
-        toast("Сохранено ✅");
-        closeForm();
-      }catch(e){
-        console.warn(e);
-        toast("Не удалось сохранить");
-      }
+      await loadProducts();
+      render();
+      renderAdminProducts();
+      updateDebug();
+      toast("Сохранено (local)");
+      closeForm();
     });
 
     el.fDelete.addEventListener("click", async () => {
       if(!state.isAdmin) return;
-      const id = (state.editingProductId || el.fId.value.trim());
+      const id = state.editingProductId || el.fId.value.trim();
       if(!id) return;
       if(!confirm("Удалить товар?")) return;
 
-      if(CONFIG.DATA_MODE === "local"){
-        const cur = loadLocalProducts().filter(x => x.id !== id);
-        saveLocalProducts(cur);
-        await loadProducts();
-        render();
-        renderAdminProducts();
-        toast("Удалено (local)");
-        closeForm();
-        return;
-      }
+      const cur = loadLocalProducts().filter(x => x.id !== id);
+      saveLocalProducts(cur);
 
-      const EDGE_DELETE_URL = "PASTE_EDGE_FUNCTION_URL_ADMIN_PRODUCTS_DELETE";
-      if(EDGE_DELETE_URL.includes("PASTE_")){
-        toast("Не настроена Edge Function для удаления.");
-        return;
-      }
+      CONFIG.DATA_MODE = "local";
+      sSet(LS.MODE, "local");
 
-      try{
-        const res = await fetch(EDGE_DELETE_URL, {
-          method: "POST",
-          headers: { "Content-Type":"application/json" },
-          body: JSON.stringify({ initData: getInitData(), productId: id })
-        });
-        const json = await res.json();
-        if(!res.ok) throw new Error(json?.error || "Ошибка удаления");
-
-        await loadProducts();
-        render();
-        renderAdminProducts();
-        toast("Удалено ✅");
-        closeForm();
-      }catch(e){
-        console.warn(e);
-        toast("Не удалось удалить");
-      }
+      await loadProducts();
+      render();
+      renderAdminProducts();
+      updateDebug();
+      toast("Удалено (local)");
+      closeForm();
     });
 
-    /* ============================================================
-       12) Admin Settings
-       ============================================================ */
+    /* =========================
+       Settings
+       ========================= */
     function renderSettings(){
-      el.adminIdInput.value = String(localStorage.getItem(LS.ADMIN_ID) || CONFIG.ADMIN_TELEGRAM_ID);
-      el.paidMessageInput.value = localStorage.getItem(LS.PAID_MSG) || CONFIG.PAID_MESSAGE;
+      el.adminIdInput.value = String(sGet(LS.ADMIN_ID) || CONFIG.ADMIN_TELEGRAM_ID);
+      el.paidMessageInput.value = sGet(LS.PAID_MSG) || CONFIG.PAID_MESSAGE;
     }
 
-    el.btnModeSupabase.addEventListener("click", () => {
-      if(!canUseSupabase()){
+    el.btnModeSupabase.addEventListener("click", async () => {
+      if(!supabaseConfigured()){
         alert("Supabase не настроен. Вставьте SUPABASE_URL и ANON KEY в CONFIG.");
         return;
       }
       CONFIG.DATA_MODE = "supabase";
-      localStorage.setItem(LS.MODE, "supabase");
+      sSet(LS.MODE, "supabase");
       toast("Режим: Supabase");
+      await loadProducts();
+      render();
+      updateDebug();
     });
 
-    el.btnModeLocal.addEventListener("click", () => {
+    el.btnModeLocal.addEventListener("click", async () => {
       CONFIG.DATA_MODE = "local";
-      localStorage.setItem(LS.MODE, "local");
+      sSet(LS.MODE, "local");
       toast("Режим: Local");
+      await loadProducts();
+      render();
+      updateDebug();
     });
 
     el.adminIdInput.addEventListener("change", () => {
       const v = Number(el.adminIdInput.value.trim());
       if(!Number.isFinite(v)) return;
-      localStorage.setItem(LS.ADMIN_ID, String(v));
+      sSet(LS.ADMIN_ID, String(v));
       toast("Admin ID сохранён");
-      updateAdminVisibility();
     });
 
     el.paidMessageInput.addEventListener("change", () => {
-      localStorage.setItem(LS.PAID_MSG, el.paidMessageInput.value);
+      sSet(LS.PAID_MSG, el.paidMessageInput.value);
       toast("Текст сообщения сохранён");
     });
 
-    /* ============================================================
-       13) Theme + Search events
-       ============================================================ */
+    /* =========================
+       Theme + Search
+       ========================= */
     el.btnTheme.addEventListener("click", () => {
       const cur = document.body.getAttribute("data-theme");
       setTheme(cur === "dark" ? "light" : "dark");
@@ -1801,29 +1487,37 @@
 
     el.q.addEventListener("input", render);
 
-    /* ============================================================
-       14) Boot
-       ============================================================ */
+    /* =========================
+       Boot
+       ========================= */
     async function boot(){
-      // Theme init
-      const storedTheme = localStorage.getItem(LS.THEME);
-      if(storedTheme) setTheme(storedTheme);
+      try{
+        const theme = sGet(LS.THEME);
+        if(theme) setTheme(theme);
 
-      // Mode init
-      const storedMode = localStorage.getItem(LS.MODE);
-      if(storedMode) CONFIG.DATA_MODE = storedMode;
+        const mode = sGet(LS.MODE);
+        if(mode) CONFIG.DATA_MODE = mode;
 
-      // Paid message init
-      const storedMsg = localStorage.getItem(LS.PAID_MSG);
-      if(storedMsg) CONFIG.PAID_MESSAGE = storedMsg;
+        const msg = sGet(LS.PAID_MSG);
+        if(msg) CONFIG.PAID_MESSAGE = msg;
 
-      initTelegram();
-      supabase = initSupabase();
+        initTelegram();
 
-      updateAdminVisibility();
+        await loadProducts();
+        render();
 
-      await loadProducts();
-      render();
+        state.isAdmin = isAdminNow();
+        renderAdminAccessHint();
+        updateDebug();
+
+      }catch(e){
+        console.warn("BOOT ERROR:", e);
+        // Супер-fallback: показываем demo товары даже если что-то сломалось
+        state.products = seedProducts();
+        render();
+        el.debugLine.textContent = "Fallback demo mode (boot error)";
+        toast("Использую demo режим");
+      }
     }
 
     boot();
