@@ -53,7 +53,7 @@
       -webkit-font-smoothing: antialiased;
     }
     .safe{padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0; min-height:100%;}
-    .container{max-width:var(--maxw); margin:0 auto; padding:14px 14px 86px;}
+    .container{max-width:var(--maxw); margin:0 auto; padding:14px 14px 24px;}
 
     .appbar{position:sticky; top:0; z-index:20; padding-top:env(safe-area-inset-top);
       background:linear-gradient(180deg, rgba(0,0,0,.28), rgba(0,0,0,0));}
@@ -73,6 +73,7 @@
       color:var(--text); cursor:pointer; display:flex; align-items:center; gap:8px;
       user-select:none; -webkit-tap-highlight-color:transparent;
       transition:transform .06s ease, background .18s ease, border-color .18s ease;
+      white-space:nowrap;
     }
     .btn:active{transform:scale(.985);}
     .btn.primary{
@@ -127,7 +128,7 @@
     .cardFooter{margin-top:auto; display:flex; gap:8px;}
     .cardFooter .btn{width:100%; justify-content:center;}
 
-    /* Modal / overlays (no blending with background) */
+    /* Modal / overlays */
     .overlay{
       position:fixed; inset:0; background:rgba(0,0,0,.55);
       display:none; align-items:flex-end; justify-content:center;
@@ -169,7 +170,7 @@
     textarea{min-height:92px; resize:vertical;}
     .prices{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px;}
 
-    /* Admin panel redesigned */
+    /* Admin panel */
     .adminPanel{
       display:none;
       margin-top:14px;
@@ -230,7 +231,7 @@
     .previewLogo img{width:100%; height:100%; object-fit:cover;}
 
     .toast{
-      position:fixed; left:50%; bottom:calc(70px + env(safe-area-inset-bottom));
+      position:fixed; left:50%; bottom:calc(14px + env(safe-area-inset-bottom));
       transform:translateX(-50%);
       background:rgba(0,0,0,.72); color:#fff;
       border:1px solid rgba(255,255,255,.16);
@@ -245,63 +246,19 @@
     [data-theme="light"] .toast{background:rgba(11,16,32,.78);}
     .toast.open{display:block;}
 
-    /* Bottom navigation */
-    .bottomNav{
-      position:fixed; left:0; right:0; bottom:0;
-      padding:10px 12px calc(10px + env(safe-area-inset-bottom));
-      background:linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.55));
-      z-index:40;
-    }
-    [data-theme="light"] .bottomNav{background:linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,.85));}
-    .bottomNavInner{
-      max-width:var(--maxw);
-      margin:0 auto;
-      display:grid;
-      grid-template-columns:repeat(3,minmax(0,1fr));
-      gap:10px;
-    }
-    .navBtn{
-      height:48px;border-radius:18px;
+    .list{display:grid; gap:10px;}
+    .smallBtn{height:38px;border-radius:14px;}
+    .chatBox{display:grid; gap:8px;}
+    .chatMsg{
       border:1px solid var(--border);
-      background:rgba(255,255,255,.05);
-      color:var(--muted);
-      cursor:pointer;
-      display:flex; align-items:center; justify-content:center;
-      gap:8px;
-      user-select:none;
-    }
-    .navBtn.active{
-      color:var(--text);
-      border-color:rgba(90,230,255,.30);
-      background:linear-gradient(135deg, rgba(90,230,255,.10), rgba(124,92,255,.08));
-    }
-
-    /* Chat list */
-    .chatBox{
-      border:1px solid var(--border);
-      border-radius:18px;
-      background:rgba(255,255,255,.03);
-      padding:10px;
-      max-height:290px;
-      overflow:auto;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-    .msg{
-      max-width:86%;
-      padding:10px 12px;
       border-radius:16px;
-      border:1px solid var(--border);
-      background:rgba(255,255,255,.04);
+      padding:10px;
+      background:rgba(255,255,255,.03);
       line-height:1.35;
       font-size:13px;
-      white-space:pre-wrap;
-      word-break:break-word;
     }
-    .msg.user{align-self:flex-end; border-color:rgba(90,230,255,.24); background:rgba(90,230,255,.08);}
-    .msg.admin{align-self:flex-start; border-color:rgba(124,92,255,.22); background:rgba(124,92,255,.08);}
-    .msg small{display:block; margin-top:6px; color:var(--muted2); font-size:11px;}
+    .chatMsg.admin{border-color:rgba(90,230,255,.25);}
+    .chatMeta{color:var(--muted2); font-size:11px; margin-top:6px;}
   </style>
 </head>
 
@@ -318,13 +275,13 @@
         </div>
 
         <div class="actions">
-          <button class="btn" id="btnReviews" style="display:none;" title="Отзывы">⭐ Отзывы</button>
+          <button class="btn" id="btnCabinet" title="Личный кабинет">👤 Кабинет</button>
           <div class="adminBadge" id="adminBadge" title="Открыть/закрыть админ панель">🛡️ Админ</div>
           <button class="btn" id="btnTheme" title="Тема">🌓 Тема</button>
         </div>
       </div>
 
-      <div class="searchWrap" id="searchWrap">
+      <div class="searchWrap">
         <div class="searchBox">
           <div class="searchIcon">🔎</div>
           <input id="q" type="text" placeholder="Поиск по AI-инструментам (например: ChatGPT…)" />
@@ -333,133 +290,61 @@
     </div>
 
     <div class="container">
-      <!-- VIEW: CATALOG -->
-      <div id="viewCatalog">
-        <div class="sectionHead">
-          <h2>Каталог</h2>
-          <small id="countLabel">—</small>
-        </div>
-        <div class="grid" id="grid"></div>
-
-        <!-- ADMIN PANEL (only admin sees it) -->
-        <div class="adminPanel" id="adminPanel">
-          <div class="adminTop">
-            <div style="display:flex;flex-direction:column;gap:2px;">
-              <b style="font-size:14px;">Админ панель</b>
-              <small id="adminHint" style="font-size:12px;color:var(--muted);">—</small>
-            </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
-              <button class="btn" id="btnApiTest">✅ Проверить API</button>
-              <button class="btn" id="btnAdminCollapse">Свернуть</button>
-            </div>
-          </div>
-
-          <div class="adminBody">
-            <div class="tabs">
-              <div class="tab active" id="tabOrders">Заявки</div>
-              <div class="tab" id="tabProducts">Товары</div>
-              <div class="tab" id="tabSettings">Настройки</div>
-            </div>
-
-            <div id="panelOrders">
-              <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                <button class="btn" id="btnLoadOrders">⟳ Обновить заявки</button>
-                <button class="btn" id="btnFilterAll">Все</button>
-                <button class="btn" id="btnFilterPending">Pending</button>
-                <button class="btn" id="btnFilterPaid">Paid+</button>
-              </div>
-              <div style="height:10px;"></div>
-              <div id="adminOrdersList"></div>
-              <p class="hint">Оплата подтверждается вручную: после оплаты админ ставит paid и назначает номер заказа (не навязчиво).</p>
-            </div>
-
-            <div id="panelProducts" style="display:none;">
-              <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                <button class="btn primary" id="btnAddProduct">+ Новый товар</button>
-                <button class="btn" id="btnReloadCatalog">⟳ Обновить каталог</button>
-              </div>
-              <div style="height:10px;"></div>
-              <div id="adminProductsList"></div>
-            </div>
-
-            <div id="panelSettings" style="display:none;">
-              <p class="hint">Секреты (service_role и bot token) хранятся в Supabase → Edge Functions → Secrets.</p>
-              <p class="hint">Если видишь “Invalid initData hash” — токен бота не совпадает с ботом, который открывает Mini App. Для dev можно включить SKIP_INITDATA_VERIFY=1.</p>
-              <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                <button class="btn" id="btnRefreshSettings">⟳ Обновить настройки</button>
-              </div>
-              <div style="height:8px;"></div>
-              <div id="settingsCard"></div>
-            </div>
-          </div>
-        </div>
+      <div class="sectionHead">
+        <h2>Каталог</h2>
+        <small id="countLabel">—</small>
       </div>
 
-      <!-- VIEW: CABINET -->
-      <div id="viewCabinet" style="display:none;">
-        <div class="sectionHead">
-          <h2>Личный кабинет</h2>
-          <small id="meLabel">—</small>
-        </div>
+      <div class="grid" id="grid"></div>
 
-        <div class="card" style="min-height:auto;">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
-            <div>
-              <b id="meName">—</b><br>
-              <small style="color:var(--muted);" id="meUser">—</small>
-            </div>
-            <button class="btn" id="btnReloadMyOrders">⟳ Обновить</button>
+      <!-- ADMIN PANEL (only admin sees it) -->
+      <div class="adminPanel" id="adminPanel">
+        <div class="adminTop">
+          <div style="display:flex;flex-direction:column;gap:2px;">
+            <b style="font-size:14px;">Админ панель</b>
+            <small id="adminHint" style="font-size:12px;color:var(--muted);">—</small>
           </div>
-          <p class="hint" style="margin-top:8px;">
-            Здесь отображаются «Мои покупки»: дата/время оплаты, статус исполнения (в обработке / заказ получен), номер заказа (назначит админ после оплаты).
-          </p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
+            <button class="btn" id="btnApiTest">✅ Проверить API</button>
+            <button class="btn" id="btnAdminCollapse">Свернуть</button>
+          </div>
         </div>
 
-        <div style="height:10px;"></div>
+        <div class="adminBody">
+          <div class="tabs">
+            <div class="tab active" id="tabOrders">Заявки</div>
+            <div class="tab" id="tabProducts">Товары</div>
+            <div class="tab" id="tabSettings">Настройки</div>
+          </div>
 
-        <div class="sectionHead">
-          <h2>Мои покупки</h2>
-          <small id="myOrdersCount">—</small>
-        </div>
-
-        <div id="myOrdersList"></div>
-
-        <div class="card" style="min-height:auto;">
-          <b>Гарантия</b>
-          <p class="hint">
-            После отправки данных аккаунта администратором действует гарантия 10 дней. Если аккаунт заблокируют не по вине пользователя — замена бесплатно.
-          </p>
-        </div>
-      </div>
-
-      <!-- VIEW: PARTNER -->
-      <div id="viewPartner" style="display:none;">
-        <div class="sectionHead">
-          <h2>Партнёрская программа</h2>
-          <small id="refBadge">—</small>
-        </div>
-
-        <div class="card" style="min-height:auto;">
-          <b>Ваша реферальная ссылка</b>
-          <p class="hint">
-            Партнёр получает 10% с оплаченного заказа. Приглашённый получает скидку 5% только на 1-й заказ.
-          </p>
-
-          <div style="display:grid;gap:8px;">
-            <input id="refLink" type="text" readonly value="—"/>
+          <div id="panelOrders">
             <div style="display:flex;gap:10px;flex-wrap:wrap;">
-              <button class="btn primary" id="btnCopyRef">Копировать</button>
-              <button class="btn" id="btnShareRef">Открыть в Telegram</button>
-              <button class="btn" id="btnReloadRef">⟳ Обновить</button>
+              <button class="btn" id="btnLoadOrders">⟳ Обновить заявки</button>
+              <button class="btn" id="btnFilterAll">Все</button>
+              <button class="btn" id="btnFilterPending">Pending</button>
+              <button class="btn" id="btnFilterPaid">Paid</button>
+              <button class="btn" id="btnFilterProcessing">Processing</button>
+              <button class="btn" id="btnFilterDelivered">Delivered</button>
             </div>
+            <div style="height:10px;"></div>
+            <div id="adminOrdersList"></div>
+            <p class="hint">Оплата сейчас подтверждается вручную админом (paid + номер заказа). Позже можно добавить webhook YooMoney.</p>
           </div>
-        </div>
 
-        <div style="height:10px;"></div>
+          <div id="panelProducts" style="display:none;">
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <button class="btn primary" id="btnAddProduct">+ Новый товар</button>
+              <button class="btn" id="btnReloadCatalog">⟳ Обновить каталог</button>
+            </div>
+            <div style="height:10px;"></div>
+            <div id="adminProductsList"></div>
+          </div>
 
-        <div class="card" style="min-height:auto;">
-          <b>Статистика</b>
-          <div id="refStats" class="hint">—</div>
+          <div id="panelSettings" style="display:none;">
+            <p class="hint">Секреты (service_role и bot token) хранятся только в Supabase → Edge Functions → Secrets.</p>
+            <p class="hint">Если видишь “Invalid initData hash” — токен бота не совпадает с ботом, который открывает Mini App.</p>
+            <p class="hint">Кнопка “Отзывы” включается в таблице app_settings (reviews_enabled=true и reviews_chat_url).</p>
+          </div>
         </div>
       </div>
     </div>
@@ -476,7 +361,7 @@
             <small id="mFrom">—</small>
           </div>
         </div>
-        <button class="btn" id="mClose" style="height:38px;border-radius:14px;">✕</button>
+        <button class="btn smallBtn" id="mClose">✕</button>
       </div>
       <div class="modalBody">
         <p class="hint" id="mDesc">—</p>
@@ -492,7 +377,40 @@
     </div>
   </div>
 
-  <!-- ORDER DETAIL / CHAT MODAL -->
+  <!-- CABINET -->
+  <div class="overlay" id="cabOverlay">
+    <div class="modal">
+      <div class="modalHead">
+        <div class="modalTitle">
+          <div class="logoMark" style="width:40px;height:40px;border-radius:16px;">👤</div>
+          <div style="min-width:0;">
+            <b id="cabTitle">Личный кабинет</b>
+            <small id="cabSub" style="display:block;margin-top:2px;font-size:12px;color:var(--muted);">—</small>
+          </div>
+        </div>
+        <button class="btn smallBtn" id="cabClose">✕</button>
+      </div>
+
+      <div class="modalBody">
+        <div class="tabs">
+          <div class="tab active" id="cabTabOrders">Мои покупки</div>
+          <div class="tab" id="cabTabReviews" style="display:none;">Отзывы</div>
+        </div>
+
+        <div id="cabPanelOrders">
+          <div id="myOrdersList" class="list"></div>
+          <p class="hint">В каждом заказе есть чат с администратором. Гарантия 10 дней после выдачи данных.</p>
+        </div>
+
+        <div id="cabPanelReviews" style="display:none;">
+          <p class="hint">Кнопка отзывов будет включена позже администратором.</p>
+          <button class="btn primary" id="btnOpenReviews" style="display:none;">Открыть отзывы</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ORDER DETAILS (for user + admin chat) -->
   <div class="overlay" id="orderOverlay">
     <div class="modal">
       <div class="modalHead">
@@ -500,35 +418,34 @@
           <div class="logoMark" style="width:40px;height:40px;border-radius:16px;">🧾</div>
           <div style="min-width:0;">
             <b id="oTitle">Заказ</b>
-            <small id="oSub">—</small>
+            <small id="oSub" style="display:block;margin-top:2px;font-size:12px;color:var(--muted);">—</small>
           </div>
         </div>
-        <button class="btn" id="oClose" style="height:38px;border-radius:14px;">✕</button>
+        <button class="btn smallBtn" id="orderClose">✕</button>
       </div>
       <div class="modalBody">
-        <div id="oInfo" class="hint">—</div>
-
-        <div style="display:grid;gap:8px;">
-          <div class="label">Чат с администратором</div>
-          <div class="chatBox" id="chatBox"></div>
-          <div style="display:flex;gap:10px;">
-            <input id="chatInput" type="text" placeholder="Написать сообщение..." style="flex:1;" />
-            <button class="btn primary" id="chatSend">Отправить</button>
+        <div class="row">
+          <div class="rowLeft" style="flex-direction:column; gap:4px;">
+            <b id="oStatus">—</b>
+            <small id="oDates">—</small>
           </div>
-          <p class="hint">Сообщения сохраняются в заказе. Администратор отвечает здесь же и (опционально) в Telegram.</p>
+          <div class="rowActions" id="oAdminActions" style="display:none;">
+            <button class="btn" id="btnSetNumber">№</button>
+            <button class="btn primary" id="btnMarkPaid">Paid</button>
+            <button class="btn" id="btnMarkProcessing">Processing</button>
+            <button class="btn" id="btnSendMaterial">Отправить данные</button>
+          </div>
         </div>
 
-        <!-- admin quick actions -->
-        <div id="adminOrderActions" style="display:none; border-top:1px solid var(--border); padding-top:10px;">
-          <div class="label">Действия админа</div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap;">
-            <button class="btn" id="btnSetNumber">№ Назначить</button>
-            <button class="btn primary" id="btnMarkPaid">✅ paid</button>
-            <button class="btn" id="btnMarkProcessing">🛠️ в обработке</button>
-            <button class="btn" id="btnMarkDelivered">📦 заказ получен</button>
-            <button class="btn" id="btnOpenSendMaterial">✉️ отправить данные</button>
-          </div>
-          <p class="hint">После «отправить данные» автоматически выставится статус «заказ получен» и гарантия 10 дней.</p>
+        <div>
+          <div class="label">Чат по заказу</div>
+          <div id="chatList" class="list" style="margin-top:8px;"></div>
+        </div>
+
+        <div class="chatBox">
+          <textarea id="chatInput" placeholder="Написать администратору..."></textarea>
+          <button class="btn primary" id="chatSend">Отправить</button>
+          <p class="hint">После выдачи данных действует гарантия 10 дней. Если аккаунт заблокируют не по вине пользователя — сделаем замену бесплатно (правила добавит админ позже).</p>
         </div>
       </div>
     </div>
@@ -545,7 +462,7 @@
             <small style="display:block;margin-top:2px;font-size:12px;color:var(--muted);">Создание / редактирование</small>
           </div>
         </div>
-        <button class="btn" id="fClose" style="height:38px;border-radius:14px;">✕</button>
+        <button class="btn smallBtn" id="fClose">✕</button>
       </div>
 
       <div class="modalBody">
@@ -553,7 +470,7 @@
           <div class="previewLogo" id="logoPreview">LOGO</div>
           <div style="display:flex;flex-direction:column;gap:8px;flex:1;">
             <button class="btn" id="btnUploadLogo">⬆️ Загрузить логотип</button>
-            <small class="hint">Файл уйдёт в Supabase Storage (bucket product-logos) и ссылка сохранится в товар.</small>
+            <small class="hint">Файл уйдёт в Supabase Storage и ссылка сохранится в товар.</small>
           </div>
           <input id="logoFile" type="file" accept="image/*" style="display:none;" />
         </div>
@@ -583,7 +500,7 @@
             <button class="btn danger" id="fDelete" style="display:none;">Удалить</button>
           </div>
 
-          <p class="hint">Slug скрыт и создаётся автоматически (можно оставить пустым).</p>
+          <p class="hint">Slug скрыт и создаётся автоматически. Вручную вводить не нужно.</p>
         </div>
       </div>
     </div>
@@ -596,16 +513,16 @@
         <div class="modalTitle">
           <div class="logoMark" style="width:40px;height:40px;border-radius:16px;">✉️</div>
           <div style="min-width:0;">
-            <b>Отправка данных аккаунта</b>
+            <b>Отправка данных</b>
             <small id="msgSub" style="display:block;margin-top:2px;font-size:12px;color:var(--muted);">—</small>
           </div>
         </div>
-        <button class="btn" id="msgClose" style="height:38px;border-radius:14px;">✕</button>
+        <button class="btn smallBtn" id="msgClose">✕</button>
       </div>
       <div class="modalBody">
         <div style="display:flex;flex-direction:column;gap:6px;">
-          <div class="label">Материал (логин/пароль/ссылка/инструкция)</div>
-          <textarea id="msgText" placeholder="Например: данные для входа..."></textarea>
+          <div class="label">Данные аккаунта / ссылка / инструкция</div>
+          <textarea id="msgText" placeholder="Например: логин/пароль/ссылка/инструкция..."></textarea>
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;">
           <button class="btn primary" id="msgSend">Отправить</button>
@@ -618,45 +535,25 @@
 
   <div class="toast" id="toast"></div>
 
-  <div class="bottomNav">
-    <div class="bottomNavInner">
-      <button class="navBtn active" id="navCatalog">🏬 Каталог</button>
-      <button class="navBtn" id="navCabinet">👤 Кабинет</button>
-      <button class="navBtn" id="navPartner">💸 Партнёрка</button>
-    </div>
-  </div>
-
   <script>
     /**
-     * =========================
-     * CONFIG — заполнить руками
-     * =========================
-     * SUPABASE_URL / SUPABASE_ANON_KEY:
-     *  Supabase → Settings → API
+     * ================================
+     * CONFIG — ВАЖНО заполнить!
+     * ================================
+     * SUPABASE_URL / SUPABASE_ANON_KEY берёшь в Supabase → Settings → API
+     * ADMIN_TELEGRAM_ID — твой TG id (число)
      *
-     * ADMIN_TELEGRAM_ID:
-     *  твой Telegram user_id
-     *
-     * BOT_USERNAME / MINIAPP_SHORT_NAME:
-     *  чтобы строить реферальную ссылку.
-     *  Пример: https://t.me/BOT_USERNAME/MINIAPP_SHORT_NAME?startapp=ref_xxx
-     *
-     * YOOMONEY_WALLET:
-     *  номер кошелька YooMoney (пока можно оставить пустым)
+     * ⚠️ НИКОГДА не вставляй service_role сюда. Он хранится только в Edge Functions → Secrets.
      */
     const CONFIG = {
       SUPABASE_URL: "https://cilnfljlyubwhooxuuob.supabase.co",
       SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpbG5mbGpseXVid2hvb3h1dW9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExMjMyNDIsImV4cCI6MjA4NjY5OTI0Mn0.030FmUuyL6Ht-C4WlEvA0jL29rvx_m1JH8rQ1V8W6oQ",
       ADMIN_TELEGRAM_ID: 5017229451,
 
-      // ⚠️ Для реф-ссылки:
-      BOT_USERNAME: "PASTE_BOT_USERNAME_HERE",       // например: ai_market_bot
-      MINIAPP_SHORT_NAME: "PASTE_MINIAPP_NAME_HERE", // например: ai_market (как в direct link)
-
-      // YooMoney (RUB)
+      // YooMoney (RUB) — можно оставить пустым, тогда оплата будет недоступна
       YOOMONEY_WALLET: "",
 
-      // Сообщение, которое админ отправляет после подтверждения оплаты (перед материалом)
+      // Сообщение, которое админ отправляет вместе с данными
       PAID_MESSAGE:
         "Спасибо! Оплату получили ✅\n" +
         "Мы запускаем создание вашего аккаунта — обычно это занимает от 30 минут до 2 часов.\n" +
@@ -664,55 +561,25 @@
     };
 
     const PLAN_LABELS = { "1m":"1 месяц", "6m":"6 месяцев", "12m":"12 месяцев" };
-    const PLAN_ORDER = { "1m": 1, "6m": 6, "12m": 12 };
 
     const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
     const getTelegramUser = () => { try{ return tg?.initDataUnsafe?.user || null; }catch(e){ return null; } };
     const getInitData = () => { try{ return tg?.initData || ""; }catch(e){ return ""; } };
-    const getStartParam = () => { try{ return tg?.initDataUnsafe?.start_param || ""; }catch(e){ return ""; } };
 
     const el = {
       btnTheme: document.getElementById("btnTheme"),
-      btnReviews: document.getElementById("btnReviews"),
+      btnCabinet: document.getElementById("btnCabinet"),
+
       adminBadge: document.getElementById("adminBadge"),
       adminPanel: document.getElementById("adminPanel"),
       adminHint: document.getElementById("adminHint"),
       btnAdminCollapse: document.getElementById("btnAdminCollapse"),
       btnApiTest: document.getElementById("btnApiTest"),
-      btnRefreshSettings: document.getElementById("btnRefreshSettings"),
-      settingsCard: document.getElementById("settingsCard"),
 
-      // nav
-      navCatalog: document.getElementById("navCatalog"),
-      navCabinet: document.getElementById("navCabinet"),
-      navPartner: document.getElementById("navPartner"),
-      viewCatalog: document.getElementById("viewCatalog"),
-      viewCabinet: document.getElementById("viewCabinet"),
-      viewPartner: document.getElementById("viewPartner"),
-      searchWrap: document.getElementById("searchWrap"),
-
-      // catalog
       q: document.getElementById("q"),
       grid: document.getElementById("grid"),
       countLabel: document.getElementById("countLabel"),
 
-      // cabinet
-      meLabel: document.getElementById("meLabel"),
-      meName: document.getElementById("meName"),
-      meUser: document.getElementById("meUser"),
-      btnReloadMyOrders: document.getElementById("btnReloadMyOrders"),
-      myOrdersCount: document.getElementById("myOrdersCount"),
-      myOrdersList: document.getElementById("myOrdersList"),
-
-      // partner
-      refBadge: document.getElementById("refBadge"),
-      refLink: document.getElementById("refLink"),
-      btnCopyRef: document.getElementById("btnCopyRef"),
-      btnShareRef: document.getElementById("btnShareRef"),
-      btnReloadRef: document.getElementById("btnReloadRef"),
-      refStats: document.getElementById("refStats"),
-
-      // product modal
       overlay: document.getElementById("overlay"),
       mClose: document.getElementById("mClose"),
       mLogo: document.getElementById("mLogo"),
@@ -723,7 +590,31 @@
       mPay: document.getElementById("mPay"),
       mPayHint: document.getElementById("mPayHint"),
 
-      // admin tabs
+      cabOverlay: document.getElementById("cabOverlay"),
+      cabClose: document.getElementById("cabClose"),
+      cabSub: document.getElementById("cabSub"),
+      cabTabOrders: document.getElementById("cabTabOrders"),
+      cabTabReviews: document.getElementById("cabTabReviews"),
+      cabPanelOrders: document.getElementById("cabPanelOrders"),
+      cabPanelReviews: document.getElementById("cabPanelReviews"),
+      myOrdersList: document.getElementById("myOrdersList"),
+      btnOpenReviews: document.getElementById("btnOpenReviews"),
+
+      orderOverlay: document.getElementById("orderOverlay"),
+      orderClose: document.getElementById("orderClose"),
+      oTitle: document.getElementById("oTitle"),
+      oSub: document.getElementById("oSub"),
+      oStatus: document.getElementById("oStatus"),
+      oDates: document.getElementById("oDates"),
+      oAdminActions: document.getElementById("oAdminActions"),
+      btnSetNumber: document.getElementById("btnSetNumber"),
+      btnMarkPaid: document.getElementById("btnMarkPaid"),
+      btnMarkProcessing: document.getElementById("btnMarkProcessing"),
+      btnSendMaterial: document.getElementById("btnSendMaterial"),
+      chatList: document.getElementById("chatList"),
+      chatInput: document.getElementById("chatInput"),
+      chatSend: document.getElementById("chatSend"),
+
       tabOrders: document.getElementById("tabOrders"),
       tabProducts: document.getElementById("tabProducts"),
       tabSettings: document.getElementById("tabSettings"),
@@ -735,6 +626,8 @@
       btnFilterAll: document.getElementById("btnFilterAll"),
       btnFilterPending: document.getElementById("btnFilterPending"),
       btnFilterPaid: document.getElementById("btnFilterPaid"),
+      btnFilterProcessing: document.getElementById("btnFilterProcessing"),
+      btnFilterDelivered: document.getElementById("btnFilterDelivered"),
       adminOrdersList: document.getElementById("adminOrdersList"),
 
       btnAddProduct: document.getElementById("btnAddProduct"),
@@ -756,7 +649,6 @@
       logoFile: document.getElementById("logoFile"),
       logoPreview: document.getElementById("logoPreview"),
 
-      // send material
       msgOverlay: document.getElementById("msgOverlay"),
       msgClose: document.getElementById("msgClose"),
       msgCancel: document.getElementById("msgCancel"),
@@ -764,23 +656,6 @@
       msgText: document.getElementById("msgText"),
       msgSub: document.getElementById("msgSub"),
       msgHint: document.getElementById("msgHint"),
-
-      // order chat
-      orderOverlay: document.getElementById("orderOverlay"),
-      oClose: document.getElementById("oClose"),
-      oTitle: document.getElementById("oTitle"),
-      oSub: document.getElementById("oSub"),
-      oInfo: document.getElementById("oInfo"),
-      chatBox: document.getElementById("chatBox"),
-      chatInput: document.getElementById("chatInput"),
-      chatSend: document.getElementById("chatSend"),
-
-      adminOrderActions: document.getElementById("adminOrderActions"),
-      btnSetNumber: document.getElementById("btnSetNumber"),
-      btnMarkPaid: document.getElementById("btnMarkPaid"),
-      btnMarkProcessing: document.getElementById("btnMarkProcessing"),
-      btnMarkDelivered: document.getElementById("btnMarkDelivered"),
-      btnOpenSendMaterial: document.getElementById("btnOpenSendMaterial"),
 
       toast: document.getElementById("toast")
     };
@@ -794,36 +669,20 @@
       ordersFilter:"all",
       orders: [],
 
-      // product modal state
       currentProduct:null,
       selectedPlan:"1m",
 
-      // editor
       editingSlug:null,
       editingLogoUrl:"",
 
-      // send material
       msgOrderId:null,
       msgUserId:null,
 
-      // views
-      view:"catalog",
-
-      // cabinet
-      myOrders: [],
-      me: null,
-
-      // order modal
-      currentOrderId: null,
-      currentOrder: null,
-      currentMessages: [],
-
-      // settings
-      settings: { reviews_enabled:false, reviews_chat_url:"" },
-
-      // referral
-      referral_code: null,
-      referral_stats: null
+      me:null,              // whoami result
+      settings:null,        // app_settings
+// order detail
+      currentOrder:null,
+      chatTimer:null
     };
 
     function toast(msg){
@@ -837,7 +696,6 @@
       document.body.setAttribute("data-theme", theme);
       try{ localStorage.setItem("theme", theme); }catch(e){}
     }
-
     function initTheme(){
       try{
         const saved = localStorage.getItem("theme");
@@ -847,10 +705,11 @@
 
     function escapeHtml(s){ return String(s ?? "").replace(/[<>&'"]/g, c => ({ "<":"&lt;","&":"&amp;",">":"&gt;","'":"&apos;",'"':"&quot;" }[c])); }
     function formatRUB(n){ const v = Number(n||0); return "₽" + v.toLocaleString("ru-RU"); }
-    function formatDT(dt){
-      if(!dt) return "—";
-      try{ return new Date(dt).toLocaleString("ru-RU"); }catch(e){ return String(dt); }
+    function formatDT(s){
+      if(!s) return "—";
+      try{ return new Date(s).toLocaleString("ru-RU"); }catch(e){ return String(s); }
     }
+
     function supabaseConfigured(){
       return CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY &&
              !CONFIG.SUPABASE_URL.includes("PASTE_") &&
@@ -865,6 +724,20 @@
       if(!s) return "AI";
       const parts = s.split(/\s+/).slice(0,2);
       return parts.map(x=>x[0]?.toUpperCase()).join("") || "AI";
+    }
+
+    function syncBackButton(){
+      const anyOpen =
+        el.overlay.classList.contains("open") ||
+        el.formOverlay.classList.contains("open") ||
+        el.msgOverlay.classList.contains("open") ||
+        el.cabOverlay.classList.contains("open") ||
+        el.orderOverlay.classList.contains("open");
+      try{
+        if(tg){
+          anyOpen ? tg.BackButton.show() : tg.BackButton.hide();
+        }
+      }catch(e){}
     }
 
     // ===== Supabase REST (public read catalog) =====
@@ -887,7 +760,7 @@
       return json;
     }
 
-    // ===== Edge Function API (secure writes + private reads) =====
+    // ===== Edge Function API =====
     async function api(action, payload = {}){
       if(!supabaseConfigured()) throw new Error("Supabase не настроен");
       const url = CONFIG.SUPABASE_URL.replace(/\/$/,"") + "/functions/v1/admin-api";
@@ -913,57 +786,23 @@
     }
 
     // ===== Telegram init =====
-    function syncBackButton(){
-      const anyOpen =
-        state.modalOpen ||
-        el.formOverlay.classList.contains("open") ||
-        el.msgOverlay.classList.contains("open") ||
-        el.orderOverlay.classList.contains("open");
-      try{
-        if(tg){
-          anyOpen ? tg.BackButton.show() : tg.BackButton.hide();
-        }
-      }catch(e){}
-    }
-
     function initTelegram(){
       if(!tg) return;
       try{ tg.ready(); tg.expand(); }catch(e){}
       try{
         tg.BackButton.onClick(() => {
-          if(state.modalOpen) closeModal();
-          if(el.formOverlay.classList.contains("open")) closeForm();
-          if(el.msgOverlay.classList.contains("open")) closeMsg();
           if(el.orderOverlay.classList.contains("open")) closeOrder();
+          else if(el.msgOverlay.classList.contains("open")) closeMsg();
+          else if(el.formOverlay.classList.contains("open")) closeForm();
+          else if(el.cabOverlay.classList.contains("open")) closeCabinet();
+          else if(el.overlay.classList.contains("open")) closeModal();
         });
       }catch(e){}
     }
 
-    // ===== Views =====
-    function setActiveNav(btn){
-      [el.navCatalog, el.navCabinet, el.navPartner].forEach(x => x.classList.remove("active"));
-      btn.classList.add("active");
-    }
+    // ===== Catalog =====
+    const PLAN_ORDER = { "1m": 1, "6m": 6, "12m": 12 };
 
-    function switchView(v){
-      state.view = v;
-      el.viewCatalog.style.display = v==="catalog" ? "block" : "none";
-      el.viewCabinet.style.display = v==="cabinet" ? "block" : "none";
-      el.viewPartner.style.display = v==="partner" ? "block" : "none";
-
-      // Search is meaningful only in catalog
-      el.searchWrap.style.display = v==="catalog" ? "block" : "none";
-
-      if(v==="catalog") setActiveNav(el.navCatalog);
-      if(v==="cabinet") setActiveNav(el.navCabinet);
-      if(v==="partner") setActiveNav(el.navPartner);
-    }
-
-    el.navCatalog.addEventListener("click", () => switchView("catalog"));
-    el.navCabinet.addEventListener("click", async () => { switchView("cabinet"); await loadMyOrders(); });
-    el.navPartner.addEventListener("click", async () => { switchView("partner"); await loadReferral(); });
-
-    // ===== Catalog loading =====
     async function loadProducts(){
       const select = encodeURIComponent("slug,name,description,logo_url,is_active,product_plans(duration,price_rub)");
       const rows = await sbFetch(`products?select=${select}&is_active=eq.true`, { method:"GET" });
@@ -974,12 +813,12 @@
         description: p.description || "",
         logo_url: p.logo_url || "",
         plans: (p.product_plans||[]).map(pl => ({ duration:pl.duration, price_rub:Number(pl.price_rub) }))
-          .sort((a,b)=> (PLAN_ORDER[a.duration]||999) - (PLAN_ORDER[b.duration]||999)) // ✅ fixed sorting
+          .sort((a,b)=> (PLAN_ORDER[a.duration]||999) - (PLAN_ORDER[b.duration]||999))
       }));
     }
 
     function minPlanPriceRub(p){
-      const prices = (p.plans||[]).map(x => Number(x.price_rub||0)).filter(Boolean);
+      const prices = (p.plans||[]).map(x => Number(x.price_rub||0)).filter(v => v>0);
       return prices.length ? Math.min(...prices) : 0;
     }
 
@@ -1018,7 +857,7 @@
       }).join("") || `<p class="hint">Ничего не найдено.</p>`;
     }
 
-    // Event delegation for catalog open (faster than re-binding every time)
+    // Делегирование кликов по карточкам (не навешиваем обработчики каждый раз)
     el.grid.addEventListener("click", (e) => {
       const btn = e.target.closest("[data-open]");
       if(btn) openModal(btn.getAttribute("data-open"));
@@ -1082,7 +921,6 @@
       el.overlay.classList.remove("open");
       syncBackButton();
     }
-
     el.mClose.addEventListener("click", closeModal);
     el.overlay.addEventListener("click", (e) => { if(e.target === el.overlay) closeModal(); });
 
@@ -1109,7 +947,6 @@
           return;
         }
 
-        // 1) create order (server computes price + referral discount)
         const res = await api("create_order", {
           product_slug: p.id,
           plan_duration: state.selectedPlan
@@ -1117,12 +954,8 @@
 
         const order = res.order;
         const amount = Number(order.amount_rub);
-        const base = Number(order.base_amount_rub || amount);
-        const disc = Number(order.discount_rub || 0);
-
         const target = `AI MARKET: ${order.product_name} · ${PLAN_LABELS[order.plan_duration] || order.plan_duration}`;
 
-        // 2) open payment link
         const link = buildYooMoneyLink({
           wallet: CONFIG.YOOMONEY_WALLET,
           amount,
@@ -1136,18 +969,269 @@
         }catch(e){
           window.open(link, "_blank");
         }
-
-        el.mPayHint.textContent =
-          (disc ? `Скидка по реферальной программе: -${formatRUB(disc)} (из ${formatRUB(base)}). ` : "") +
-          "Ссылка на оплату открыта. После оплаты админ подтвердит заявку и назначит номер заказа.";
-
         toast("Создана заявка · ожидаем оплату");
 
-        // optional: auto refresh cabinet later
       }catch(e){
         alert("Ошибка: " + e.message);
       }
     });
+
+    // ===== Cabinet =====
+    function openCabinet(){
+      el.cabOverlay.classList.add("open");
+      syncBackButton();
+      openCabTab("orders");
+      loadMyOrders();
+applyReviewsVisibility();
+    }
+    function closeCabinet(){
+      el.cabOverlay.classList.remove("open");
+      syncBackButton();
+    }
+    el.btnCabinet.addEventListener("click", openCabinet);
+    el.cabClose.addEventListener("click", closeCabinet);
+    el.cabOverlay.addEventListener("click", (e)=>{ if(e.target === el.cabOverlay) closeCabinet(); });
+
+    function openCabTab(tab){
+      el.cabTabOrders.classList.toggle("active", tab==="orders");
+el.cabTabReviews.classList.toggle("active", tab==="reviews");
+
+      el.cabPanelOrders.style.display = tab==="orders" ? "block":"none";
+el.cabPanelReviews.style.display = tab==="reviews" ? "block":"none";
+    }
+    el.cabTabOrders.addEventListener("click", ()=> openCabTab("orders"));
+el.cabTabReviews.addEventListener("click", ()=> openCabTab("reviews"));
+
+    async function loadMyOrders(){
+      try{
+        el.myOrdersList.innerHTML = `<p class="hint">Загрузка...</p>`;
+        const res = await api("list_my_orders", {});
+        const orders = res.orders || [];
+        if(!orders.length){
+          el.myOrdersList.innerHTML = `<p class="hint">Покупок пока нет.</p>`;
+          return;
+        }
+
+        el.myOrdersList.innerHTML = orders.map(o => {
+          const st = escapeHtml(o.status);
+          const statusLabel =
+            st==="pending" ? "🕘 В ожидании оплаты" :
+            st==="paid" ? "✅ Оплачено" :
+            st==="processing" ? "🛠️ В обработке" :
+            st==="delivered" ? "📦 Заказ получен" :
+            st;
+
+          const num = o.order_number ? `№ ${escapeHtml(o.order_number)}` : "№ — (назначит админ)";
+          const paidAt = o.paid_at ? `Оплата: ${formatDT(o.paid_at)}` : `Создан: ${formatDT(o.created_at)}`;
+          const warr = o.warranty_until ? `Гарантия до: ${formatDT(o.warranty_until)}` : `Гарантия: —`;
+
+          return `
+            <div class="row">
+              <div class="rowLeft" style="flex-direction:column;gap:3px;">
+                <b>${escapeHtml(o.product_name)} · ${PLAN_LABELS[o.plan_duration]||o.plan_duration} · ${formatRUB(o.amount_rub)}</b>
+                <small>${statusLabel} · ${num}</small>
+                <small>${paidAt} · ${warr}</small>
+              </div>
+              <div class="rowActions">
+                <button class="btn" data-open-order="${o.id}">Открыть</button>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        el.myOrdersList.querySelectorAll("[data-open-order]").forEach(b => {
+          b.addEventListener("click", () => openOrder(b.getAttribute("data-open-order"), false));
+        });
+
+      }catch(e){
+        el.myOrdersList.innerHTML = `<p class="hint">Ошибка: ${escapeHtml(e.message)}</p>`;
+      }
+    }
+
+    function applyReviewsVisibility(){
+      const s = state.settings || {};
+      if(s.reviews_enabled){
+        el.cabTabReviews.style.display = "flex";
+        el.btnOpenReviews.style.display = "inline-flex";
+        el.btnOpenReviews.onclick = () => {
+          const url = s.reviews_chat_url || "";
+          if(!url){ toast("Ссылка не задана"); return; }
+          try{
+            if(tg && tg.openLink) tg.openLink(url);
+            else window.open(url, "_blank");
+          }catch(e){
+            window.open(url, "_blank");
+          }
+        };
+      }else{
+        el.cabTabReviews.style.display = "none";
+        el.btnOpenReviews.style.display = "none";
+      }
+    }
+
+    // ===== Order details + chat =====
+    async function openOrder(orderId, openedFromAdmin){
+      el.orderOverlay.classList.add("open");
+      syncBackButton();
+      el.chatList.innerHTML = `<p class="hint">Загрузка...</p>`;
+      el.chatInput.value = "";
+
+      // find order object from cache if possible
+      let order = null;
+      if(openedFromAdmin){
+        order = (state.orders || []).find(x => x.id === orderId) || null;
+      }
+
+      // If from user, we can load from my orders list again quickly (optional)
+      // We'll just request messages; and update header with id
+      state.currentOrder = { id: orderId, ...order };
+
+      const title = order?.order_number ? `Заказ № ${order.order_number}` : `Заказ`;
+      el.oTitle.textContent = title;
+      el.oSub.textContent = `id: ${orderId}`;
+
+      // Admin actions block
+      el.oAdminActions.style.display = state.isAdmin ? "flex" : "none";
+
+      if(state.isAdmin){
+        el.btnMarkPaid.onclick = async () => {
+          if(!confirm("Отметить как PAID?")) return;
+          try{
+            await api("set_status", { orderId, status:"paid" });
+            toast("Статус: paid");
+            await loadOrders();
+          }catch(e){ alert("Ошибка: " + e.message); }
+        };
+        el.btnMarkProcessing.onclick = async () => {
+          try{
+            await api("set_status", { orderId, status:"processing" });
+            toast("Статус: processing");
+            await loadOrders();
+          }catch(e){ alert("Ошибка: " + e.message); }
+        };
+        el.btnSetNumber.onclick = async () => {
+          const num = prompt("Введите номер заказа (например 1024):");
+          if(!num) return;
+          try{
+            await api("set_order_number", { orderId, order_number: num.trim() });
+            toast("Номер сохранён");
+            await loadOrders();
+          }catch(e){ alert("Ошибка: " + e.message); }
+        };
+        el.btnSendMaterial.onclick = async () => {
+          // open send data modal
+          const user = state.currentOrder?.telegram_user_id || (order?.telegram_user_id);
+          if(!user){
+            alert("Не найден telegram_user_id заказа. Открой заказ из админ-списка.");
+            return;
+          }
+          openMsg(orderId, user);
+        };
+      }
+
+      await refreshOrderHeader(orderId);
+      await loadChat(orderId);
+
+      clearInterval(state.chatTimer);
+      state.chatTimer = setInterval(()=> loadChat(orderId, true), 6000);
+    }
+
+    async function refreshOrderHeader(orderId){
+      // simplest: if admin, take from admin orders list; if user, reload my orders and find
+      try{
+        if(state.isAdmin){
+          const o = (state.orders||[]).find(x=>x.id===orderId);
+          if(o){
+            setOrderHeader(o);
+            state.currentOrder = o;
+            return;
+          }
+        }
+        // user path: load my orders and find
+        const res = await api("list_my_orders", {});
+        const o = (res.orders||[]).find(x=>x.id===orderId);
+        if(o){
+          setOrderHeader(o);
+          state.currentOrder = o;
+        }else{
+          el.oStatus.textContent = "—";
+          el.oDates.textContent = "—";
+        }
+      }catch(e){
+        // ignore
+      }
+    }
+
+    function setOrderHeader(o){
+      const st = String(o.status||"");
+      const statusLabel =
+        st==="pending" ? "🕘 В ожидании оплаты" :
+        st==="paid" ? "✅ Оплачено" :
+        st==="processing" ? "🛠️ В обработке" :
+        st==="delivered" ? "📦 Заказ получен" :
+        st;
+
+      const num = o.order_number ? `№ ${o.order_number}` : "№ —";
+      el.oStatus.textContent = `${statusLabel} · ${num} · ${formatRUB(o.amount_rub)}`;
+
+      const parts = [];
+      parts.push(`Создан: ${formatDT(o.created_at)}`);
+      if(o.paid_at) parts.push(`Оплата: ${formatDT(o.paid_at)}`);
+      if(o.delivered_at) parts.push(`Выдано: ${formatDT(o.delivered_at)}`);
+      if(o.warranty_until) parts.push(`Гарантия до: ${formatDT(o.warranty_until)}`);
+      el.oDates.textContent = parts.join(" · ");
+    }
+
+    async function loadChat(orderId, silent=false){
+      try{
+        const res = await api("list_messages", { orderId });
+        const msgs = res.messages || [];
+        if(!msgs.length){
+          el.chatList.innerHTML = `<p class="hint">Сообщений пока нет. Напишите администратору.</p>`;
+          return;
+        }
+        el.chatList.innerHTML = msgs.map(m => {
+          const cls = m.sender === "admin" ? "chatMsg admin" : "chatMsg";
+          const meta = `${m.sender === "admin" ? "Админ" : "Вы"} · ${formatDT(m.created_at)}${m.is_material ? " · данные" : ""}`;
+          return `<div class="${cls}">
+            <div>${escapeHtml(m.message)}</div>
+            <div class="chatMeta">${escapeHtml(meta)}</div>
+          </div>`;
+        }).join("");
+
+        // auto scroll
+        el.chatList.scrollTop = el.chatList.scrollHeight;
+
+        if(!silent) toast("Чат загружен");
+      }catch(e){
+        if(!silent) el.chatList.innerHTML = `<p class="hint">Ошибка чата: ${escapeHtml(e.message)}</p>`;
+      }
+    }
+
+    el.chatSend.addEventListener("click", async () => {
+      try{
+        const orderId = state.currentOrder?.id;
+        if(!orderId) return;
+        const text = (el.chatInput.value||"").trim();
+        if(!text){ toast("Пусто"); return; }
+        await api("post_message", { orderId, message: text });
+        el.chatInput.value = "";
+        await loadChat(orderId, true);
+        toast("Отправлено");
+      }catch(e){
+        alert("Ошибка отправки: " + e.message);
+      }
+    });
+
+    function closeOrder(){
+      el.orderOverlay.classList.remove("open");
+      syncBackButton();
+      clearInterval(state.chatTimer);
+      state.chatTimer = null;
+      state.currentOrder = null;
+    }
+    el.orderClose.addEventListener("click", closeOrder);
+    el.orderOverlay.addEventListener("click", (e)=>{ if(e.target === el.orderOverlay) closeOrder(); });
 
     // ===== Admin panel =====
     function openTab(tab){
@@ -1178,7 +1262,6 @@
         showAdminPanel();
         if(state.activeTab === "orders") await loadOrders();
         if(state.activeTab === "products") renderAdminProducts();
-        if(state.activeTab === "settings") await refreshSettings();
       }
     });
     el.btnAdminCollapse.addEventListener("click", () => {
@@ -1188,71 +1271,18 @@
 
     el.tabOrders.addEventListener("click", async () => { openTab("orders"); await loadOrders(); });
     el.tabProducts.addEventListener("click", () => { openTab("products"); renderAdminProducts(); });
-    el.tabSettings.addEventListener("click", async () => { openTab("settings"); await refreshSettings(); });
+    el.tabSettings.addEventListener("click", () => { openTab("settings"); });
 
     el.btnApiTest.addEventListener("click", async () => {
       try{
         const res = await api("whoami", {});
-        toast(`API OK · userId=${res.telegram_user_id} · admin=${res.is_admin} · skipVerify=${res.skipVerify}`);
+        toast(`API OK · userId=${res.telegram_user_id} · admin=${res.isAdmin}`);
       }catch(e){
         alert("API ошибка: " + e.message);
       }
     });
 
-    async function refreshSettings(){
-      try{
-        const res = await api("get_settings", {});
-        state.settings = res.settings || { reviews_enabled:false, reviews_chat_url:"" };
-        renderSettingsCard();
-        applyReviewsButton();
-      }catch(e){
-        el.settingsCard.innerHTML = `<p class="hint">Ошибка: ${escapeHtml(e.message)}</p>`;
-      }
-    }
-    el.btnRefreshSettings.addEventListener("click", refreshSettings);
-
-    function renderSettingsCard(){
-      const s = state.settings || {};
-      el.settingsCard.innerHTML = `
-        <div class="row">
-          <div class="rowLeft">
-            <div style="min-width:0;">
-              <b>Отзывы</b>
-              <small>reviews_enabled: ${s.reviews_enabled ? "true" : "false"}</small>
-              <small title="${escapeHtml(s.reviews_chat_url||"")}">reviews_chat_url: ${escapeHtml(s.reviews_chat_url||"") || "—"}</small>
-            </div>
-          </div>
-        </div>
-        <p class="hint">Чтобы включить кнопку «Отзывы» позже: обнови поле reviews_enabled в таблице app_settings (id=1).</p>
-      `;
-    }
-
-    function applyReviewsButton(){
-      const enabled = !!state.settings?.reviews_enabled;
-      const url = String(state.settings?.reviews_chat_url || "").trim();
-      el.btnReviews.style.display = enabled && url ? "inline-flex" : "none";
-    }
-
-    el.btnReviews.addEventListener("click", () => {
-      const url = String(state.settings?.reviews_chat_url || "").trim();
-      if(!url) return;
-      try{
-        if(tg && tg.openTelegramLink) tg.openTelegramLink(url);
-        else window.open(url, "_blank");
-      }catch(e){ window.open(url, "_blank"); }
-    });
-
     // ===== Orders (admin) =====
-    function statusLabel(st){
-      if(st==="pending") return "🕘 pending";
-      if(st==="paid") return "✅ paid";
-      if(st==="processing") return "🛠️ в обработке";
-      if(st==="delivered") return "📦 заказ получен";
-      if(st==="cancelled") return "⛔ cancelled";
-      if(st==="refunded") return "↩️ refunded";
-      return st;
-    }
-
     function renderOrders(){
       const list = state.orders || [];
       if(!list.length){
@@ -1262,68 +1292,66 @@
 
       el.adminOrdersList.innerHTML = list.map(o => {
         const st = escapeHtml(o.status);
-        const badge = statusLabel(st);
-        const title = `${o.product_slug} · ${PLAN_LABELS[o.plan_duration] || o.plan_duration} · ${formatRUB(o.amount_rub)}`;
-        const meta = `user: ${o.telegram_user_id} · создан: ${formatDT(o.created_at)}${o.paid_at ? (" · оплата: " + formatDT(o.paid_at)) : ""}`;
-        const label = o.payment_label ? ` · label: ${o.payment_label}` : "";
-        const num = o.order_number ? `№${o.order_number}` : "№—";
+        const badge = st === "delivered" ? "📦 delivered" :
+                      st === "processing" ? "🛠️ processing" :
+                      st === "paid" ? "✅ paid" :
+                      (st === "pending" ? "🕘 pending" : st);
 
-        const btnPaid = (st === "pending") ? `<button class="btn primary" data-status="paid" data-id="${o.id}">✅ paid</button>` : ``;
-        const btnProc = (st === "paid") ? `<button class="btn" data-status="processing" data-id="${o.id}">🛠️ в обработке</button>` : ``;
-        const btnDel  = (st === "processing") ? `<button class="btn" data-status="delivered" data-id="${o.id}">📦 заказ получен</button>` : ``;
+        const title = `${o.product_slug} · ${PLAN_LABELS[o.plan_duration] || o.plan_duration} · ${formatRUB(o.amount_rub)}`;
+        const num = o.order_number ? ` · № ${escapeHtml(o.order_number)}` : "";
+        const meta = `user: ${o.telegram_user_id} · ${new Date(o.created_at).toLocaleString("ru-RU")}`;
+        const label = o.payment_label ? ` · label: ${o.payment_label}` : "";
 
         return `
           <div class="row">
             <div class="rowLeft">
               <div style="min-width:0;">
-                <b>${badge} — ${escapeHtml(title)} <span style="color:var(--muted);font-weight:700;">· ${escapeHtml(num)}</span></b>
+                <b>${badge} — ${escapeHtml(title)}${num}</b>
                 <small>${escapeHtml(meta + label)}</small>
               </div>
             </div>
             <div class="rowActions">
-              <button class="btn" data-chat="${o.id}">Чат</button>
+              <button class="btn" data-open-admin-order="${o.id}">Открыть</button>
+              ${st !== "paid" ? `<button class="btn primary" data-paid="${o.id}">Paid</button>` : ``}
               <button class="btn" data-number="${o.id}">№</button>
-              <button class="btn" data-send="${o.id}" data-user="${o.telegram_user_id}">Данные</button>
-              ${btnPaid}
-              ${btnProc}
-              ${btnDel}
             </div>
           </div>
         `;
       }).join("");
 
-      el.adminOrdersList.querySelectorAll("[data-status]").forEach(b => {
+      el.adminOrdersList.querySelectorAll("[data-paid]").forEach(b => {
         b.addEventListener("click", async () => {
-          const id = b.getAttribute("data-id");
-          const status = b.getAttribute("data-status");
-          if(!confirm(`Поставить статус: ${status}?`)) return;
+          const id = b.getAttribute("data-paid");
+          if(!confirm("Отметить заявку как PAID?")) return;
           try{
-            await api("set_status", { orderId:id, status });
+            await api("set_status", { orderId:id, status:"paid" });
             toast("Статус обновлён");
             await loadOrders();
           }catch(e){ alert("Ошибка: " + e.message); }
         });
       });
 
-      el.adminOrdersList.querySelectorAll("[data-send]").forEach(b => {
-        b.addEventListener("click", () => openMsg(b.getAttribute("data-send"), b.getAttribute("data-user")));
-      });
-
       el.adminOrdersList.querySelectorAll("[data-number]").forEach(b => {
         b.addEventListener("click", async () => {
           const id = b.getAttribute("data-number");
-          const num = prompt("Введи номер заказа (например 000123):");
+          const num = prompt("Введите номер заказа (например 1024):");
           if(!num) return;
           try{
             await api("set_order_number", { orderId:id, order_number:num.trim() });
-            toast("Номер заказа сохранён");
+            toast("Номер сохранён");
             await loadOrders();
           }catch(e){ alert("Ошибка: " + e.message); }
         });
       });
 
-      el.adminOrdersList.querySelectorAll("[data-chat]").forEach(b => {
-        b.addEventListener("click", () => openOrder(b.getAttribute("data-chat")));
+      el.adminOrdersList.querySelectorAll("[data-open-admin-order]").forEach(b => {
+        b.addEventListener("click", async () => {
+          const id = b.getAttribute("data-open-admin-order");
+          // find object in admin list for telegram_user_id
+          const o = (state.orders||[]).find(x=>x.id===id);
+          state.currentOrder = o || { id };
+          await openOrder(id, true);
+        });
       });
     }
 
@@ -1341,6 +1369,8 @@
     el.btnFilterAll.addEventListener("click", async()=>{ state.ordersFilter="all"; await loadOrders(); });
     el.btnFilterPending.addEventListener("click", async()=>{ state.ordersFilter="pending"; await loadOrders(); });
     el.btnFilterPaid.addEventListener("click", async()=>{ state.ordersFilter="paid"; await loadOrders(); });
+    el.btnFilterProcessing.addEventListener("click", async()=>{ state.ordersFilter="processing"; await loadOrders(); });
+    el.btnFilterDelivered.addEventListener("click", async()=>{ state.ordersFilter="delivered"; await loadOrders(); });
 
     // ===== Products admin =====
     function renderAdminProducts(){
@@ -1353,7 +1383,7 @@
             <div class="rowLeft">
               <div class="pLogo" style="width:42px;height:42px;border-radius:16px;">${logo}</div>
               <div style="min-width:0;">
-                <b>${escapeHtml(p.name)} <span style="color:var(--muted);font-weight:700;">${escapeHtml(fromLabel)}</span></b>
+                <b>${escapeHtml(p.name)} <span style="color:var(--muted);font-weight:700;">${fromLabel}</span></b>
                 <small title="${escapeHtml(p.description)}">${escapeHtml(p.description || "")}</small>
               </div>
             </div>
@@ -1419,7 +1449,7 @@
     el.fClose.addEventListener("click", closeForm);
     el.formOverlay.addEventListener("click", (e)=>{ if(e.target === el.formOverlay) closeForm(); });
 
-    // Upload logo (admin) — with size limit
+    // Upload logo (admin)
     el.btnUploadLogo.addEventListener("click", () => el.logoFile.click());
     el.logoFile.addEventListener("change", async () => {
       const file = el.logoFile.files && el.logoFile.files[0];
@@ -1494,12 +1524,12 @@
       }
     });
 
-    // ===== Send material modal =====
+    // ===== Send data modal =====
     function openMsg(orderId, userId){
       state.msgOrderId = orderId;
       state.msgUserId = Number(userId);
       el.msgSub.textContent = `order: ${orderId} · user: ${userId}`;
-      el.msgHint.textContent = "Сообщение уйдёт пользователю в Telegram и сохранится в чате заказа. Статус станет «заказ получен», гарантия 10 дней.";
+      el.msgHint.textContent = "Сообщение уйдёт пользователю в боте и отметится в чате заказа. Статус станет “delivered”.";
       el.msgText.value = "";
       el.msgOverlay.classList.add("open");
       syncBackButton();
@@ -1514,7 +1544,7 @@
 
     el.msgSend.addEventListener("click", async () => {
       const text = el.msgText.value.trim();
-      if(!text){ alert("Вставь материал"); return; }
+      if(!text){ alert("Вставь данные"); return; }
       try{
         await api("send_material", {
           orderId: state.msgOrderId,
@@ -1525,218 +1555,14 @@
         toast("Отправлено");
         closeMsg();
         await loadOrders();
-        if(el.orderOverlay.classList.contains("open")) await refreshOrderModal(); // refresh chat if opened
+        // refresh chat if open
+        if(el.orderOverlay.classList.contains("open") && state.currentOrder?.id === state.msgOrderId){
+          await refreshOrderHeader(state.msgOrderId);
+          await loadChat(state.msgOrderId, true);
+        }
       }catch(e){
         alert("Ошибка отправки: " + e.message);
       }
-    });
-
-    // ===== Order detail (chat) modal =====
-    function orderStatusInfo(o){
-      const st = statusLabel(String(o.status));
-      const num = o.order_number ? `№${o.order_number}` : "№— (назначит админ)";
-      const paid = o.paid_at ? `Оплата: ${formatDT(o.paid_at)}` : "Оплата: —";
-      const del = o.delivered_at ? `Получено: ${formatDT(o.delivered_at)}` : "Получено: —";
-      const war = o.warranty_until ? `Гарантия до: ${formatDT(o.warranty_until)}` : "Гарантия: —";
-      return `${st} · ${num}\n${paid}\n${del}\n${war}`;
-    }
-
-    async function openOrder(orderId){
-      state.currentOrderId = orderId;
-      el.orderOverlay.classList.add("open");
-      syncBackButton();
-      await refreshOrderModal();
-    }
-
-    async function refreshOrderModal(){
-      if(!state.currentOrderId) return;
-      try{
-        const res = await api("list_messages", { orderId: state.currentOrderId });
-        state.currentOrder = res.order;
-        state.currentMessages = res.messages || [];
-
-        const o = state.currentOrder;
-        el.oTitle.textContent = "Заказ";
-        el.oSub.textContent = `${o.product_slug} · ${PLAN_LABELS[o.plan_duration] || o.plan_duration} · ${formatRUB(o.amount_rub)}`;
-        el.oInfo.textContent = orderStatusInfo(o);
-
-        // chat render
-        el.chatBox.innerHTML = (state.currentMessages.length ? state.currentMessages : []).map(m => {
-          const cls = m.sender === "admin" ? "admin" : "user";
-          const time = formatDT(m.created_at);
-          const mat = m.is_material ? " · данные" : "";
-          return `<div class="msg ${cls}">${escapeHtml(m.message)}<small>${escapeHtml(time + mat)}</small></div>`;
-        }).join("") || `<p class="hint">Сообщений пока нет. Напишите администратору.</p>`;
-
-        // autoscroll
-        try{ el.chatBox.scrollTop = el.chatBox.scrollHeight; }catch(e){}
-
-        // admin actions
-        el.adminOrderActions.style.display = state.isAdmin ? "block" : "none";
-      }catch(e){
-        alert("Ошибка: " + e.message);
-      }
-    }
-
-    function closeOrder(){
-      state.currentOrderId = null;
-      state.currentOrder = null;
-      state.currentMessages = [];
-      el.orderOverlay.classList.remove("open");
-      syncBackButton();
-    }
-    el.oClose.addEventListener("click", closeOrder);
-    el.orderOverlay.addEventListener("click", (e)=>{ if(e.target === el.orderOverlay) closeOrder(); });
-
-    el.chatSend.addEventListener("click", async () => {
-      const txt = (el.chatInput.value||"").trim();
-      if(!txt) return;
-      try{
-        await api("post_message", { orderId: state.currentOrderId, message: txt });
-        el.chatInput.value = "";
-        await refreshOrderModal();
-      }catch(e){
-        alert("Ошибка: " + e.message);
-      }
-    });
-    el.chatInput.addEventListener("keydown", (e)=>{ if(e.key==="Enter"){ e.preventDefault(); el.chatSend.click(); } });
-
-    // Admin quick actions in order modal
-    el.btnSetNumber.addEventListener("click", async () => {
-      const num = prompt("Номер заказа:");
-      if(!num) return;
-      try{
-        await api("set_order_number", { orderId: state.currentOrderId, order_number: num.trim() });
-        toast("Номер сохранён");
-        await refreshOrderModal();
-        await loadOrders();
-      }catch(e){ alert("Ошибка: " + e.message); }
-    });
-    el.btnMarkPaid.addEventListener("click", async () => {
-      try{
-        await api("set_status", { orderId: state.currentOrderId, status:"paid" });
-        toast("paid");
-        await refreshOrderModal();
-        await loadOrders();
-      }catch(e){ alert("Ошибка: " + e.message); }
-    });
-    el.btnMarkProcessing.addEventListener("click", async () => {
-      try{
-        await api("set_status", { orderId: state.currentOrderId, status:"processing" });
-        toast("в обработке");
-        await refreshOrderModal();
-        await loadOrders();
-      }catch(e){ alert("Ошибка: " + e.message); }
-    });
-    el.btnMarkDelivered.addEventListener("click", async () => {
-      try{
-        await api("set_status", { orderId: state.currentOrderId, status:"delivered" });
-        toast("заказ получен");
-        await refreshOrderModal();
-        await loadOrders();
-      }catch(e){ alert("Ошибка: " + e.message); }
-    });
-    el.btnOpenSendMaterial.addEventListener("click", async () => {
-      if(!state.currentOrder) return;
-      openMsg(state.currentOrderId, state.currentOrder.telegram_user_id || state.msgUserId || "");
-    });
-
-    // ===== Cabinet (my orders) =====
-    function renderMyOrders(){
-      const list = state.myOrders || [];
-      el.myOrdersCount.textContent = `${list.length} заказов`;
-      el.myOrdersList.innerHTML = list.map(o => {
-        const st = statusLabel(String(o.status));
-        const num = o.order_number ? `№${o.order_number}` : "№—";
-        const paid = o.paid_at ? formatDT(o.paid_at) : "—";
-        const del = o.delivered_at ? formatDT(o.delivered_at) : "—";
-        const logo = o.logo_url
-          ? `<img src="${o.logo_url}" alt="${escapeHtml(o.product_name)}" style="width:42px;height:42px;border-radius:16px;object-fit:cover;border:1px solid var(--border);">`
-          : `<div class="pLogo" style="width:42px;height:42px;border-radius:16px;">${escapeHtml(initials(o.product_name))}</div>`;
-
-        return `
-          <div class="row" style="cursor:pointer;" data-open-order="${o.id}">
-            <div class="rowLeft">
-              ${logo}
-              <div style="min-width:0;">
-                <b>${escapeHtml(o.product_name)} · ${escapeHtml(PLAN_LABELS[o.plan_duration] || o.plan_duration)} · ${formatRUB(o.amount_rub)}</b>
-                <small>${escapeHtml(st)} · ${escapeHtml(num)}</small>
-                <small>Оплата: ${escapeHtml(paid)} · Получено: ${escapeHtml(del)}</small>
-              </div>
-            </div>
-            <div class="rowActions">
-              <button class="btn">Открыть</button>
-            </div>
-          </div>
-        `;
-      }).join("") || `<p class="hint">Покупок пока нет. Выберите товар в каталоге.</p>`;
-
-      el.myOrdersList.querySelectorAll("[data-open-order]").forEach(r => {
-        r.addEventListener("click", () => openOrder(r.getAttribute("data-open-order")));
-      });
-    }
-
-    async function loadMyOrders(){
-      try{
-        const res = await api("list_my_orders", {});
-        state.myOrders = res.orders || [];
-        renderMyOrders();
-      }catch(e){
-        el.myOrdersList.innerHTML = `<p class="hint">Ошибка: ${escapeHtml(e.message)}</p>`;
-      }
-    }
-    el.btnReloadMyOrders.addEventListener("click", loadMyOrders);
-
-    // ===== Partner (referrals) =====
-    function buildRefLink(code){
-      // Primary template (direct mini app link)
-      if(CONFIG.BOT_USERNAME && CONFIG.MINIAPP_SHORT_NAME &&
-         !CONFIG.BOT_USERNAME.includes("PASTE_") && !CONFIG.MINIAPP_SHORT_NAME.includes("PASTE_")){
-        return `https://t.me/${CONFIG.BOT_USERNAME}/${CONFIG.MINIAPP_SHORT_NAME}?startapp=${encodeURIComponent(code)}`;
-      }
-      // Fallback template (some bots use ?startapp= without /miniapp)
-      if(CONFIG.BOT_USERNAME && !CONFIG.BOT_USERNAME.includes("PASTE_")){
-        return `https://t.me/${CONFIG.BOT_USERNAME}?startapp=${encodeURIComponent(code)}`;
-      }
-      return `Поставь BOT_USERNAME / MINIAPP_SHORT_NAME в CONFIG, затем обнови`;
-    }
-
-    async function loadReferral(){
-      try{
-        const res = await api("get_referral", {});
-        state.referral_code = res.referral_code;
-        state.referral_stats = res.stats;
-        el.refBadge.textContent = `код: ${res.referral_code}`;
-        const link = buildRefLink(res.referral_code);
-        el.refLink.value = link;
-
-        const st = res.stats || {};
-        el.refStats.textContent =
-          `Заказов по ссылке: ${st.total_orders ?? 0}\n` +
-          `Оплачено/в работе: ${st.paid_orders ?? 0}\n` +
-          `Заработано (10%): ${formatRUB(st.earned_rub ?? 0)}\n\n` +
-          `Важно: скидка 5% действует только на первый заказ приглашённого пользователя.`;
-      }catch(e){
-        el.refStats.textContent = "Ошибка: " + e.message;
-      }
-    }
-
-    el.btnReloadRef.addEventListener("click", loadReferral);
-    el.btnCopyRef.addEventListener("click", async () => {
-      try{
-        await navigator.clipboard.writeText(el.refLink.value || "");
-        toast("Ссылка скопирована");
-      }catch(e){
-        prompt("Скопируй ссылку вручную:", el.refLink.value);
-      }
-    });
-    el.btnShareRef.addEventListener("click", () => {
-      const link = el.refLink.value || "";
-      if(!link) return;
-      try{
-        if(tg && tg.openTelegramLink) tg.openTelegramLink(link);
-        else window.open(link, "_blank");
-      }catch(e){ window.open(link, "_blank"); }
     });
 
     // Theme + Search
@@ -1745,6 +1571,7 @@
       setTheme(cur === "dark" ? "light" : "dark");
     });
     el.q.addEventListener("input", renderCatalog);
+    }
 
     async function boot(){
       initTheme();
@@ -1755,36 +1582,31 @@
         return;
       }
 
-      const me = getTelegramUser();
-      state.me = me;
-      el.meLabel.textContent = me ? `id: ${me.id}` : "—";
-      el.meName.textContent = me ? (me.first_name || "Пользователь") : "—";
-      el.meUser.textContent = me ? ("@" + (me.username || "без username")) : "—";
+      // whoami + settings
+      state.me = await api("whoami", {});
+      state.settings = state.me.settings || null;
 
-      // read settings + show reviews button if enabled
-      try{
-        const w = await api("whoami", {});
-        state.isAdmin = !!w.is_admin;
-        state.settings = w.settings || state.settings;
-        applyReviewsButton();
+      // cabinet subtitle
+      const u = getTelegramUser();
+      const uname = u?.username ? ("@" + u.username) : (u?.first_name || "Пользователь");
+      el.cabSub.textContent = `Вы: ${uname} · id: ${u?.id || "—"}`;
 
-        if(state.isAdmin){
-          el.adminBadge.classList.add("show");
-          el.adminHint.textContent = `Вы вошли как админ (${w.telegram_user_id})`;
-          showAdminPanel();
-          await loadOrders();
-        }
-      }catch(e){
-        // if not in Telegram, api will fail; ignore
+      state.isAdmin = isAdminNow();
+      if(state.isAdmin){
+        el.adminBadge.classList.add("show");
+        el.adminHint.textContent = `Вы вошли как админ (${getTelegramUser().id})`;
+        showAdminPanel();
+        await loadOrders();
       }
+
+      // reviews visibility
+      applyReviewsVisibility();
 
       await loadProducts();
       renderCatalog();
       if(state.isAdmin) renderAdminProducts();
 
-      // default view
-      switchView("catalog");
-      syncBackButton();
+      toast("Готово");
     }
 
     boot().catch(e => alert("Ошибка запуска: " + e.message));
