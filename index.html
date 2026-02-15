@@ -1482,12 +1482,105 @@
 
     // Сейчас сохранение через Local fallback не подключено к БД (безопасность).
     // Реальный CRUD делается через Edge Function: add/update/delete product.
-    el.fSave.addEventListener("click", () => {
-      alert("CRUD товаров через БД сделаем через Edge Function (безопасно). Сейчас UI готов.");
-    });
-    el.fDelete.addEventListener("click", () => {
-      alert("Удаление товаров через Edge Function (безопасно). Сейчас UI готов.");
-    });
+    // Запоминаем, что редактируем
+state.editingSlug = null;
+
+function openForm(product){
+  if(!state.isAdmin){ toast("Нет доступа"); return; }
+  state.formOpen = true;
+  el.formOverlay.classList.add("open");
+  try{ tg && tg.BackButton.show(); }catch(e){}
+
+  if(!product){
+    state.editingSlug = null;
+    el.fTitle.textContent = "Новый товар";
+    el.fDelete.style.display = "none";
+    el.fId.disabled = false;
+
+    el.fId.value = "";
+    el.fName.value = "";
+    el.fDesc.value = "";
+    el.fLogo.value = "";
+    el.p1.value = "";
+    el.p6.value = "";
+    el.p12.value = "";
+    return;
+  }
+
+  state.editingSlug = product.id; // slug
+  el.fTitle.textContent = "Редактирование";
+  el.fDelete.style.display = "inline-flex";
+
+  // slug лучше не менять при редактировании (чтобы не плодить дубль)
+  el.fId.disabled = true;
+
+  el.fId.value = product.id;
+  el.fName.value = product.name;
+  el.fDesc.value = product.description || "";
+  el.fLogo.value = product.logo_url || "";
+  el.p1.value = (product.plans||[]).find(x=>x.duration==="1m")?.price_rub ?? "";
+  el.p6.value = (product.plans||[]).find(x=>x.duration==="6m")?.price_rub ?? "";
+  el.p12.value = (product.plans||[]).find(x=>x.duration==="12m")?.price_rub ?? "";
+}
+
+async function saveProductToDB(){
+  const slug = (el.fId.value || "").trim();
+  const name = (el.fName.value || "").trim();
+  const description = (el.fDesc.value || "").trim();
+  const logo_url = (el.fLogo.value || "").trim();
+  const price_1m = Number(el.p1.value || 0);
+  const price_6m = Number(el.p6.value || 0);
+  const price_12m = Number(el.p12.value || 0);
+
+  if(!slug){ alert("Заполни Slug (уникальный ID)"); return; }
+  if(!name){ alert("Заполни Название"); return; }
+
+  // пишем через Edge Function (безопасно)
+  await adminApi("upsert_product", {
+    slug, name, description, logo_url,
+    is_active: true,
+    price_1m, price_6m, price_12m
+  });
+
+  toast("Сохранено в Supabase");
+  closeForm();
+
+  await loadProducts();
+  renderCatalog();
+  renderAdminProducts();
+}
+
+async function deleteProductFromDB(){
+  const slug = (el.fId.value || "").trim();
+  if(!slug) return;
+  if(!confirm("Удалить товар из Supabase?")) return;
+
+  await adminApi("delete_product", { slug });
+
+  toast("Удалено");
+  closeForm();
+
+  await loadProducts();
+  renderCatalog();
+  renderAdminProducts();
+}
+
+el.fSave.addEventListener("click", async () => {
+  try{
+    await saveProductToDB();
+  }catch(e){
+    alert("Ошибка сохранения: " + e.message);
+  }
+});
+
+el.fDelete.addEventListener("click", async () => {
+  try{
+    await deleteProductFromDB();
+  }catch(e){
+    alert("Ошибка удаления: " + e.message);
+  }
+});
+
 
     /* =========================
        Settings
