@@ -16,18 +16,21 @@
       --r20: 20px;
       --r24: 24px;
 
+      /* Dark corporate */
       --bg: #070A12;
       --bg2: #0A1022;
-      --surface: rgba(255,255,255,.05);
-      --surface2: rgba(255,255,255,.035);
+      --panel: rgba(12,16,32,.92);            /* важно: модалка не сливается */
+      --surface: rgba(255,255,255,.06);
+      --surface2: rgba(255,255,255,.04);
       --border: rgba(255,255,255,.10);
 
       --text: rgba(255,255,255,.92);
       --muted: rgba(255,255,255,.66);
       --muted2: rgba(255,255,255,.48);
 
-      --shadow: 0 18px 55px rgba(0,0,0,.48);
-      --shadow2: 0 10px 30px rgba(0,0,0,.38);
+      /* Уменьшил тяжёлые тени + убрал blur на overlay — меньше лагов */
+      --shadow: 0 14px 36px rgba(0,0,0,.44);
+      --shadow2: 0 8px 18px rgba(0,0,0,.34);
 
       --accent: #5AE6FF;
       --accent2:#7C5CFF;
@@ -41,16 +44,17 @@
     [data-theme="light"]{
       --bg: #F6F7FB;
       --bg2:#EEF1FB;
-      --surface: rgba(255,255,255,.78);
-      --surface2: rgba(255,255,255,.58);
+      --panel: rgba(255,255,255,.96);
+      --surface: rgba(255,255,255,.86);
+      --surface2: rgba(255,255,255,.64);
       --border: rgba(11,16,32,.10);
 
       --text: rgba(11,16,32,.92);
       --muted: rgba(11,16,32,.66);
       --muted2: rgba(11,16,32,.48);
 
-      --shadow: 0 18px 55px rgba(20,30,60,.12);
-      --shadow2: 0 10px 30px rgba(20,30,60,.10);
+      --shadow: 0 14px 36px rgba(20,30,60,.12);
+      --shadow2: 0 8px 18px rgba(20,30,60,.10);
 
       --accent: #0EA5E9;
       --accent2:#6D28D9;
@@ -65,8 +69,8 @@
       margin:0;
       font-family: var(--font);
       background:
-        radial-gradient(950px 650px at 18% -10%, rgba(90,230,255,.18), transparent 60%),
-        radial-gradient(880px 650px at 112% 10%, rgba(124,92,255,.16), transparent 58%),
+        radial-gradient(900px 620px at 18% -10%, rgba(90,230,255,.16), transparent 60%),
+        radial-gradient(860px 620px at 112% 10%, rgba(124,92,255,.14), transparent 58%),
         linear-gradient(180deg, var(--bg), var(--bg2));
       color: var(--text);
       -webkit-font-smoothing: antialiased;
@@ -86,16 +90,16 @@
       padding: 14px 14px 24px;
     }
 
+    /* Appbar: убрал backdrop-filter (частая причина лагов в WebView) */
     .appbar{
       position: sticky;
       top: 0;
       z-index: 20;
       padding-top: env(safe-area-inset-top);
-      backdrop-filter: blur(14px);
-      background: linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,0));
+      background: linear-gradient(180deg, rgba(0,0,0,.28), rgba(0,0,0,0));
     }
     [data-theme="light"] .appbar{
-      background: linear-gradient(180deg, rgba(255,255,255,.78), rgba(255,255,255,0));
+      background: linear-gradient(180deg, rgba(255,255,255,.88), rgba(255,255,255,0));
     }
 
     .appbar-inner{
@@ -197,7 +201,7 @@
       width: 34px; height: 34px;
       border-radius: 14px;
       border: 1px solid var(--border);
-      background: linear-gradient(135deg, rgba(90,230,255,.18), rgba(124,92,255,.12));
+      background: linear-gradient(135deg, rgba(90,230,255,.16), rgba(124,92,255,.10));
       display:grid;
       place-items:center;
       flex: 0 0 auto;
@@ -239,7 +243,9 @@
       font-size: 11px;
       color: var(--muted2);
       line-height: 1.35;
+      display:none; /* по умолчанию скрыто */
     }
+    .debug.show{ display:block; }
 
     .grid{
       display:grid;
@@ -319,16 +325,19 @@
     }
     .cardFooter .btn{ width: 100%; justify-content:center; }
 
+    /* Overlay/Modal: без blur, более “резиновый” и быстрый */
     .overlay{
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,.60);
+      background: rgba(0,0,0,.55);
       display:none;
       align-items: flex-end;
       justify-content: center;
       padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
       z-index: 50;
+      will-change: opacity;
     }
+    [data-theme="light"] .overlay{ background: rgba(10,14,26,.28); }
     .overlay.open{ display:flex; }
 
     .modal{
@@ -336,9 +345,11 @@
       max-width: 560px;
       border-radius: 26px;
       border: 1px solid var(--border);
-      background: var(--surface);
+      background: var(--panel);
       box-shadow: var(--shadow);
       overflow:hidden;
+      transform: translate3d(0,0,0);
+      will-change: transform;
     }
 
     .modalHead{
@@ -417,7 +428,7 @@
 
     /* Admin */
     .admin{
-      display:none;
+      display:none; /* полностью скрыто для обычных пользователей */
       margin-top: 14px;
       border-radius: 24px;
       border: 1px solid var(--border);
@@ -457,6 +468,7 @@
     }
 
     .adminBody{ padding: 12px; display:grid; gap: 12px; }
+
     .row{
       border: 1px solid var(--border);
       border-radius: 18px;
@@ -478,7 +490,7 @@
       text-overflow: ellipsis;
       max-width: 520px;
     }
-    .rowActions{ display:flex; gap: 8px; flex:0 0 auto; }
+    .rowActions{ display:flex; gap: 8px; flex:0 0 auto; flex-wrap: wrap; justify-content:flex-end; }
 
     .formGrid{ display:grid; gap: 10px; }
     .field{ display:flex; flex-direction:column; gap:6px; }
@@ -516,10 +528,25 @@
       z-index: 100;
       max-width: 92vw;
       text-align:center;
-      backdrop-filter: blur(10px);
     }
     [data-theme="light"] .toast{ background: rgba(11,16,32,.78); }
     .toast.open{ display:block; }
+
+    /* badge для админа */
+    .adminBadge{
+      display:none;
+      height: 34px;
+      border-radius: 999px;
+      padding: 0 10px;
+      border: 1px solid rgba(90,230,255,.30);
+      background: linear-gradient(135deg, rgba(90,230,255,.10), rgba(124,92,255,.08));
+      color: var(--text);
+      align-items:center;
+      gap: 8px;
+      font-size: 12px;
+      user-select:none;
+    }
+    .adminBadge.show{ display:flex; }
   </style>
 </head>
 
@@ -527,7 +554,7 @@
   <div class="safe">
     <div class="appbar">
       <div class="appbar-inner">
-        <div class="brand" id="brand">
+        <div class="brand">
           <div class="logoMark">AI</div>
           <div class="brandText">
             <b>AI MARKET</b>
@@ -536,8 +563,7 @@
         </div>
 
         <div class="actions">
-          <!-- Админ теперь всегда виден, а доступ проверяем внутри -->
-          <button class="btn ghost" id="btnAdmin" title="Админ панель">🛠️ Админ</button>
+          <div class="adminBadge" id="adminBadge">🛡️ Админ</div>
           <button class="btn" id="btnTheme" title="Тема">🌓 Тема</button>
         </div>
       </div>
@@ -556,78 +582,78 @@
         <small id="countLabel">—</small>
       </div>
 
-      <div class="debug" id="debugLine">Загрузка…</div>
+      <div class="debug" id="debugLine"></div>
 
       <div class="grid" id="grid"></div>
 
+      <!-- ADMIN (видно только админу и открывается автоматически) -->
       <div class="admin" id="adminPanel">
         <div class="adminHead">
           <div style="display:flex;flex-direction:column;gap:2px;">
             <b style="font-size:14px;">Админ панель</b>
             <small id="adminHint" style="color:var(--muted);font-size:12px;">—</small>
           </div>
-          <div class="tabs">
-            <div class="tab active" id="tabProducts">Товары</div>
-            <div class="tab" id="tabOrders">Оплаченные заявки</div>
-            <div class="tab" id="tabSettings">Настройки</div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
+            <div class="tabs">
+              <div class="tab active" id="tabOrders">Заявки</div>
+              <div class="tab" id="tabProducts">Товары</div>
+              <div class="tab" id="tabSettings">Настройки</div>
+            </div>
+            <button class="btn" id="btnCollapseAdmin" style="height:38px;border-radius:14px;">Свернуть</button>
           </div>
         </div>
 
         <div class="adminBody">
-          <div id="panelProducts">
+          <div id="panelOrders">
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <button class="btn" id="btnLoadOrders">⟳ Обновить заявки</button>
+              <button class="btn" id="btnFilterAll">Все</button>
+              <button class="btn" id="btnFilterPending">Pending</button>
+              <button class="btn" id="btnFilterPaid">Paid</button>
+            </div>
+            <div style="height:10px;"></div>
+            <div id="adminOrdersList"></div>
+            <p class="hint">
+              Заявки грузятся через Edge Function (админ-API). Это безопасно: секреты не попадают в HTML.
+            </p>
+          </div>
+
+          <div id="panelProducts" style="display:none;">
             <div style="display:flex;gap:10px;flex-wrap:wrap;">
               <button class="btn primary" id="btnAddProduct">+ Добавить товар</button>
-              <button class="btn" id="btnReload">⟳ Обновить</button>
+              <button class="btn" id="btnReloadCatalog">⟳ Обновить каталог</button>
             </div>
             <div style="height:10px;"></div>
             <div id="adminProductsList"></div>
           </div>
 
-          <div id="panelOrders" style="display:none;">
-            <button class="btn" id="btnLoadPaid">⟳ Загрузить оплаченные</button>
-            <div style="height:10px;"></div>
-            <div id="adminOrdersList"></div>
-            <p class="hint">
-              Чтобы работало по-настоящему: нужен сервер/Edge Function (проверка Telegram initData + чтение orders через service_role).
-            </p>
-          </div>
-
           <div id="panelSettings" style="display:none;">
             <p class="hint">
-              Важно: <b>service_role</b> ключ НЕЛЬЗЯ вставлять в HTML. Только в Edge Functions/сервер.
+              ВАЖНО: service_role и Telegram Bot Token хранить только в Edge Functions (переменные окружения).
             </p>
 
             <div class="formGrid">
-              <div class="field">
-                <div class="label">Режим данных</div>
-                <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                  <button class="btn" id="btnModeSupabase">Supabase</button>
-                  <button class="btn" id="btnModeLocal">Local (demo)</button>
-                </div>
-              </div>
-
               <div class="field">
                 <div class="label">Админ Telegram ID</div>
                 <input id="adminIdInput" type="text" />
               </div>
 
               <div class="field">
-                <div class="label">Сообщение пользователю после подтверждения оплаты</div>
+                <div class="label">Текст авто-сообщения после подтверждения оплаты</div>
                 <textarea id="paidMessageInput"></textarea>
               </div>
 
               <div class="field">
-                <div class="label">YooMoney (рубли) — куда вставлять</div>
+                <div class="label">YooMoney (RUB)</div>
                 <p class="hint">
-                  В коде ищите: <b>CONFIG.YOOMONEY_WALLET</b> и вставьте номер кошелька/receiver.
-                  <br>После этого кнопка “Оплатить” будет вести на QuickPay.
+                  Вставь кошелёк сюда: <b>CONFIG.YOOMONEY_WALLET</b> (в коде).
                 </p>
               </div>
 
-              <p class="hint">
-                Если вы открываете Mini App в <b>web.telegram.org</b> и Telegram user не определяется,
-                админка может быть недоступна. Надёжнее для админки использовать <b>Telegram Desktop</b> на Windows.
-              </p>
+              <div class="field">
+                <div class="label">Debug-строка (помогает при проблемах)</div>
+                <button class="btn" id="btnToggleDebug">Показать/скрыть Debug</button>
+              </div>
             </div>
           </div>
 
@@ -659,15 +685,12 @@
         </div>
 
         <button class="btn primary" id="mPay">Оплатить</button>
-
-        <p class="hint">
-          Оплата в рублях через YooMoney. После подтверждения оплаты мы начинаем создание аккаунта и уведомим вас в боте.
-        </p>
+        <!-- УБРАЛИ фразу про оплату/уведомление как ты просил -->
       </div>
     </div>
   </div>
 
-  <!-- Admin Form Modal -->
+  <!-- Admin Product Form Modal -->
   <div class="overlay" id="formOverlay" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="modalHead">
@@ -675,7 +698,7 @@
           <div class="logoMark" style="width:40px;height:40px;border-radius:16px;">✎</div>
           <div style="min-width:0;">
             <b id="fTitle">Товар</b>
-            <small id="fSub">Создание / редактирование</small>
+            <small style="display:block;margin-top:2px;font-size:12px;color:var(--muted);">Создание / редактирование</small>
           </div>
         </div>
         <button class="btn" id="fClose" style="height:38px;border-radius:14px;">✕</button>
@@ -684,7 +707,7 @@
       <div class="modalBody">
         <div class="formGrid">
           <div class="field">
-            <div class="label">ID (уникальный)</div>
+            <div class="label">Slug (уникальный ID)</div>
             <input id="fId" type="text" placeholder="например: chatgpt" />
           </div>
 
@@ -718,9 +741,40 @@
           </div>
 
           <p class="hint">
-            В режиме Supabase для полноценного CRUD лучше использовать Edge Functions (безопасно).
-            В режиме Local всё работает прямо в браузере.
+            CRUD товаров лучше делать через Edge Function (безопасно). Но как резерв — есть Local-редактор.
           </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Send Material Modal -->
+  <div class="overlay" id="msgOverlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modalHead">
+        <div class="modalTitle">
+          <div class="logoMark" style="width:40px;height:40px;border-radius:16px;">✉️</div>
+          <div style="min-width:0;">
+            <b>Отправка материала</b>
+            <small id="msgSub" style="display:block;margin-top:2px;font-size:12px;color:var(--muted);">—</small>
+          </div>
+        </div>
+        <button class="btn" id="msgClose" style="height:38px;border-radius:14px;">✕</button>
+      </div>
+
+      <div class="modalBody">
+        <div class="formGrid">
+          <div class="field">
+            <div class="label">Текст/материал (логин, пароль, ссылка, инструкции)</div>
+            <textarea id="msgText" placeholder="Например: Ваши данные... / ссылка..."></textarea>
+          </div>
+
+          <div style="display:flex;gap:10px;">
+            <button class="btn primary" id="msgSend">Отправить в бот</button>
+            <button class="btn" id="msgCancel">Отмена</button>
+          </div>
+
+          <p class="hint" id="msgHint"></p>
         </div>
       </div>
     </div>
@@ -730,74 +784,60 @@
 
   <script>
     /* =========================
-       CONFIG — ВАЖНО
+       CONFIG (заполни 3 поля)
        ========================= */
     const CONFIG = {
-      // Вставьте Project URL из Supabase → Settings → API → Project URL
+      // Твой Supabase Project URL (как на скрине Data API → API URL)
       SUPABASE_URL: "https://cilnfljlyubwhooxuuob.supabase.co",
 
-      // Вставьте ANON KEY из Supabase → Settings → API → anon public
+      // Вставь сюда anon public key
       SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpbG5mbGpseXVid2hvb3h1dW9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExMjMyNDIsImV4cCI6MjA4NjY5OTI0Mn0.030FmUuyL6Ht-C4WlEvA0jL29rvx_m1JH8rQ1V8W6oQ",
 
-      // Режим данных:
-      // local — всегда покажет товары (без БД)
-      // supabase — грузит каталог из Supabase через REST
-      DATA_MODE: "local",
-
-      // Ваш Telegram ID (админ)
+      // Админ Telegram ID
       ADMIN_TELEGRAM_ID: 5017229451,
 
-      // YooMoney (рубли)
+      // YooMoney (рубли) — вставь номер кошелька, когда будет
       YOOMONEY_WALLET: "PASTE_YOOMONEY_WALLET_HERE",
-      YOOMONEY_SUCCESS_URL: "",
 
+      // Текст, который бот может отправить после подтверждения оплаты
       PAID_MESSAGE:
         "Спасибо! Оплату получили ✅\n" +
-        "Мы запускаем процесс создания вашего аккаунта — обычно это занимает от 30 минут до 2 часов.\n" +
+        "Мы запускаем создание вашего аккаунта — обычно это занимает от 30 минут до 2 часов.\n" +
         "В редких случаях процесс может занять до 3 дней. Мы напишем вам сразу, как всё будет готово."
     };
 
     const LS = {
-      THEME: "ai_market_theme_v3",
-      MODE: "ai_market_mode_v3",
-      ADMIN_ID: "ai_market_admin_id_v3",
-      PAID_MSG: "ai_market_paid_msg_v3",
-      LOCAL_PRODUCTS: "ai_market_local_products_v3"
+      THEME: "ai_market_theme_v4",
+      ADMIN_ID: "ai_market_admin_id_v4",
+      PAID_MSG: "ai_market_paid_msg_v4",
+      DEBUG: "ai_market_debug_v4"
     };
 
     /* =========================
-       Safe storage (не падаем, если localStorage ограничен)
+       Safe storage
        ========================= */
     const storage = (() => {
-      try{
-        localStorage.setItem("__t","1");
-        localStorage.removeItem("__t");
-        return localStorage;
-      }catch(e){
-        return null;
-      }
+      try{ localStorage.setItem("__t","1"); localStorage.removeItem("__t"); return localStorage; }
+      catch(e){ return null; }
     })();
-
-    function sGet(key){ try{ return storage ? storage.getItem(key) : null; }catch(e){ return null; } }
-    function sSet(key,val){ try{ if(storage) storage.setItem(key,val); }catch(e){} }
-    function sDel(key){ try{ if(storage) storage.removeItem(key); }catch(e){} }
+    const sGet = (k) => { try{ return storage ? storage.getItem(k) : null; }catch(e){ return null; } };
+    const sSet = (k,v) => { try{ storage && storage.setItem(k,v); }catch(e){} };
 
     /* =========================
-       Telegram WebApp
+       Telegram
        ========================= */
     const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
-    function getTelegramUser(){ try{ return tg?.initDataUnsafe?.user || null; }catch(e){ return null; } }
-    function getInitData(){ try{ return tg?.initData || ""; }catch(e){ return ""; } }
+    const getTelegramUser = () => { try{ return tg?.initDataUnsafe?.user || null; }catch(e){ return null; } };
+    const getInitData = () => { try{ return tg?.initData || ""; }catch(e){ return ""; } };
     function initTelegram(){
       if(!tg) return;
       try{ tg.ready(); tg.expand(); }catch(e){}
-      if(!sGet(LS.THEME)){
-        setTheme(tg.colorScheme === "light" ? "light" : "dark");
-      }
+      if(!sGet(LS.THEME)) setTheme(tg.colorScheme === "light" ? "light" : "dark");
       try{
         tg.BackButton.onClick(() => {
           if(state.modalOpen) closeModal();
           if(state.formOpen) closeForm();
+          if(state.msgOpen) closeMsg();
         });
       }catch(e){}
     }
@@ -806,9 +846,8 @@
        UI refs
        ========================= */
     const el = {
-      brand: document.getElementById("brand"),
       btnTheme: document.getElementById("btnTheme"),
-      btnAdmin: document.getElementById("btnAdmin"),
+      adminBadge: document.getElementById("adminBadge"),
 
       q: document.getElementById("q"),
       grid: document.getElementById("grid"),
@@ -826,19 +865,27 @@
 
       adminPanel: document.getElementById("adminPanel"),
       adminHint: document.getElementById("adminHint"),
-      tabProducts: document.getElementById("tabProducts"),
       tabOrders: document.getElementById("tabOrders"),
+      tabProducts: document.getElementById("tabProducts"),
       tabSettings: document.getElementById("tabSettings"),
-      panelProducts: document.getElementById("panelProducts"),
       panelOrders: document.getElementById("panelOrders"),
+      panelProducts: document.getElementById("panelProducts"),
       panelSettings: document.getElementById("panelSettings"),
+      btnCollapseAdmin: document.getElementById("btnCollapseAdmin"),
+
+      btnLoadOrders: document.getElementById("btnLoadOrders"),
+      btnFilterAll: document.getElementById("btnFilterAll"),
+      btnFilterPending: document.getElementById("btnFilterPending"),
+      btnFilterPaid: document.getElementById("btnFilterPaid"),
+      adminOrdersList: document.getElementById("adminOrdersList"),
 
       btnAddProduct: document.getElementById("btnAddProduct"),
-      btnReload: document.getElementById("btnReload"),
-      btnLoadPaid: document.getElementById("btnLoadPaid"),
-
+      btnReloadCatalog: document.getElementById("btnReloadCatalog"),
       adminProductsList: document.getElementById("adminProductsList"),
-      adminOrdersList: document.getElementById("adminOrdersList"),
+
+      adminIdInput: document.getElementById("adminIdInput"),
+      paidMessageInput: document.getElementById("paidMessageInput"),
+      btnToggleDebug: document.getElementById("btnToggleDebug"),
 
       formOverlay: document.getElementById("formOverlay"),
       fClose: document.getElementById("fClose"),
@@ -853,17 +900,17 @@
       fSave: document.getElementById("fSave"),
       fDelete: document.getElementById("fDelete"),
 
-      btnModeSupabase: document.getElementById("btnModeSupabase"),
-      btnModeLocal: document.getElementById("btnModeLocal"),
-      adminIdInput: document.getElementById("adminIdInput"),
-      paidMessageInput: document.getElementById("paidMessageInput"),
+      msgOverlay: document.getElementById("msgOverlay"),
+      msgClose: document.getElementById("msgClose"),
+      msgCancel: document.getElementById("msgCancel"),
+      msgSend: document.getElementById("msgSend"),
+      msgText: document.getElementById("msgText"),
+      msgSub: document.getElementById("msgSub"),
+      msgHint: document.getElementById("msgHint"),
 
       toast: document.getElementById("toast")
     };
 
-    /* =========================
-       Helpers
-       ========================= */
     const PLAN_LABELS = { "1m":"1 месяц", "6m":"6 месяцев", "12m":"12 месяцев" };
 
     function toast(msg){
@@ -913,12 +960,11 @@
 
     function supabaseConfigured(){
       return CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY &&
-             !CONFIG.SUPABASE_URL.includes("PASTE_") &&
              !CONFIG.SUPABASE_ANON_KEY.includes("PASTE_");
     }
 
     /* =========================
-       Supabase REST client (без SDK)
+       Supabase REST (без SDK)
        ========================= */
     async function sbFetch(path, { method="GET", body=null, headers={} } = {}){
       const base = CONFIG.SUPABASE_URL.replace(/\/$/,"") + "/rest/v1/";
@@ -931,12 +977,7 @@
         ...headers
       };
 
-      const res = await fetch(url, {
-        method,
-        headers: h,
-        body: body ? JSON.stringify(body) : null
-      });
-
+      const res = await fetch(url, { method, headers: h, body: body ? JSON.stringify(body) : null });
       const text = await res.text();
       let json = null;
       try{ json = text ? JSON.parse(text) : null; }catch(e){}
@@ -949,45 +990,34 @@
     }
 
     /* =========================
-       Local seed
+       Edge Function (Admin API)
        ========================= */
-    function seedProducts(){
-      return [
-        { id:"chatgpt", name:"ChatGPT", description:"AI помощник для задач, писем, идей, анализа и автоматизации.", logo_url: makeLogoDataURI("ChatGPT"), is_active:true,
-          plans:[{duration:"1m",price_rub:1990},{duration:"6m",price_rub:9990},{duration:"12m",price_rub:17990}] },
-        { id:"gemini", name:"Google Gemini", description:"Мультимодальный ИИ для текста, кода и контента.", logo_url: makeLogoDataURI("Gemini"), is_active:true,
-          plans:[{duration:"1m",price_rub:1790},{duration:"6m",price_rub:8990},{duration:"12m",price_rub:15990}] },
-        { id:"midjourney", name:"Midjourney", description:"Генерация изображений для дизайна, маркетинга и контента.", logo_url: makeLogoDataURI("Midjourney"), is_active:true,
-          plans:[{duration:"1m",price_rub:2490},{duration:"6m",price_rub:12490},{duration:"12m",price_rub:21990}] },
-        { id:"cursor", name:"Cursor AI", description:"AI-IDE для ускорения разработки: подсказки, рефакторинг, автокод.", logo_url: makeLogoDataURI("Cursor"), is_active:true,
-          plans:[{duration:"1m",price_rub:1890},{duration:"6m",price_rub:9490},{duration:"12m",price_rub:16990}] },
-        { id:"perplexity", name:"Perplexity AI", description:"Поиск с источниками: быстрые ответы и ресёрч.", logo_url: makeLogoDataURI("Perplexity"), is_active:true,
-          plans:[{duration:"1m",price_rub:1490},{duration:"6m",price_rub:7490},{duration:"12m",price_rub:13490}] },
-        { id:"claude", name:"Claude AI", description:"Аккуратный ассистент для документов, текстов и задач.", logo_url: makeLogoDataURI("Claude"), is_active:true,
-          plans:[{duration:"1m",price_rub:2090},{duration:"6m",price_rub:10490},{duration:"12m",price_rub:18990}] },
-        { id:"grok", name:"Grok AI", description:"Ассистент для быстрых ответов и идей. (Моковые данные)", logo_url: makeLogoDataURI("Grok"), is_active:true,
-          plans:[{duration:"1m",price_rub:1690},{duration:"6m",price_rub:8490},{duration:"12m",price_rub:15490}] }
-      ];
-    }
+    async function adminApi(action, payload = {}){
+      if(!supabaseConfigured()) throw new Error("Supabase не настроен");
 
-    function loadLocalProducts(){
-      const raw = sGet(LS.LOCAL_PRODUCTS);
-      if(!raw){
-        const seeded = seedProducts();
-        sSet(LS.LOCAL_PRODUCTS, JSON.stringify(seeded));
-        return seeded;
+      const url = CONFIG.SUPABASE_URL.replace(/\/$/,"") + "/functions/v1/admin-api";
+      const initData = getInitData();
+      if(!initData) throw new Error("Открой Mini App внутри Telegram (Desktop/Mobile)");
+
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type":"application/json",
+          "apikey": CONFIG.SUPABASE_ANON_KEY,
+          "Authorization": "Bearer " + CONFIG.SUPABASE_ANON_KEY
+        },
+        body: JSON.stringify({ action, initData, ...payload })
+      });
+
+      const text = await res.text();
+      let json = null;
+      try{ json = text ? JSON.parse(text) : null; }catch(e){}
+
+      if(!res.ok){
+        const msg = json?.error || json?.message || text || ("HTTP " + res.status);
+        throw new Error(msg);
       }
-      try{
-        const parsed = JSON.parse(raw);
-        if(Array.isArray(parsed) && parsed.length) return parsed;
-      }catch(e){}
-      const seeded = seedProducts();
-      sSet(LS.LOCAL_PRODUCTS, JSON.stringify(seeded));
-      return seeded;
-    }
-
-    function saveLocalProducts(products){
-      sSet(LS.LOCAL_PRODUCTS, JSON.stringify(products));
+      return json;
     }
 
     /* =========================
@@ -998,67 +1028,70 @@
       view: [],
       modalOpen: false,
       formOpen: false,
+      msgOpen: false,
+
       selectedProduct: null,
       selectedPlan: null,
 
-      adminOpen: false,
       isAdmin: false,
-      activeTab: "products",
-      editingProductId: null
+      adminOpen: false,
+      activeTab: "orders",
+
+      ordersFilter: "all",
+      orders: [],
+      msgOrderId: null,
+      msgUserId: null
     };
 
+    function isAdminNow(){
+      const u = getTelegramUser();
+      const storedAdminId = sGet(LS.ADMIN_ID);
+      const adminId = storedAdminId ? Number(storedAdminId) : CONFIG.ADMIN_TELEGRAM_ID;
+      return !!u && u.id === adminId;
+    }
+
+    function updateDebug(){
+      const debug = sGet(LS.DEBUG) === "1";
+      el.debugLine.classList.toggle("show", debug);
+
+      const u = getTelegramUser();
+      const tgInfo = u ? `Telegram user: ${u.id}` : `Telegram user: недоступен`;
+      const sb = supabaseConfigured() ? "supabase: ok" : "supabase: not set";
+      el.debugLine.textContent = `${sb} · ${tgInfo}`;
+    }
+
     /* =========================
-       Catalog load
+       Load catalog from Supabase
        ========================= */
     async function loadProducts(){
-      const storedMode = sGet(LS.MODE);
-      if(storedMode) CONFIG.DATA_MODE = storedMode;
-
-      // Supabase mode: если не настроен — fallback на local
-      if(CONFIG.DATA_MODE === "supabase" && !supabaseConfigured()){
-        CONFIG.DATA_MODE = "local";
-        sSet(LS.MODE, "local");
+      if(!supabaseConfigured()){
+        throw new Error("Вставь SUPABASE_ANON_KEY в CONFIG");
       }
 
-      // Local mode: всегда показывает товары
-      if(CONFIG.DATA_MODE === "local"){
-        state.products = loadLocalProducts().filter(p => p.is_active !== false);
-        return;
-      }
+      // products + plans (embedded)
+      const select = encodeURIComponent("slug,name,description,logo_url,is_active,product_plans(duration,price_rub)");
+      const rows = await sbFetch(`products?select=${select}&is_active=eq.true`, { method:"GET" });
 
-      // Supabase REST: products + embedded product_plans
-      try{
-        const select = encodeURIComponent("id,slug,name,description,logo_url,is_active,product_plans(duration,price_rub)");
-        const rows = await sbFetch(`products?select=${select}&is_active=eq.true`, { method:"GET" });
+      state.products = (rows || []).map(p => ({
+        id: p.slug,
+        name: p.name,
+        description: p.description || "",
+        logo_url: p.logo_url || makeLogoDataURI(p.name),
+        is_active: p.is_active,
+        plans: (p.product_plans || [])
+          .map(pl => ({ duration: pl.duration, price_rub: Number(pl.price_rub) }))
+          .sort((a,b) => (a.duration > b.duration ? 1 : -1))
+      }));
 
-        state.products = (rows || []).map(p => ({
-          id: p.slug || String(p.id),
-          name: p.name,
-          description: p.description || "",
-          logo_url: p.logo_url || makeLogoDataURI(p.name),
-          is_active: p.is_active,
-          plans: (p.product_plans || []).map(pl => ({
-            duration: pl.duration,
-            price_rub: Number(pl.price_rub)
-          })).sort((a,b) => (a.duration > b.duration ? 1 : -1))
-        }));
-
-        // Если таблицы пустые — fallback (чтобы не было “пусто”)
-        if(!state.products.length){
-          state.products = loadLocalProducts().filter(p => p.is_active !== false);
-        }
-
-      }catch(err){
-        console.warn("Supabase error:", err);
-        toast("Supabase недоступен — показаны demo товары");
-        state.products = loadLocalProducts().filter(p => p.is_active !== false);
+      if(!state.products.length){
+        toast("Каталог пуст — проверь seed в SQL");
       }
     }
 
     /* =========================
        Render catalog
        ========================= */
-    function render(){
+    function renderCatalog(){
       const query = (el.q.value || "").trim().toLowerCase();
       const list = query
         ? state.products.filter(p =>
@@ -1083,7 +1116,7 @@
               <div class="pDesc">${escapeHtml(p.description || "")}</div>
             </div>
             <div class="cardFooter">
-              <button class="btn primary" data-open="${escapeHtml(p.id)}">Подробнее</button>
+              <button class="btn primary" data-open="${escapeHtml(p.id)}">Купить</button>
             </div>
           </div>
         `;
@@ -1158,45 +1191,42 @@
     async function startPayment(product, plan){
       const user = getTelegramUser();
       if(!user){
-        alert("Откройте мини-приложение внутри Telegram Desktop/Mobile, чтобы привязать оплату к вашему аккаунту.");
+        alert("Откройте мини-приложение внутри Telegram Desktop/Mobile, чтобы привязать оплату к аккаунту.");
         return;
       }
 
-      // Создаём заявку (в Supabase — если включен режим supabase и настроен)
-      let orderId = "local_" + Date.now();
-
-      if(CONFIG.DATA_MODE === "supabase" && supabaseConfigured()){
-        try{
-          const inserted = await sbFetch("orders", {
-            method: "POST",
-            headers: { "Prefer":"return=representation" },
-            body: {
-              telegram_user_id: user.id,
-              product_id: null,           // если у вас FK на bigint — заполняется через Edge Function
-              plan_duration: plan.duration,
-              amount_rub: Number(plan.price_rub),
-              currency: "RUB",
-              status: "pending",
-              payment_provider: "yoomoney"
-            }
-          });
-          // inserted — массив строк (return=representation)
-          orderId = inserted?.[0]?.id || orderId;
-        }catch(e){
-          console.warn(e);
-          toast("Не удалось создать заявку в Supabase — продолжу как demo");
-        }
+      // 1) Создаём заявку в Supabase (orders)
+      let orderId = null;
+      try{
+        const inserted = await sbFetch("orders", {
+          method: "POST",
+          headers: { "Prefer":"return=representation" },
+          body: {
+            telegram_user_id: user.id,
+            product_slug: product.id,
+            plan_duration: plan.duration,
+            amount_rub: Number(plan.price_rub),
+            currency: "RUB",
+            status: "pending",
+            payment_provider: "yoomoney"
+          }
+        });
+        orderId = inserted?.[0]?.id || null;
+      }catch(e){
+        console.warn(e);
+        alert("Не удалось создать заявку. Проверь RLS/SQL.");
+        return;
       }
 
+      // 2) YooMoney QuickPay
       if(!CONFIG.YOOMONEY_WALLET || CONFIG.YOOMONEY_WALLET.includes("PASTE_")){
-        alert("YooMoney ещё не настроен. В CONFIG вставьте YOOMONEY_WALLET (номер кошелька/receiver).");
+        alert("YooMoney ещё не настроен. В CONFIG вставь YOOMONEY_WALLET.");
         return;
       }
 
       const sum = Number(plan.price_rub);
       const label = encodeURIComponent(orderId);
       const targets = encodeURIComponent(`AI MARKET · ${product.name} · ${PLAN_LABELS[plan.duration]}`);
-      const success = CONFIG.YOOMONEY_SUCCESS_URL ? `&successURL=${encodeURIComponent(CONFIG.YOOMONEY_SUCCESS_URL)}` : "";
 
       const payUrl =
         `https://yoomoney.ru/quickpay/confirm.xml` +
@@ -1205,43 +1235,171 @@
         `&targets=${targets}` +
         `&paymentType=AC` +
         `&sum=${encodeURIComponent(sum)}` +
-        `&label=${label}` +
-        success;
+        `&label=${label}`;
 
       window.open(payUrl, "_blank");
-      toast("Открываю YooMoney…");
+      toast("Открываю оплату…");
       closeModal();
     }
 
     /* =========================
-       Admin access + UI
+       Admin UI (hidden for non-admin)
        ========================= */
-    function isAdminNow(){
-      const u = getTelegramUser();
-      const storedAdminId = sGet(LS.ADMIN_ID);
-      const adminId = storedAdminId ? Number(storedAdminId) : CONFIG.ADMIN_TELEGRAM_ID;
-      return !!u && u.id === adminId;
-    }
-
-    function updateDebug(){
-      const u = getTelegramUser();
-      const tgInfo = u ? `Telegram user: ${u.id}` : `Telegram user: недоступен (web.telegram.org бывает ограничен)`;
-      const mode = `mode: ${CONFIG.DATA_MODE}`;
-      const sb = supabaseConfigured() ? "supabase: ok" : "supabase: not set";
-      el.debugLine.textContent = `${mode} · ${sb} · ${tgInfo}`;
-    }
-
     function openTab(tab){
       state.activeTab = tab;
-      el.tabProducts.classList.toggle("active", tab === "products");
       el.tabOrders.classList.toggle("active", tab === "orders");
+      el.tabProducts.classList.toggle("active", tab === "products");
       el.tabSettings.classList.toggle("active", tab === "settings");
 
-      el.panelProducts.style.display = tab === "products" ? "block" : "none";
       el.panelOrders.style.display = tab === "orders" ? "block" : "none";
+      el.panelProducts.style.display = tab === "products" ? "block" : "none";
       el.panelSettings.style.display = tab === "settings" ? "block" : "none";
     }
 
+    function showAdmin(){
+      state.adminOpen = true;
+      el.adminPanel.classList.add("open");
+      el.adminBadge.classList.add("show");
+      openTab("orders");
+    }
+    function hideAdmin(){
+      state.adminOpen = false;
+      el.adminPanel.classList.remove("open");
+    }
+
+    el.btnCollapseAdmin.addEventListener("click", () => {
+      if(!state.isAdmin) return;
+      if(state.adminOpen) hideAdmin(); else showAdmin();
+    });
+
+    el.tabOrders.addEventListener("click", () => openTab("orders"));
+    el.tabProducts.addEventListener("click", () => openTab("products"));
+    el.tabSettings.addEventListener("click", () => { openTab("settings"); renderSettings(); });
+
+    /* =========================
+       Admin: Orders (Edge Function)
+       ========================= */
+    function renderOrders(){
+      const list = state.orders || [];
+      if(!list.length){
+        el.adminOrdersList.innerHTML = `<p class="hint">Заявок нет.</p>`;
+        return;
+      }
+
+      el.adminOrdersList.innerHTML = list.map(o => {
+        const st = escapeHtml(o.status);
+        const badge = st === "paid" ? "✅ paid" : (st === "pending" ? "🕘 pending" : st);
+        const title = `${o.product_name || o.product_slug} · ${PLAN_LABELS[o.plan_duration] || o.plan_duration} · ${formatRUB(o.amount_rub)}`;
+        const meta = `user: ${o.telegram_user_id} · ${new Date(o.created_at).toLocaleString("ru-RU")}`;
+        const note = o.admin_note ? ` · note: ${escapeHtml(o.admin_note)}` : "";
+        return `
+          <div class="row">
+            <div class="rowLeft">
+              <div style="min-width:0;">
+                <b>${badge} — ${escapeHtml(title)}</b>
+                <small>${escapeHtml(meta)}${note}</small>
+              </div>
+            </div>
+            <div class="rowActions">
+              <button class="btn" data-copy="${o.telegram_user_id}">Copy ID</button>
+              <button class="btn" data-send="${o.id}" data-user="${o.telegram_user_id}">Отправить</button>
+              ${st !== "paid" ? `<button class="btn primary" data-paid="${o.id}">Отметить paid</button>` : ``}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      el.adminOrdersList.querySelectorAll("[data-copy]").forEach(b => {
+        b.addEventListener("click", async () => {
+          const v = b.getAttribute("data-copy");
+          try{ await navigator.clipboard.writeText(v); toast("Скопировано"); }catch(e){ toast("Не удалось скопировать"); }
+        });
+      });
+
+      el.adminOrdersList.querySelectorAll("[data-paid]").forEach(b => {
+        b.addEventListener("click", async () => {
+          const id = b.getAttribute("data-paid");
+          if(!confirm("Отметить заявку как PAID?")) return;
+          try{
+            await adminApi("set_status", { orderId: id, status: "paid" });
+            toast("Статус обновлён");
+            await loadOrders();
+          }catch(e){
+            alert("Ошибка: " + e.message);
+          }
+        });
+      });
+
+      el.adminOrdersList.querySelectorAll("[data-send]").forEach(b => {
+        b.addEventListener("click", () => {
+          const orderId = b.getAttribute("data-send");
+          const userId = b.getAttribute("data-user");
+          openMsg(orderId, userId);
+        });
+      });
+    }
+
+    async function loadOrders(){
+      try{
+        const res = await adminApi("list_orders", { filter: state.ordersFilter });
+        state.orders = res.orders || [];
+        renderOrders();
+      }catch(e){
+        el.adminOrdersList.innerHTML = `<p class="hint">Ошибка загрузки заявок: ${escapeHtml(e.message)}</p>`;
+      }
+    }
+
+    el.btnLoadOrders.addEventListener("click", loadOrders);
+
+    el.btnFilterAll.addEventListener("click", async () => { state.ordersFilter="all"; await loadOrders(); });
+    el.btnFilterPending.addEventListener("click", async () => { state.ordersFilter="pending"; await loadOrders(); });
+    el.btnFilterPaid.addEventListener("click", async () => { state.ordersFilter="paid"; await loadOrders(); });
+
+    /* =========================
+       Admin: Send material modal
+       ========================= */
+    function openMsg(orderId, userId){
+      state.msgOpen = true;
+      state.msgOrderId = orderId;
+      state.msgUserId = Number(userId);
+      el.msgSub.textContent = `order: ${orderId} · user: ${userId}`;
+      el.msgHint.textContent = "После отправки отметка сохраняется в заявке (notified_at/admin_note).";
+      el.msgText.value = "";
+      el.msgOverlay.classList.add("open");
+      try{ tg && tg.BackButton.show(); }catch(e){}
+    }
+    function closeMsg(){
+      state.msgOpen = false;
+      state.msgOrderId = null;
+      state.msgUserId = null;
+      el.msgOverlay.classList.remove("open");
+      try{ tg && tg.BackButton.hide(); }catch(e){}
+    }
+    el.msgClose.addEventListener("click", closeMsg);
+    el.msgCancel.addEventListener("click", closeMsg);
+    el.msgOverlay.addEventListener("click", (e) => { if(e.target === el.msgOverlay) closeMsg(); });
+
+    el.msgSend.addEventListener("click", async () => {
+      const text = el.msgText.value.trim();
+      if(!text){ alert("Вставь материал/текст для пользователя."); return; }
+      try{
+        await adminApi("send_material", {
+          orderId: state.msgOrderId,
+          userId: state.msgUserId,
+          materialText: text,
+          paidMessage: (sGet(LS.PAID_MSG) || CONFIG.PAID_MESSAGE)
+        });
+        toast("Отправлено");
+        closeMsg();
+        await loadOrders();
+      }catch(e){
+        alert("Ошибка отправки: " + e.message);
+      }
+    });
+
+    /* =========================
+       Admin: Products (пока UI, реальный CRUD лучше через Edge)
+       ========================= */
     function renderAdminProducts(){
       el.adminProductsList.innerHTML = state.products.map(p => {
         const from = minPlanPriceRub(p);
@@ -1272,68 +1430,24 @@
       });
     }
 
-    function renderAdminAccessHint(){
-      const u = getTelegramUser();
-      if(state.isAdmin){
-        el.adminHint.textContent = `Доступ: админ (id ${u.id})`;
-      } else {
-        el.adminHint.textContent = u
-          ? `Доступ запрещён. Ваш id ${u.id}, админ id ${CONFIG.ADMIN_TELEGRAM_ID}`
-          : `Telegram user не определяется. Откройте в Telegram Desktop (Windows) для админки.`;
-      }
-    }
-
-    el.btnAdmin.addEventListener("click", () => {
-      state.isAdmin = isAdminNow();
-      renderAdminAccessHint();
-
-      state.adminOpen = !state.adminOpen;
-      el.adminPanel.classList.toggle("open", state.adminOpen);
-
-      // Показываем админку даже если доступа нет — чтобы было понятно почему
-      if(state.adminOpen){
-        openTab("products");
-        if(state.isAdmin) renderAdminProducts();
-        else el.adminProductsList.innerHTML = `<p class="hint">Нет доступа к редактированию. ${escapeHtml(el.adminHint.textContent)}</p>`;
-      }
-    });
-
-    el.tabProducts.addEventListener("click", () => {
-      openTab("products");
-      if(state.isAdmin) renderAdminProducts();
-      else el.adminProductsList.innerHTML = `<p class="hint">Нет доступа. ${escapeHtml(el.adminHint.textContent)}</p>`;
-    });
-    el.tabOrders.addEventListener("click", () => {
-      openTab("orders");
-    });
-    el.tabSettings.addEventListener("click", () => {
-      openTab("settings");
-      renderSettings();
-    });
-
-    el.btnReload.addEventListener("click", async () => {
+    el.btnReloadCatalog.addEventListener("click", async () => {
       await loadProducts();
-      render();
-      if(state.adminOpen && state.isAdmin && state.activeTab === "products") renderAdminProducts();
-      updateDebug();
-      toast("Обновлено");
+      renderCatalog();
+      renderAdminProducts();
+      toast("Каталог обновлён");
     });
 
     /* =========================
-       Admin product form (Local CRUD работает сразу)
+       Product Form (Local fallback editor – не убираем функционал)
        ========================= */
     function openForm(product){
-      if(!state.isAdmin){
-        toast("Нет доступа");
-        return;
-      }
+      if(!state.isAdmin){ toast("Нет доступа"); return; }
 
       state.formOpen = true;
-      try{ tg && tg.BackButton.show(); }catch(e){}
       el.formOverlay.classList.add("open");
+      try{ tg && tg.BackButton.show(); }catch(e){}
 
       if(!product){
-        state.editingProductId = null;
         el.fTitle.textContent = "Новый товар";
         el.fDelete.style.display = "none";
         el.fId.value = "";
@@ -1346,15 +1460,12 @@
         return;
       }
 
-      state.editingProductId = product.id;
       el.fTitle.textContent = "Редактирование";
       el.fDelete.style.display = "inline-flex";
-
       el.fId.value = product.id;
       el.fName.value = product.name;
       el.fDesc.value = product.description || "";
       el.fLogo.value = product.logo_url || "";
-
       el.p1.value = (product.plans||[]).find(x=>x.duration==="1m")?.price_rub ?? "";
       el.p6.value = (product.plans||[]).find(x=>x.duration==="6m")?.price_rub ?? "";
       el.p12.value = (product.plans||[]).find(x=>x.duration==="12m")?.price_rub ?? "";
@@ -1365,74 +1476,17 @@
       el.formOverlay.classList.remove("open");
       try{ tg && tg.BackButton.hide(); }catch(e){}
     }
-
     el.fClose.addEventListener("click", closeForm);
     el.formOverlay.addEventListener("click", (e) => { if(e.target === el.formOverlay) closeForm(); });
-
     el.btnAddProduct.addEventListener("click", () => openForm(null));
 
-    el.fSave.addEventListener("click", async () => {
-      if(!state.isAdmin) return;
-
-      const payload = {
-        id: el.fId.value.trim(),
-        name: el.fName.value.trim(),
-        description: el.fDesc.value.trim(),
-        logo_url: el.fLogo.value.trim() || makeLogoDataURI(el.fName.value.trim() || "AI"),
-        is_active: true,
-        plans: [
-          { duration:"1m", price_rub: Number(el.p1.value || 0) },
-          { duration:"6m", price_rub: Number(el.p6.value || 0) },
-          { duration:"12m", price_rub: Number(el.p12.value || 0) }
-        ]
-      };
-
-      if(!payload.id || !payload.name){
-        alert("ID и Название обязательны.");
-        return;
-      }
-      if(payload.plans.some(x => Number.isNaN(x.price_rub))){
-        alert("Цены должны быть числами.");
-        return;
-      }
-
-      // Сейчас надёжно работает Local CRUD (сразу видно результат)
-      // Supabase CRUD лучше делать через Edge Functions (безопасно).
-      const cur = loadLocalProducts();
-      const idx = cur.findIndex(x => x.id === (state.editingProductId || payload.id));
-      if(idx >= 0) cur[idx] = payload;
-      else cur.unshift(payload);
-      saveLocalProducts(cur);
-
-      CONFIG.DATA_MODE = "local";
-      sSet(LS.MODE, "local");
-
-      await loadProducts();
-      render();
-      renderAdminProducts();
-      updateDebug();
-      toast("Сохранено (local)");
-      closeForm();
+    // Сейчас сохранение через Local fallback не подключено к БД (безопасность).
+    // Реальный CRUD делается через Edge Function: add/update/delete product.
+    el.fSave.addEventListener("click", () => {
+      alert("CRUD товаров через БД сделаем через Edge Function (безопасно). Сейчас UI готов.");
     });
-
-    el.fDelete.addEventListener("click", async () => {
-      if(!state.isAdmin) return;
-      const id = state.editingProductId || el.fId.value.trim();
-      if(!id) return;
-      if(!confirm("Удалить товар?")) return;
-
-      const cur = loadLocalProducts().filter(x => x.id !== id);
-      saveLocalProducts(cur);
-
-      CONFIG.DATA_MODE = "local";
-      sSet(LS.MODE, "local");
-
-      await loadProducts();
-      render();
-      renderAdminProducts();
-      updateDebug();
-      toast("Удалено (local)");
-      closeForm();
+    el.fDelete.addEventListener("click", () => {
+      alert("Удаление товаров через Edge Function (безопасно). Сейчас UI готов.");
     });
 
     /* =========================
@@ -1443,28 +1497,6 @@
       el.paidMessageInput.value = sGet(LS.PAID_MSG) || CONFIG.PAID_MESSAGE;
     }
 
-    el.btnModeSupabase.addEventListener("click", async () => {
-      if(!supabaseConfigured()){
-        alert("Supabase не настроен. Вставьте SUPABASE_URL и ANON KEY в CONFIG.");
-        return;
-      }
-      CONFIG.DATA_MODE = "supabase";
-      sSet(LS.MODE, "supabase");
-      toast("Режим: Supabase");
-      await loadProducts();
-      render();
-      updateDebug();
-    });
-
-    el.btnModeLocal.addEventListener("click", async () => {
-      CONFIG.DATA_MODE = "local";
-      sSet(LS.MODE, "local");
-      toast("Режим: Local");
-      await loadProducts();
-      render();
-      updateDebug();
-    });
-
     el.adminIdInput.addEventListener("change", () => {
       const v = Number(el.adminIdInput.value.trim());
       if(!Number.isFinite(v)) return;
@@ -1474,7 +1506,13 @@
 
     el.paidMessageInput.addEventListener("change", () => {
       sSet(LS.PAID_MSG, el.paidMessageInput.value);
-      toast("Текст сообщения сохранён");
+      toast("Текст сохранён");
+    });
+
+    el.btnToggleDebug.addEventListener("click", () => {
+      const now = sGet(LS.DEBUG) === "1" ? "0" : "1";
+      sSet(LS.DEBUG, now);
+      updateDebug();
     });
 
     /* =========================
@@ -1484,43 +1522,50 @@
       const cur = document.body.getAttribute("data-theme");
       setTheme(cur === "dark" ? "light" : "dark");
     });
-
-    el.q.addEventListener("input", render);
+    el.q.addEventListener("input", renderCatalog);
 
     /* =========================
        Boot
        ========================= */
     async function boot(){
-      try{
-        const theme = sGet(LS.THEME);
-        if(theme) setTheme(theme);
+      const theme = sGet(LS.THEME);
+      if(theme) setTheme(theme);
 
-        const mode = sGet(LS.MODE);
-        if(mode) CONFIG.DATA_MODE = mode;
+      const msg = sGet(LS.PAID_MSG);
+      if(msg) CONFIG.PAID_MESSAGE = msg;
 
-        const msg = sGet(LS.PAID_MSG);
-        if(msg) CONFIG.PAID_MESSAGE = msg;
+      initTelegram();
 
-        initTelegram();
-
-        await loadProducts();
-        render();
-
-        state.isAdmin = isAdminNow();
-        renderAdminAccessHint();
-        updateDebug();
-
-      }catch(e){
-        console.warn("BOOT ERROR:", e);
-        // Супер-fallback: показываем demo товары даже если что-то сломалось
-        state.products = seedProducts();
-        render();
-        el.debugLine.textContent = "Fallback demo mode (boot error)";
-        toast("Использую demo режим");
+      // Admin auto enter
+      state.isAdmin = isAdminNow();
+      if(state.isAdmin){
+        el.adminHint.textContent = `Доступ: админ (${getTelegramUser().id})`;
+        showAdmin();
+        // сразу грузим заявки
+        loadOrders();
+      } else {
+        // обычный пользователь НЕ видит админку
+        hideAdmin();
       }
+
+      updateDebug();
+
+      // Catalog
+      await loadProducts();
+      renderCatalog();
+      if(state.isAdmin) renderAdminProducts();
+
+      // Admin tab clicks
+      el.tabOrders.addEventListener("click", async () => { openTab("orders"); await loadOrders(); });
+      el.tabProducts.addEventListener("click", () => { openTab("products"); renderAdminProducts(); });
+      el.tabSettings.addEventListener("click", () => { openTab("settings"); renderSettings(); });
+
     }
 
-    boot();
+    boot().catch(e => {
+      console.warn(e);
+      alert("Ошибка запуска: " + e.message);
+    });
   </script>
 </body>
 </html>
