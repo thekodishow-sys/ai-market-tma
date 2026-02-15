@@ -7,6 +7,7 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <style>
+    /* --- Corporate / Fintech minimal --- */
     :root{
       --maxw: 980px; --tap: 44px;
       --r16:16px; --r20:20px; --r24:24px;
@@ -51,6 +52,7 @@
     }
     .safe{padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0; min-height:100%;}
     .container{max-width:var(--maxw); margin:0 auto; padding:14px 14px 24px;}
+
     .appbar{position:sticky; top:0; z-index:20; padding-top:env(safe-area-inset-top);
       background:linear-gradient(180deg, rgba(0,0,0,.28), rgba(0,0,0,0));}
     [data-theme="light"] .appbar{background:linear-gradient(180deg, rgba(255,255,255,.88), rgba(255,255,255,0));}
@@ -62,6 +64,7 @@
     .brandText b{font-size:13px; letter-spacing:1px;}
     .brandText span{font-size:12px;color:var(--muted);}
     .actions{display:flex; align-items:center; gap:8px;}
+
     .btn{
       height:var(--tap); border-radius:14px; padding:0 12px;
       border:1px solid var(--border); background:var(--surface2);
@@ -76,6 +79,7 @@
       color:#050812; font-weight:900;
     }
     .btn.danger{border-color:rgba(255,77,109,.30); background:rgba(255,77,109,.10);}
+
     .adminBadge{
       display:none; height:34px; border-radius:999px; padding:0 10px;
       border:1px solid rgba(90,230,255,.30);
@@ -83,6 +87,7 @@
       align-items:center; gap:8px; font-size:12px; cursor:pointer;
     }
     .adminBadge.show{display:flex;}
+
     .searchWrap{max-width:var(--maxw); margin:0 auto; padding:0 14px 10px;}
     .searchBox{display:flex; align-items:center; gap:10px; border:1px solid var(--border); background:var(--surface);
       border-radius:18px; padding:10px 12px; box-shadow:var(--shadow2);}
@@ -91,16 +96,28 @@
       display:grid;place-items:center;flex:0 0 auto;}
     .searchBox input{width:100%;border:0;outline:none;background:transparent;color:var(--text);font-size:14px;height:28px;}
     .searchBox input::placeholder{color:var(--muted2);}
+
     .sectionHead{display:flex; align-items:baseline; justify-content:space-between; margin:14px 2px 8px;}
     .sectionHead h2{margin:0;font-size:13px; letter-spacing:.9px; text-transform:uppercase; color:var(--muted);}
     .sectionHead small{color:var(--muted2); font-size:12px; white-space:nowrap;}
+
     .grid{display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px;}
     @media (max-width:340px){.grid{grid-template-columns:1fr;}}
-    .card{border-radius:var(--r24); border:1px solid var(--border); background:var(--surface); box-shadow:var(--shadow2);
-      padding:12px; min-height:182px; display:flex; flex-direction:column; gap:10px;}
+
+    .card{
+      border-radius:var(--r24); border:1px solid var(--border);
+      background:var(--surface); box-shadow:var(--shadow2);
+      padding:12px; min-height:182px;
+      display:flex; flex-direction:column; gap:10px;
+    }
     .cardTop{display:flex; align-items:flex-start; justify-content:space-between; gap:10px;}
-    .pLogo{width:46px;height:46px;border-radius:16px;border:1px solid var(--border); background:rgba(255,255,255,.06);
-      display:grid;place-items:center; overflow:hidden; flex:0 0 auto;}
+    .pLogo{
+      width:46px;height:46px;border-radius:16px;border:1px solid var(--border);
+      background:rgba(255,255,255,.06);
+      display:grid;place-items:center; overflow:hidden; flex:0 0 auto;
+      font-weight:900; color:rgba(255,255,255,.92);
+    }
+    [data-theme="light"] .pLogo{color:rgba(11,16,32,.92);}
     .pLogo img{width:100%; height:100%; object-fit:cover;}
     .pill{font-size:11px;padding:4px 9px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--muted);}
     .pName{margin:0;font-size:14px;}
@@ -108,12 +125,22 @@
     .cardFooter{margin-top:auto; display:flex; gap:8px;}
     .cardFooter .btn{width:100%; justify-content:center;}
 
-    .overlay{position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:flex-end; justify-content:center;
-      padding:12px 12px calc(12px + env(safe-area-inset-bottom)); z-index:50;}
+    /* Modal / overlays (no blending with background) */
+    .overlay{
+      position:fixed; inset:0; background:rgba(0,0,0,.55);
+      display:none; align-items:flex-end; justify-content:center;
+      padding:12px 12px calc(12px + env(safe-area-inset-bottom));
+      z-index:50;
+    }
     [data-theme="light"] .overlay{background:rgba(10,14,26,.28);}
     .overlay.open{display:flex;}
-    .modal{width:100%; max-width:560px; border-radius:26px; border:1px solid var(--border); background:var(--panel);
-      box-shadow:var(--shadow); overflow:hidden;}
+    .modal{
+      width:100%; max-width:560px;
+      border-radius:26px; border:1px solid var(--border);
+      background:var(--panel);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
     .modalHead{display:flex; align-items:center; justify-content:space-between; padding:12px; border-bottom:1px solid var(--border);
       background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0));}
     .modalTitle{display:flex; align-items:center; gap:10px; min-width:0;}
@@ -122,11 +149,13 @@
     .modalBody{padding:12px; display:grid; gap:12px;}
     .label{font-size:12px;color:var(--muted);}
     .hint{margin:0;font-size:12px; line-height:1.4; color:var(--muted2);}
+
     .seg{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px;}
     .segBtn{height:46px;border-radius:16px;border:1px solid var(--border); background:rgba(255,255,255,.04);
       color:var(--text); cursor:pointer; display:grid; place-items:center; font-size:13px; padding:6px; text-align:center;}
     .segBtn.active{border-color:rgba(90,230,255,.38); background:linear-gradient(135deg, rgba(90,230,255,.12), rgba(124,92,255,.10));
       box-shadow:0 0 0 3px rgba(90,230,255,.06) inset;}
+
     input, textarea{
       border:1px solid var(--border); outline:none;
       background:rgba(255,255,255,.04);
@@ -188,6 +217,16 @@
     .rowLeft small{display:block; font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:520px;}
     .rowActions{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;}
 
+    .previewLogo{
+      width:64px; height:64px; border-radius:18px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.04);
+      overflow:hidden;
+      display:grid; place-items:center;
+      font-weight:900;
+    }
+    .previewLogo img{width:100%; height:100%; object-fit:cover;}
+
     .toast{
       position:fixed; left:50%; bottom:calc(14px + env(safe-area-inset-bottom));
       transform:translateX(-50%);
@@ -203,17 +242,9 @@
     }
     [data-theme="light"] .toast{background:rgba(11,16,32,.78);}
     .toast.open{display:block;}
-
-    .previewLogo{
-      width:64px; height:64px; border-radius:18px;
-      border:1px solid var(--border);
-      background:rgba(255,255,255,.04);
-      overflow:hidden;
-      display:grid; place-items:center;
-    }
-    .previewLogo img{width:100%; height:100%; object-fit:cover;}
   </style>
 </head>
+
 <body data-theme="dark">
   <div class="safe">
     <div class="appbar">
@@ -245,9 +276,10 @@
         <h2>Каталог</h2>
         <small id="countLabel">—</small>
       </div>
+
       <div class="grid" id="grid"></div>
 
-      <!-- ADMIN -->
+      <!-- ADMIN PANEL (only admin sees it) -->
       <div class="adminPanel" id="adminPanel">
         <div class="adminTop">
           <div style="display:flex;flex-direction:column;gap:2px;">
@@ -255,7 +287,7 @@
             <small id="adminHint" style="font-size:12px;color:var(--muted);">—</small>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
-            <button class="btn" id="btnApiTest">✅ Проверить админ-API</button>
+            <button class="btn" id="btnApiTest">✅ Проверить API</button>
             <button class="btn" id="btnAdminCollapse">Свернуть</button>
           </div>
         </div>
@@ -276,7 +308,7 @@
             </div>
             <div style="height:10px;"></div>
             <div id="adminOrdersList"></div>
-            <p class="hint">Оплата подтверждается вручную (пока). Позже подключим YooMoney webhook — будет автоматически.</p>
+            <p class="hint">Позже подключим YooMoney webhook — заявки будут автоматически переходить в paid.</p>
           </div>
 
           <div id="panelProducts" style="display:none;">
@@ -289,19 +321,15 @@
           </div>
 
           <div id="panelSettings" style="display:none;">
-            <p class="hint">
-              Секреты (service_role, bot token) — только в Edge Functions → Secrets. В HTML их не хранить.
-            </p>
-            <p class="hint">
-              Если ловишь “Invalid initData hash”, значит токен бота не тот. Временно можно поставить секрет SKIP_INITDATA_VERIFY=1.
-            </p>
+            <p class="hint">Секреты (service_role и bot token) хранятся только в Supabase → Edge Functions → Secrets.</p>
+            <p class="hint">Если видишь “Invalid initData hash” — токен бота не совпадает с ботом, который открывает Mini App. Временно можно включить SKIP_INITDATA_VERIFY=1.</p>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Product modal -->
+  <!-- PRODUCT MODAL -->
   <div class="overlay" id="overlay">
     <div class="modal">
       <div class="modalHead">
@@ -316,16 +344,19 @@
       </div>
       <div class="modalBody">
         <p class="hint" id="mDesc">—</p>
+
         <div>
           <div class="label">План</div>
           <div class="seg" id="mPlans"></div>
         </div>
+
         <button class="btn primary" id="mPay">Оплатить</button>
+        <p class="hint" id="mPayHint"></p>
       </div>
     </div>
   </div>
 
-  <!-- Product editor modal (admin) -->
+  <!-- PRODUCT EDITOR (ADMIN) -->
   <div class="overlay" id="formOverlay">
     <div class="modal">
       <div class="modalHead">
@@ -344,7 +375,7 @@
           <div class="previewLogo" id="logoPreview">LOGO</div>
           <div style="display:flex;flex-direction:column;gap:8px;flex:1;">
             <button class="btn" id="btnUploadLogo">⬆️ Загрузить логотип</button>
-            <small class="hint">Файл загрузится в Supabase Storage и ссылка сохранится в товар.</small>
+            <small class="hint">Файл уйдёт в Supabase Storage и ссылка сохранится в товар.</small>
           </div>
           <input id="logoFile" type="file" accept="image/*" style="display:none;" />
         </div>
@@ -374,13 +405,13 @@
             <button class="btn danger" id="fDelete" style="display:none;">Удалить</button>
           </div>
 
-          <p class="hint">Slug скрыт и создаётся автоматически. Редактировать его не нужно.</p>
+          <p class="hint">Slug скрыт и создаётся автоматически. Вручную вводить не нужно.</p>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Send material modal -->
+  <!-- SEND MATERIAL (ADMIN) -->
   <div class="overlay" id="msgOverlay">
     <div class="modal">
       <div class="modalHead">
@@ -410,16 +441,28 @@
   <div class="toast" id="toast"></div>
 
   <script>
+    /**
+     * CONFIG
+     * - SUPABASE_ANON_KEY: берёшь в Supabase → Settings → API
+     * - YOOMONEY_WALLET: номер кошелька YooMoney (потом вставишь)
+     */
     const CONFIG = {
-      SUPABASE_URL: "https://cilnfljlyubwhooxuuob.supabase.co",
+      SUPABASE_URL: "PASTE_SUPABASE_URL_HERE",
       SUPABASE_ANON_KEY: "PASTE_SUPABASE_ANON_KEY_HERE",
       ADMIN_TELEGRAM_ID: 5017229451,
-      YOOMONEY_WALLET: "PASTE_YOOMONEY_WALLET_HERE",
+
+      // YooMoney (RUB)
+      // Вставишь позже. Пока можно оставить пустым — тогда оплата будет показывать подсказку.
+      YOOMONEY_WALLET: "",
+
+      // Сообщение, которое админ отправляет после оплаты/подтверждения + материала
       PAID_MESSAGE:
         "Спасибо! Оплату получили ✅\n" +
         "Мы запускаем создание вашего аккаунта — обычно это занимает от 30 минут до 2 часов.\n" +
         "В редких случаях процесс может занять до 3 дней. Мы напишем вам сразу, как всё будет готово."
     };
+
+    const PLAN_LABELS = { "1m":"1 месяц", "6m":"6 месяцев", "12m":"12 месяцев" };
 
     const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
     const getTelegramUser = () => { try{ return tg?.initDataUnsafe?.user || null; }catch(e){ return null; } };
@@ -445,6 +488,7 @@
       mDesc: document.getElementById("mDesc"),
       mPlans: document.getElementById("mPlans"),
       mPay: document.getElementById("mPay"),
+      mPayHint: document.getElementById("mPayHint"),
 
       tabOrders: document.getElementById("tabOrders"),
       tabProducts: document.getElementById("tabProducts"),
@@ -489,20 +533,26 @@
       toast: document.getElementById("toast")
     };
 
-    const PLAN_LABELS = { "1m":"1 месяц", "6m":"6 месяцев", "12m":"12 месяцев" };
-
     const state = {
       products: [],
-      view: [],
       modalOpen:false,
       isAdmin:false,
       adminOpen:false,
       activeTab:"orders",
       ordersFilter:"all",
       orders: [],
-      // editor state
-      editingSlug: null,
-      editingLogoUrl: ""
+
+      // product modal state
+      currentProduct:null,
+      selectedPlan:"1m",
+
+      // editor
+      editingSlug:null,
+      editingLogoUrl:"",
+
+      // send material
+      msgOrderId:null,
+      msgUserId:null
     };
 
     function toast(msg){
@@ -511,13 +561,26 @@
       clearTimeout(toast._t);
       toast._t = setTimeout(()=> el.toast.classList.remove("open"), 2200);
     }
-
     function setTheme(theme){ document.body.setAttribute("data-theme", theme); }
-    function formatRUB(n){ const v = Number(n||0); return "₽" + v.toLocaleString("ru-RU"); }
     function escapeHtml(s){ return String(s ?? "").replace(/[<>&'"]/g, c => ({ "<":"&lt;","&":"&amp;",">":"&gt;","'":"&apos;",'"':"&quot;" }[c])); }
-    function minPlanPriceRub(p){ return Math.min(...(p.plans||[]).map(x => Number(x.price_rub||0))); }
-    function supabaseConfigured(){ return CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY && !CONFIG.SUPABASE_ANON_KEY.includes("PASTE_"); }
+    function formatRUB(n){ const v = Number(n||0); return "₽" + v.toLocaleString("ru-RU"); }
+    function supabaseConfigured(){
+      return CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY &&
+             !CONFIG.SUPABASE_URL.includes("https://cilnfljlyubwhooxuuob.supabase.co") &&
+             !CONFIG.SUPABASE_ANON_KEY.includes("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpbG5mbGpseXVid2hvb3h1dW9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExMjMyNDIsImV4cCI6MjA4NjY5OTI0Mn0.030FmUuyL6Ht-C4WlEvA0jL29rvx_m1JH8rQ1V8W6oQ");
+    }
+    function isAdminNow(){
+      const u = getTelegramUser();
+      return !!u && u.id === CONFIG.ADMIN_TELEGRAM_ID;
+    }
+    function initials(name){
+      const s = String(name||"").trim();
+      if(!s) return "AI";
+      const parts = s.split(/\s+/).slice(0,2);
+      return parts.map(x=>x[0]?.toUpperCase()).join("") || "AI";
+    }
 
+    // ===== Supabase REST (public read catalog) =====
     async function sbFetch(path, { method="GET", body=null, headers={} } = {}){
       const base = CONFIG.SUPABASE_URL.replace(/\/$/,"") + "/rest/v1/";
       const url = base + path;
@@ -537,7 +600,8 @@
       return json;
     }
 
-    async function adminApi(action, payload = {}){
+    // ===== Edge Function API =====
+    async function api(action, payload = {}){
       if(!supabaseConfigured()) throw new Error("Supabase не настроен");
       const url = CONFIG.SUPABASE_URL.replace(/\/$/,"") + "/functions/v1/admin-api";
       const initData = getInitData();
@@ -561,11 +625,7 @@
       return json;
     }
 
-    function isAdminNow(){
-      const u = getTelegramUser();
-      return !!u && u.id === CONFIG.ADMIN_TELEGRAM_ID;
-    }
-
+    // ===== Telegram init =====
     function initTelegram(){
       if(!tg) return;
       try{ tg.ready(); tg.expand(); }catch(e){}
@@ -578,8 +638,8 @@
       }catch(e){}
     }
 
+    // ===== Catalog loading =====
     async function loadProducts(){
-      if(!supabaseConfigured()) throw new Error("Вставь SUPABASE_ANON_KEY в CONFIG");
       const select = encodeURIComponent("slug,name,description,logo_url,is_active,product_plans(duration,price_rub)");
       const rows = await sbFetch(`products?select=${select}&is_active=eq.true`, { method:"GET" });
 
@@ -593,6 +653,11 @@
       }));
     }
 
+    function minPlanPriceRub(p){
+      const prices = (p.plans||[]).map(x => Number(x.price_rub||0)).filter(Boolean);
+      return prices.length ? Math.min(...prices) : 0;
+    }
+
     function renderCatalog(){
       const query = (el.q.value || "").trim().toLowerCase();
       const list = query
@@ -602,17 +667,19 @@
           )
         : state.products;
 
-      state.view = list;
       el.countLabel.textContent = `${list.length} товаров`;
 
       el.grid.innerHTML = list.map(p => {
         const from = minPlanPriceRub(p);
-        const logo = p.logo_url ? `<img src="${p.logo_url}" alt="${escapeHtml(p.name)}">` : "";
+        const logo = p.logo_url
+          ? `<img src="${p.logo_url}" alt="${escapeHtml(p.name)}">`
+          : `<span>${escapeHtml(initials(p.name))}</span>`;
+
         return `
           <div class="card">
             <div class="cardTop">
               <div class="pLogo">${logo}</div>
-              <div class="pill">от ${formatRUB(from)}</div>
+              <div class="pill">${from ? ("от " + formatRUB(from)) : "цена по запросу"}</div>
             </div>
             <div>
               <h3 class="pName">${escapeHtml(p.name)}</h3>
@@ -630,53 +697,130 @@
       });
     }
 
-    function openModal(id){
-      const p = state.products.find(x => x.id === id);
+    // ===== Product modal =====
+    function openModal(slug){
+      const p = state.products.find(x => x.id === slug);
       if(!p) return;
+
+      state.currentProduct = p;
+      state.selectedPlan = (p.plans?.[0]?.duration) || "1m";
       state.modalOpen = true;
 
       try{ tg && tg.BackButton.show(); }catch(e){}
-      el.mLogo.innerHTML = p.logo_url ? `<img src="${p.logo_url}" alt="${escapeHtml(p.name)}" style="width:100%;height:100%;object-fit:cover;">` : "";
+
+      el.mLogo.innerHTML = p.logo_url
+        ? `<img src="${p.logo_url}" alt="${escapeHtml(p.name)}" style="width:100%;height:100%;object-fit:cover;">`
+        : `<span>${escapeHtml(initials(p.name))}</span>`;
+
       el.mName.textContent = p.name;
-      el.mFrom.textContent = "от " + formatRUB(minPlanPriceRub(p));
+      const from = minPlanPriceRub(p);
+      el.mFrom.textContent = from ? ("от " + formatRUB(from)) : "—";
       el.mDesc.textContent = p.description || "";
+      el.mPayHint.textContent = "";
 
-      let selected = (p.plans && p.plans[0]) ? p.plans[0] : null;
+      renderPlans();
+      updatePayButton();
 
+      el.overlay.classList.add("open");
+    }
+
+    function renderPlans(){
+      const p = state.currentProduct;
       el.mPlans.innerHTML = (p.plans||[]).map(pl => `
-        <div class="segBtn ${selected && pl.duration === selected.duration ? "active" : ""}" data-plan="${pl.duration}">
+        <div class="segBtn ${pl.duration === state.selectedPlan ? "active" : ""}" data-plan="${pl.duration}">
           ${PLAN_LABELS[pl.duration] || pl.duration}<br>
           <small style="color:var(--muted);font-size:12px;">${formatRUB(pl.price_rub)}</small>
         </div>
       `).join("");
 
-      const setPay = () => {
-        if(!selected) el.mPay.textContent = "Оплатить";
-        else el.mPay.textContent = `Оплатить ${formatRUB(selected.price_rub)}`;
-      };
-      setPay();
-
       el.mPlans.querySelectorAll("[data-plan]").forEach(node => {
         node.addEventListener("click", () => {
-          const dur = node.getAttribute("data-plan");
-          selected = (p.plans||[]).find(x => x.duration === dur) || selected;
+          state.selectedPlan = node.getAttribute("data-plan");
           el.mPlans.querySelectorAll(".segBtn").forEach(x => x.classList.remove("active"));
           node.classList.add("active");
-          setPay();
+          updatePayButton();
         });
       });
+    }
 
-      el.overlay.classList.add("open");
+    function updatePayButton(){
+      const p = state.currentProduct;
+      const pl = (p.plans||[]).find(x => x.duration === state.selectedPlan);
+      const amount = Number(pl?.price_rub || 0);
+      el.mPay.textContent = amount ? `Оплатить ${formatRUB(amount)}` : "Оплатить";
     }
 
     function closeModal(){
       state.modalOpen = false;
+      state.currentProduct = null;
       el.overlay.classList.remove("open");
       try{ tg && tg.BackButton.hide(); }catch(e){}
     }
 
     el.mClose.addEventListener("click", closeModal);
     el.overlay.addEventListener("click", (e) => { if(e.target === el.overlay) closeModal(); });
+
+    // YooMoney link builder (RUB)
+    function buildYooMoneyLink({ wallet, amount, label, target }) {
+      // Документация YooMoney Quickpay:
+      // receiver = wallet
+      // label = unique label (we use payment_label)
+      // sum = amount in RUB
+      // quickpay-form=shop
+      // targets = description
+      const u = new URL("https://yoomoney.ru/quickpay/confirm.xml");
+      u.searchParams.set("receiver", wallet);
+      u.searchParams.set("quickpay-form", "shop");
+      u.searchParams.set("targets", target);
+      u.searchParams.set("label", label);
+      u.searchParams.set("sum", String(amount));
+      u.searchParams.set("paymentType", "AC"); // card
+      return u.toString();
+    }
+
+    // BUY flow: create_order via Edge Function (secure), then open YooMoney link
+    el.mPay.addEventListener("click", async () => {
+      try{
+        const p = state.currentProduct;
+        if(!p) return;
+
+        if(!CONFIG.YOOMONEY_WALLET){
+          el.mPayHint.textContent = "Админ ещё не указал YooMoney кошелёк. Оплата временно недоступна.";
+          return;
+        }
+
+        // 1) create order (server computes price)
+        const res = await api("create_order", {
+          product_slug: p.id,
+          plan_duration: state.selectedPlan
+        });
+
+        const order = res.order;
+        const amount = Number(order.amount_rub);
+        const target = `AI MARKET: ${order.product_name} · ${PLAN_LABELS[order.plan_duration] || order.plan_duration}`;
+
+        // 2) open payment link
+        const link = buildYooMoneyLink({
+          wallet: CONFIG.YOOMONEY_WALLET,
+          amount,
+          label: order.payment_label,
+          target
+        });
+
+        try{
+          if(tg && tg.openLink) tg.openLink(link);
+          else window.open(link, "_blank");
+        }catch(e){
+          window.open(link, "_blank");
+        }
+
+        el.mPayHint.textContent = "Ссылка на оплату открыта. После оплаты вернитесь в чат — админ подтвердит заявку.";
+        toast("Создана заявка · ожидаем оплату");
+
+      }catch(e){
+        alert("Ошибка: " + e.message);
+      }
+    });
 
     // ===== Admin panel =====
     function openTab(tab){
@@ -700,7 +844,6 @@
       el.adminPanel.classList.remove("show");
     }
 
-    // Админ-бейдж кликается и всегда работает (без перезапуска)
     el.adminBadge.addEventListener("click", async () => {
       if(!state.isAdmin) return;
       if(state.adminOpen) hideAdminPanel();
@@ -710,7 +853,6 @@
         if(state.activeTab === "products") renderAdminProducts();
       }
     });
-
     el.btnAdminCollapse.addEventListener("click", () => {
       if(!state.isAdmin) return;
       hideAdminPanel();
@@ -722,14 +864,14 @@
 
     el.btnApiTest.addEventListener("click", async () => {
       try{
-        const res = await adminApi("whoami", {});
-        toast(`Admin API OK · userId=${res.userId} · skipVerify=${res.skipVerify}`);
+        const res = await api("whoami", {});
+        toast(`API OK · userId=${res.telegram_user_id} · skipVerify=${res.skipVerify}`);
       }catch(e){
-        alert("Admin API ошибка: " + e.message);
+        alert("API ошибка: " + e.message);
       }
     });
 
-    // ===== Orders =====
+    // ===== Orders (admin) =====
     function renderOrders(){
       const list = state.orders || [];
       if(!list.length){
@@ -740,14 +882,16 @@
       el.adminOrdersList.innerHTML = list.map(o => {
         const st = escapeHtml(o.status);
         const badge = st === "paid" ? "✅ paid" : (st === "pending" ? "🕘 pending" : st);
-        const title = `${o.product_name || o.product_slug} · ${PLAN_LABELS[o.plan_duration] || o.plan_duration} · ${formatRUB(o.amount_rub)}`;
+        const title = `${o.product_slug} · ${PLAN_LABELS[o.plan_duration] || o.plan_duration} · ${formatRUB(o.amount_rub)}`;
         const meta = `user: ${o.telegram_user_id} · ${new Date(o.created_at).toLocaleString("ru-RU")}`;
+        const label = o.payment_label ? ` · label: ${o.payment_label}` : "";
+
         return `
           <div class="row">
             <div class="rowLeft">
               <div style="min-width:0;">
                 <b>${badge} — ${escapeHtml(title)}</b>
-                <small>${escapeHtml(meta)}</small>
+                <small>${escapeHtml(meta + label)}</small>
               </div>
             </div>
             <div class="rowActions">
@@ -763,7 +907,7 @@
           const id = b.getAttribute("data-paid");
           if(!confirm("Отметить заявку как PAID?")) return;
           try{
-            await adminApi("set_status", { orderId:id, status:"paid" });
+            await api("set_status", { orderId:id, status:"paid" });
             toast("Статус обновлён");
             await loadOrders();
           }catch(e){ alert("Ошибка: " + e.message); }
@@ -771,15 +915,13 @@
       });
 
       el.adminOrdersList.querySelectorAll("[data-send]").forEach(b => {
-        b.addEventListener("click", () => {
-          openMsg(b.getAttribute("data-send"), b.getAttribute("data-user"));
-        });
+        b.addEventListener("click", () => openMsg(b.getAttribute("data-send"), b.getAttribute("data-user")));
       });
     }
 
     async function loadOrders(){
       try{
-        const res = await adminApi("list_orders", { filter: state.ordersFilter });
+        const res = await api("list_orders", { filter: state.ordersFilter });
         state.orders = res.orders || [];
         renderOrders();
       }catch(e){
@@ -796,7 +938,7 @@
     function renderAdminProducts(){
       el.adminProductsList.innerHTML = state.products.map(p => {
         const from = minPlanPriceRub(p);
-        const logo = p.logo_url ? `<img src="${p.logo_url}" alt="${escapeHtml(p.name)}">` : "";
+        const logo = p.logo_url ? `<img src="${p.logo_url}" alt="${escapeHtml(p.name)}">` : `<span>${escapeHtml(initials(p.name))}</span>`;
         return `
           <div class="row">
             <div class="rowLeft">
@@ -821,13 +963,12 @@
     el.btnReloadCatalog.addEventListener("click", async () => {
       await loadProducts();
       renderCatalog();
-      renderAdminProducts();
+      if(state.isAdmin) renderAdminProducts();
       toast("Каталог обновлён");
     });
-
     el.btnAddProduct.addEventListener("click", () => openForm(null));
 
-    // ===== Product editor (slug hidden) =====
+    // ===== Product editor (admin) =====
     function setLogoPreview(url){
       state.editingLogoUrl = url || "";
       el.logoPreview.innerHTML = url ? `<img src="${url}" alt="logo">` : "LOGO";
@@ -851,7 +992,7 @@
         return;
       }
 
-      state.editingSlug = product.id; // внутренний slug
+      state.editingSlug = product.id;
       el.fTitle.textContent = "Редактирование";
       el.fDelete.style.display = "inline-flex";
       el.fName.value = product.name || "";
@@ -869,18 +1010,16 @@
     el.fClose.addEventListener("click", closeForm);
     el.formOverlay.addEventListener("click", (e)=>{ if(e.target === el.formOverlay) closeForm(); });
 
-    // Upload logo -> Storage via Edge Function
+    // Upload logo (admin)
     el.btnUploadLogo.addEventListener("click", () => el.logoFile.click());
-
     el.logoFile.addEventListener("change", async () => {
       const file = el.logoFile.files && el.logoFile.files[0];
       if(!file) return;
-
       const reader = new FileReader();
       reader.onload = async () => {
         try{
-          const fileBase64 = reader.result; // data:image/...;base64,...
-          const res = await adminApi("upload_logo", {
+          const fileBase64 = reader.result;
+          const res = await api("upload_logo", {
             fileBase64,
             mime: file.type || "image/png",
             originalName: file.name || "logo.png"
@@ -901,18 +1040,16 @@
         const price_1m = Number(el.p1.value || 0);
         const price_6m = Number(el.p6.value || 0);
         const price_12m = Number(el.p12.value || 0);
-
         if(!name){ alert("Заполни Название"); return; }
 
-        const payload = {
-          slug: state.editingSlug, // может быть null для нового — slug создастся автоматически
-          name, description,
+        await api("upsert_product", {
+          slug: state.editingSlug, // null -> auto slug
+          name,
+          description,
           logo_url: state.editingLogoUrl || "",
           is_active: true,
           price_1m, price_6m, price_12m
-        };
-
-        const res = await adminApi("upsert_product", payload);
+        });
 
         toast("Сохранено");
         closeForm();
@@ -931,7 +1068,7 @@
         if(!state.editingSlug) return;
         if(!confirm("Удалить товар?")) return;
 
-        await adminApi("delete_product", { slug: state.editingSlug });
+        await api("delete_product", { slug: state.editingSlug });
         toast("Удалено");
         closeForm();
 
@@ -944,7 +1081,7 @@
       }
     });
 
-    // ===== Send material =====
+    // ===== Send material modal =====
     function openMsg(orderId, userId){
       state.msgOrderId = orderId;
       state.msgUserId = Number(userId);
@@ -966,7 +1103,7 @@
       const text = el.msgText.value.trim();
       if(!text){ alert("Вставь материал"); return; }
       try{
-        await adminApi("send_material", {
+        await api("send_material", {
           orderId: state.msgOrderId,
           userId: state.msgUserId,
           materialText: text,
@@ -989,6 +1126,11 @@
 
     async function boot(){
       initTelegram();
+
+      if(!supabaseConfigured()){
+        alert("Вставь SUPABASE_URL и SUPABASE_ANON_KEY в CONFIG");
+        return;
+      }
 
       state.isAdmin = isAdminNow();
       if(state.isAdmin){
