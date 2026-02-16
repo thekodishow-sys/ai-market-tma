@@ -546,12 +546,12 @@
      * ⚠️ НИКОГДА не вставляй service_role сюда. Он хранится только в Edge Functions → Secrets.
      */
     const CONFIG = {
-      SUPABASE_URL: "https://cilnfljlyubwhooxuuob.supabase.co",
-      SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpbG5mbGpseXVid2hvb3h1dW9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExMjMyNDIsImV4cCI6MjA4NjY5OTI0Mn0.030FmUuyL6Ht-C4WlEvA0jL29rvx_m1JH8rQ1V8W6oQ",
+      SUPABASE_URL: "PASTE_SUPABASE_URL_HERE",
+      SUPABASE_ANON_KEY: "PASTE_SUPABASE_ANON_KEY_HERE",
       ADMIN_TELEGRAM_ID: 5017229451,
 
       // YooMoney (RUB) — можно оставить пустым, тогда оплата будет недоступна
-      YOOMONEY_WALLET: "4100117762416009",
+      YOOMONEY_WALLET: "",
 
       // Сообщение, которое админ отправляет вместе с данными
       PAID_MESSAGE:
@@ -1593,13 +1593,26 @@ el.cabTabReviews.addEventListener("click", ()=> openCabTab("reviews"));
       const uname = u?.username ? ("@" + u.username) : (u?.first_name || "Пользователь");
       el.cabSub.textContent = `Вы: ${uname} · id: ${u?.id || "—"}`;
 
-      state.isAdmin = isAdminNow();
-      if(state.isAdmin){
-        el.adminBadge.classList.add("show");
-        el.adminHint.textContent = `Вы вошли как админ (${getTelegramUser().id})`;
-        showAdminPanel();
-        await loadOrders();
+      state.isAdmin = false;
+      try{
+        // Серверная проверка (админ ID хранится в Supabase Secrets)
+        const who = await api("whoami", {});
+        state.me = who;
+        state.isAdmin = !!who?.isAdmin;
+        // настройки (кнопка “Отзывы”) тоже приходят из whoami
+        if(who?.settings) state.settings = who.settings;
+
+        if(state.isAdmin){
+          el.adminBadge.classList.add("show");
+          el.adminHint.textContent = `Вы вошли как админ (${who.telegram_user_id})`;
+          showAdminPanel();
+          await loadOrders();
+        }
+      }catch(e){
+        // если открыли не из Telegram или нет доступа к Edge Function — админка просто не показывается
+        state.isAdmin = false;
       }
+
 
       // reviews visibility
       applyReviewsVisibility();
