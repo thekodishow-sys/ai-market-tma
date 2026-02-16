@@ -2,518 +2,602 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>AI MARKET</title>
+
+  <!-- Telegram Mini App SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
+  <!-- Supabase JS (для каталога) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
-    /* --- Corporate / Fintech minimal --- */
     :root{
-      --maxw: 980px; --tap: 40px;
-      --r16:16px; --r20:20px; --r24:24px;
-      --bg:#070A12; --bg2:#0A1022;
-      --panel:rgba(12,16,32,.94);
-      --surface:rgba(255,255,255,.06);
-      --surface2:rgba(255,255,255,.04);
-      --border:rgba(255,255,255,.10);
-      --text:rgba(255,255,255,.92);
-      --muted:rgba(255,255,255,.66);
-      --muted2:rgba(255,255,255,.48);
-      --shadow:0 14px 36px rgba(0,0,0,.44);
-      --shadow2:0 8px 18px rgba(0,0,0,.34);
-      --accent:#5AE6FF; --accent2:#7C5CFF;
-      --danger:#FF4D6D;
-      --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans", sans-serif;
-    }
-    [data-theme="light"]{
-      --bg:#F6F7FB; --bg2:#EEF1FB;
-      --panel:rgba(255,255,255,.98);
-      --surface:rgba(255,255,255,.86);
-      --surface2:rgba(255,255,255,.64);
-      --border:rgba(11,16,32,.10);
-      --text:rgba(11,16,32,.92);
-      --muted:rgba(11,16,32,.66);
-      --muted2:rgba(11,16,32,.48);
-      --shadow:0 14px 36px rgba(20,30,60,.12);
-      --shadow2:0 8px 18px rgba(20,30,60,.10);
-      --accent:#0EA5E9; --accent2:#6D28D9;
-      --danger:#E11D48;
-    }
-    *{box-sizing:border-box;}
-    html,body{height:100%;}
-    body{
-      margin:0; font-family:var(--font);
-      background:
-        radial-gradient(900px 620px at 18% -10%, rgba(90,230,255,.16), transparent 60%),
-        radial-gradient(860px 620px at 112% 10%, rgba(124,92,255,.14), transparent 58%),
-        linear-gradient(180deg, var(--bg), var(--bg2));
-      color:var(--text);
+      --bg:#070b16;
+      --bg2:#0b1130;
+      --card: rgba(255,255,255,.06);
+      --card2: rgba(255,255,255,.09);
+      --border: rgba(255,255,255,.10);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.62);
+      --accent1:#4fd1ff;
+      --accent2:#8b5cf6;
+      --danger:#ff4d4d;
+      --ok:#2dd4bf;
+      --shadow: 0 20px 60px rgba(0,0,0,.55);
+      --radius: 18px;
+      --radius2: 24px;
+      --h: 56px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
-    .safe{padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0; min-height:100%;}
-    .container{max-width:var(--maxw); margin:0 auto; padding:12px 14px 24px;}
 
-    .appbar{position:sticky; top:0; z-index:20; padding-top:env(safe-area-inset-top);
-      background:linear-gradient(180deg, rgba(0,0,0,.28), rgba(0,0,0,0));}
-    [data-theme="light"] .appbar{background:linear-gradient(180deg, rgba(255,255,255,.88), rgba(255,255,255,0));}
-    .appbar-inner{max-width:var(--maxw); margin:0 auto; padding:10px 14px 8px; display:flex; align-items:center; justify-content:space-between; gap:10px;}
-    .brand{display:flex; align-items:center; gap:10px; user-select:none;}
-    .logoMark{width:34px;height:34px;border-radius:14px;background:linear-gradient(135deg, rgba(90,230,255,.95), rgba(124,92,255,.95));
-      box-shadow:var(--shadow2);display:grid;place-items:center;color:#050812;font-weight:900;letter-spacing:.8px;}
-    .brandText{line-height:1.1; display:flex; flex-direction:column;}
-    .brandText b{font-size:13px; letter-spacing:1px;}
-    .brandText span{font-size:12px;color:var(--muted);}
-
-    .actions{display:flex; align-items:center; gap:8px; flex-wrap:nowrap;}
-    .btn{
-      height:var(--tap); border-radius:14px; padding:0 10px;
-      border:1px solid var(--border); background:var(--surface2);
-      color:var(--text); cursor:pointer; display:flex; align-items:center; gap:8px;
-      user-select:none; -webkit-tap-highlight-color:transparent;
-      transition:transform .06s ease, background .18s ease, border-color .18s ease;
-      white-space:nowrap;
-      font-size:12px;
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      background: radial-gradient(1200px 700px at 35% 0%, rgba(79,209,255,.10), transparent 60%),
+                  radial-gradient(900px 600px at 80% 20%, rgba(139,92,246,.12), transparent 65%),
+                  linear-gradient(180deg, var(--bg), var(--bg2));
+      color: var(--text);
+      font: 14px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial;
+      overflow-x:hidden;
     }
-    .btn:active{transform:scale(.985);}
-    .btn.primary{
-      border-color:transparent;
-      background:linear-gradient(135deg, rgba(90,230,255,.95), rgba(124,92,255,.95));
-      color:#050812; font-weight:900;
+
+    .app{
+      max-width: 980px;
+      margin: 0 auto;
+      padding: calc(var(--safe-top) + 10px) 12px calc(var(--safe-bottom) + 24px);
     }
-    .btn.danger{border-color:rgba(255,77,109,.30); background:rgba(255,77,109,.10);}
 
-    .adminBadge{
-      display:none;
+    /* Header */
+    .topbar{
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding-top: var(--safe-top);
+      backdrop-filter: blur(14px);
+      background: linear-gradient(180deg, rgba(7,11,22,.92), rgba(7,11,22,.60));
+      border-bottom: 1px solid rgba(255,255,255,.06);
     }
-    .adminBadge.show{display:flex;}
-
-    .searchWrap{max-width:var(--maxw); margin:0 auto; padding:0 14px 10px;}
-    .searchBox{display:flex; align-items:center; gap:10px; border:1px solid var(--border); background:var(--surface);
-      border-radius:18px; padding:10px 12px; box-shadow:var(--shadow2);}
-    .searchIcon{width:34px;height:34px;border-radius:14px;border:1px solid var(--border);
-      background:linear-gradient(135deg, rgba(90,230,255,.16), rgba(124,92,255,.10));
-      display:grid;place-items:center;flex:0 0 auto;}
-    .searchBox input{width:100%;border:0;outline:none;background:transparent;color:var(--text);font-size:14px;height:28px;}
-    .searchBox input::placeholder{color:var(--muted2);}
-
-    .sectionHead{display:flex; align-items:baseline; justify-content:space-between; margin:14px 2px 8px;}
-    .sectionHead h2{margin:0;font-size:13px; letter-spacing:.9px; text-transform:uppercase; color:var(--muted);}
-    .sectionHead small{color:var(--muted2); font-size:12px; white-space:nowrap;}
-
-    .grid{display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px;}
-    @media (max-width:360px){.grid{grid-template-columns:1fr;}}
-
-    .card{
-      border-radius:var(--r24); border:1px solid var(--border);
-      background:var(--surface); box-shadow:var(--shadow2);
-      padding:12px; min-height:182px;
-      display:flex; flex-direction:column; gap:10px;
-    }
-    .cardTop{display:flex; align-items:flex-start; justify-content:space-between; gap:10px;}
-    .pLogo{
-      width:46px;height:46px;border-radius:16px;border:1px solid var(--border);
-      background:rgba(255,255,255,.06);
-      display:grid;place-items:center; overflow:hidden; flex:0 0 auto;
-      font-weight:900; color:rgba(255,255,255,.92);
-    }
-    [data-theme="light"] .pLogo{color:rgba(11,16,32,.92);}
-    .pLogo img{width:100%; height:100%; object-fit:cover;}
-    .pill{font-size:11px;padding:4px 9px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--muted);}
-    .pName{margin:0;font-size:14px;}
-    .pDesc{font-size:12px;color:var(--muted);line-height:1.35;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
-    .cardFooter{margin-top:auto; display:flex; gap:8px;}
-    .cardFooter .btn{width:100%; justify-content:center;}
-
-    /* Modal / overlays */
-    .overlay{
-      position:fixed; inset:0; background:rgba(0,0,0,.55);
-      display:none; align-items:flex-end; justify-content:center;
-      padding:12px 12px calc(12px + env(safe-area-inset-bottom));
-      z-index:50;
-    }
-    [data-theme="light"] .overlay{background:rgba(10,14,26,.28);}
-    .overlay.open{display:flex;}
-    .modal{
-      width:100%; max-width:560px;
-      border-radius:26px; border:1px solid var(--border);
-      background:var(--panel);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-    .modalHead{display:flex; align-items:center; justify-content:space-between; padding:12px; border-bottom:1px solid var(--border);
-      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0));}
-    .modalTitle{display:flex; align-items:center; gap:10px; min-width:0;}
-    .modalTitle b{display:block; font-size:14px; max-width:300px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-    .modalTitle small{display:block; margin-top:2px; font-size:12px; color:var(--muted);}
-    .modalBody{padding:12px; display:grid; gap:12px;}
-    .label{font-size:12px;color:var(--muted);}
-    .hint{margin:0;font-size:12px; line-height:1.4; color:var(--muted2);}
-
-    .seg{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px;}
-    .segBtn{height:46px;border-radius:16px;border:1px solid var(--border); background:rgba(255,255,255,.04);
-      color:var(--text); cursor:pointer; display:grid; place-items:center; font-size:13px; padding:6px; text-align:center;}
-    .segBtn.active{border-color:rgba(90,230,255,.38); background:linear-gradient(135deg, rgba(90,230,255,.12), rgba(124,92,255,.10));
-      box-shadow:0 0 0 3px rgba(90,230,255,.06) inset;}
-
-    input, textarea{
-      border:1px solid var(--border); outline:none;
-      background:rgba(255,255,255,.04);
-      color:var(--text);
-      border-radius:16px;
-      padding:10px 12px;
-      font-size:14px;
-    }
-    textarea{min-height:92px; resize:vertical;}
-    .prices{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px;}
-
-    /* Admin panel redesigned */
-    .adminPanel{
-      display:none;
-      margin-top:14px;
-      border-radius:24px;
-      border:1px solid var(--border);
-      background:var(--surface);
-      box-shadow:var(--shadow2);
-      overflow:hidden;
-    }
-    .adminPanel.show{display:block;}
-    .adminTop{
-      padding:12px;
-      border-bottom:1px solid var(--border);
+    .topbar-inner{
+      height: var(--h);
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:10px;
-      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0));
+      padding: 10px 12px;
     }
-    .tabs{display:flex; gap:8px; flex-wrap:wrap;}
-    .tab{
-      height:36px;border-radius:14px;padding:0 10px;
-      border:1px solid var(--border);
-      background:rgba(255,255,255,.03);
-      color:var(--muted);
-      cursor:pointer; display:flex; align-items:center;
+    .brand{
+      display:flex; align-items:center; gap:10px; min-width: 190px;
+    }
+    .brand-logo{
+      width:34px;height:34px;border-radius:12px;
+      background: rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.12);
+      display:grid; place-items:center;
+      overflow:hidden;
+      flex:0 0 auto;
+    }
+    .brand-logo img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .brand-title{
+      display:flex; flex-direction:column;
+      line-height:1.1;
+    }
+    .brand-title b{ font-size:14px; letter-spacing:.2px; }
+    .brand-title span{ font-size:12px; color:var(--muted); }
+
+    .actions{
+      display:flex; align-items:center; gap:8px;
+    }
+    .btn{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 14px;
+      cursor:pointer;
       user-select:none;
-      font-size:12px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      white-space:nowrap;
     }
-    .tab.active{
-      color:var(--text);
-      border-color:rgba(90,230,255,.30);
-      background:linear-gradient(135deg, rgba(90,230,255,.10), rgba(124,92,255,.08));
+    .btn:hover{ background: rgba(255,255,255,.09); }
+    .btn.primary{
+      border: 0;
+      background: linear-gradient(90deg, rgba(79,209,255,.95), rgba(139,92,246,.95));
+      color:#07101a;
+      font-weight:700;
     }
-    .adminBody{padding:12px; display:grid; gap:12px;}
-    .row{
-      border:1px solid var(--border);
-      border-radius:18px;
-      background:rgba(255,255,255,.03);
-      padding:10px;
+    .btn.danger{
+      border: 1px solid rgba(255,77,77,.35);
+      background: rgba(255,77,77,.10);
+      color: #ffd1d1;
+    }
+    .pill{
+      padding: 6px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    /* Search */
+    .search{
+      margin: 14px 0 12px;
       display:flex;
-      align-items:flex-start;
+      align-items:center;
+      gap:10px;
+      padding: 12px 14px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      border-radius: 18px;
+      box-shadow: 0 20px 70px rgba(0,0,0,.35);
+    }
+    .search input{
+      width:100%;
+      border:0;
+      outline:none;
+      background: transparent;
+      color: var(--text);
+      font-size: 14px;
+    }
+    .muted{ color: var(--muted); }
+
+    /* Catalog */
+    .section-title{
+      margin: 14px 0 10px;
+      font-size: 12px;
+      letter-spacing: .12em;
+      color: rgba(255,255,255,.70);
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+    .card{
+      border:1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border-radius: var(--radius2);
+      padding: 14px;
+      box-shadow: var(--shadow);
+      min-height: 132px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .card-top{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .logo{
+      width:44px;height:44px;border-radius:14px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.12);
+      overflow:hidden;
+      flex:0 0 auto;
+    }
+    .logo img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .name{ font-weight:800; font-size:14px; }
+    .sub{ color: var(--muted); font-size: 12px; margin-top: 2px; }
+    .card .buy-row{
+      display:flex;
       justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-top:auto;
+    }
+    .price{
+      font-size: 12px;
+      color: rgba(255,255,255,.75);
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      padding: 6px 10px;
+      border-radius: 999px;
+    }
+    .buy{
+      width:100%;
+      justify-content:center;
+      border:0;
+      border-radius: 16px;
+      padding: 12px 12px;
+      font-weight: 800;
+      background: linear-gradient(90deg, rgba(79,209,255,.92), rgba(139,92,246,.92));
+      color:#07101a;
+      cursor:pointer;
+    }
+
+    /* Modals */
+    .overlay{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.55);
+      z-index: 80;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+    }
+    .overlay.show{ display:flex; }
+    .modal{
+      width:min(920px, 100%);
+      max-height: min(86vh, 760px);
+      overflow:hidden;
+      border-radius: 22px;
+      border:1px solid rgba(255,255,255,.12);
+      background: linear-gradient(180deg, rgba(10,14,32,.96), rgba(10,14,32,.82));
+      box-shadow: var(--shadow);
+      display:flex;
+      flex-direction:column;
+    }
+    .modal-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 14px 16px;
+      border-bottom:1px solid rgba(255,255,255,.08);
       gap:10px;
     }
-    .rowLeft{display:flex; gap:10px; min-width:0;}
-    .rowLeft b{display:block; font-size:13px; margin-bottom:3px;}
-    .rowLeft small{display:block; font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:520px;}
-    .rowActions{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;}
-    .rowActions .btn{height:36px;border-radius:12px;}
-
-    .previewLogo{
-      width:64px; height:64px; border-radius:18px;
-      border:1px solid var(--border);
-      background:rgba(255,255,255,.04);
-      overflow:hidden;
-      display:grid; place-items:center;
-      font-weight:900;
+    .modal-title{ font-weight: 900; }
+    .modal-close{
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 12px;
+      cursor:pointer;
     }
-    .previewLogo img{width:100%; height:100%; object-fit:cover;}
+    .modal-body{
+      padding: 14px 16px;
+      overflow:auto;
+    }
+
+    .row{ display:flex; gap:12px; flex-wrap:wrap; }
+    .col{ flex:1 1 320px; }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      margin: 10px 0;
+    }
+    .field label{ font-size: 12px; color: rgba(255,255,255,.72); }
+    .field input, .field textarea, .field select{
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 12px;
+      outline:none;
+      font: inherit;
+    }
+    .field textarea{ min-height: 90px; resize: vertical; }
+
+    .tabs{ display:flex; gap:8px; margin: 8px 0 12px; flex-wrap:wrap; }
+    .tab{ padding: 8px 10px; border-radius: 999px; cursor:pointer; border:1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.05); color: var(--muted); font-size: 12px; }
+    .tab.active{ color: var(--text); background: rgba(255,255,255,.09); }
+
+    .list{ display:flex; flex-direction:column; gap:10px; }
+    .item{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      border-radius: 18px;
+      padding: 12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+    }
+    .item b{ font-size: 13px; }
+    .item small{ color: var(--muted); display:block; margin-top:2px; }
+    .item-actions{ display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+    .mini{ padding: 8px 10px; border-radius: 12px; font-size: 12px; }
+    .ok{ color: rgba(45,212,191,.95); }
+    .warn{ color: rgba(255,210,70,.95); }
 
     /* Chat */
-    .chatBox{
-      border:1px solid var(--border);
-      border-radius:18px;
-      background:rgba(255,255,255,.03);
-      padding:10px;
-      height: 52vh;
-      max-height: 480px;
+    .chat-wrap{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      height: 62vh;
+      max-height: 620px;
+    }
+    .chat-messages{
+      flex:1 1 auto;
       overflow:auto;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      border-radius: 18px;
+      padding: 12px;
       display:flex;
       flex-direction:column;
       gap:10px;
     }
     .bubble{
-      max-width:82%;
-      padding:10px 12px;
-      border-radius:18px;
-      border:1px solid var(--border);
-      background:rgba(255,255,255,.04);
-      font-size:13px;
-      line-height:1.35;
-      white-space:pre-wrap;
-      overflow-wrap:anywhere;
+      max-width: 78%;
+      padding: 10px 12px;
+      border-radius: 16px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      box-shadow: 0 12px 30px rgba(0,0,0,.25);
     }
-    .bubble.me{margin-left:auto; background:linear-gradient(135deg, rgba(90,230,255,.14), rgba(124,92,255,.10)); border-color:rgba(90,230,255,.22);}
-    .bubble .meta{display:block; margin-top:6px; font-size:11px; color:var(--muted2);}
-    .bubble img{width:100%; max-height:320px; object-fit:cover; border-radius:14px; margin-top:8px; border:1px solid var(--border);}
-    .chatInput{
+    .bubble.me{ margin-left:auto; background: rgba(79,209,255,.10); border-color: rgba(79,209,255,.20); }
+    .bubble.admin{ background: rgba(139,92,246,.10); border-color: rgba(139,92,246,.20); }
+    .bubble .meta{ font-size: 11px; color: var(--muted); margin-top: 6px; }
+    .bubble img{ max-width:100%; border-radius: 12px; display:block; border:1px solid rgba(255,255,255,.10); }
+    .chat-send{
       display:flex;
-      gap:8px;
-      align-items:center;
+      gap:10px;
+      align-items:flex-end;
     }
-    .iconBtn{
-      width:40px;
-      justify-content:center;
-      padding:0;
+    .chat-send textarea{
+      flex:1 1 auto;
+      min-height: 44px;
+      max-height: 120px;
     }
 
     .toast{
-      position:fixed; left:50%; bottom:calc(14px + env(safe-area-inset-bottom));
-      transform:translateX(-50%);
-      background:rgba(0,0,0,.72); color:#fff;
-      border:1px solid rgba(255,255,255,.16);
-      border-radius:999px;
-      padding:10px 12px;
-      font-size:12px;
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: calc(var(--safe-bottom) + 16px);
+      z-index: 200;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(10,14,32,.92);
+      box-shadow: var(--shadow);
       display:none;
-      z-index:100;
-      max-width:92vw;
-      text-align:center;
+      color: var(--text);
+      max-width: min(520px, 92vw);
     }
-    [data-theme="light"] .toast{background:rgba(11,16,32,.78);}
-    .toast.open{display:block;}
-  
-    .topbar{
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      padding-top: calc(env(safe-area-inset-top, 0px) + 8px);
-      background: linear-gradient(180deg, rgba(7,10,18,.92), rgba(7,10,18,.0));
-      backdrop-filter: blur(10px);
+    .toast.show{ display:block; }
+
+    @media (max-width: 420px){
+      .brand{ min-width: 0; }
+      .actions .btn{ padding: 9px 10px; }
+      .bubble{ max-width: 92%; }
     }
-    .topbar .actions{ display:flex; gap:10px; align-items:center; }
-    .topbar .chip{ height: 34px; }
-</style>
+  </style>
 </head>
-
-<body data-theme="dark">
-  <div class="safe">
-    <div class="appbar">
-      <div class="appbar-inner">
-        <div class="brand">
-          <div class="logoMark">AI</div>
-          <div class="brandText">
-            <b>AI MARKET</b>
-            <span>Mini App</span>
-          </div>
-        </div>
-
-        <div class="actions">
-          <button class="btn" id="btnCabinet" title="Личный кабинет">👤 Кабинет</button>
-          <button class="btn adminBadge" id="adminBadge" title="Открыть/закрыть админ панель">🛡️ Админ</button>
-          <button class="btn" id="btnTheme" title="Тема">🌓 Тема</button>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-logo" id="appLogoWrap"><span>AI</span></div>
+        <div class="brand-title">
+          <b id="appTitle">AI MARKET</b>
+          <span id="appSub">Mini App</span>
         </div>
       </div>
 
-      <div class="searchWrap">
-        <div class="searchBox">
-          <div class="searchIcon">🔎</div>
-          <input id="q" type="text" placeholder="Поиск по AI-инструментам (например: ChatGPT…)" />
-        </div>
-      </div>
-    </div>
-
-    <div class="container">
-      <div class="sectionHead">
-        <h2>Каталог</h2>
-        <small id="countLabel">—</small>
-      </div>
-
-      <div class="grid" id="grid"></div>
-
-      <!-- ADMIN PANEL -->
-      <div class="adminPanel" id="adminPanel">
-        <div class="adminTop">
-          <div style="display:flex;flex-direction:column;gap:2px;">
-            <b style="font-size:14px;">Админ панель</b>
-            <small id="adminHint" style="font-size:12px;color:var(--muted);">—</small>
-          </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
-            <button class="btn" id="btnApiTest">✅ Проверить API</button>
-            <button class="btn" id="btnAdminCollapse">Свернуть</button>
-          </div>
-        </div>
-
-        <div class="adminBody">
-          <div class="tabs">
-            <div class="tab active" id="tabOrders">Заявки</div>
-            <div class="tab" id="tabProducts">Товары</div>
-            <div class="tab" id="tabSettings">Настройки</div>
-          </div>
-
-          <div id="panelOrders">
-            <div style="display:flex;gap:10px;flex-wrap:wrap;">
-              <button class="btn" id="btnLoadOrders">⟳ Обновить</button>
-              <button class="btn" id="btnFilterAll">Все</button>
-              <button class="btn" id="btnFilterPending">Ожидают оплату</button>
-              <button class="btn" id="btnFilterProcessing">В работе</button>
-              <button class="btn" id="btnFilterDelivered">Получены</button>
-            </div>
-            <div style="height:10px;"></div>
-            <div id="adminOrdersList"></div>
-            <p class="hint">Статус “В работе” выставляется автоматически после HTTP уведомления YooMoney.</p>
-          </div>
-
-          <div id="panelProducts" style="display:none;">
-            <div style="display:flex;gap:10px;flex-wrap:wrap;">
-              <button class="btn primary" id="btnAddProduct">+ Новый товар</button>
-              <button class="btn" id="btnReloadCatalog">⟳ Обновить каталог</button>
-            </div>
-            <div style="height:10px;"></div>
-            <div id="adminProductsList"></div>
-          </div>
-
-          <div id="panelSettings" style="display:none;">
-            <p class="hint">Секреты (service_role и bot token) хранятся только в Supabase → Edge Functions → Secrets.</p>
-            <p class="hint">Если видишь “Invalid initData hash” — токен бота не совпадает с ботом, который открывает Mini App. Временно можно включить SKIP_INITDATA_VERIFY=1.</p>
-          </div>
-        </div>
+      <div class="actions">
+        <button class="btn" id="btnCabinet">Кабинет</button>
+        <button class="btn" id="btnAdmin" style="display:none">Админ</button>
+        <button class="btn" id="btnTheme">Тема</button>
       </div>
     </div>
   </div>
 
-  <!-- PRODUCT MODAL -->
-  <div class="overlay" id="overlay">
+  <div class="app">
+    <div class="search">
+      <span class="muted">🔎</span>
+      <input id="searchInput" placeholder="Поиск по AI‑инструментам (например: ChatGPT…)" />
+      <button class="btn mini" id="btnReload">Обновить</button>
+    </div>
+
+    <div class="section-title">КАТАЛОГ <span class="muted" id="catalogCount"></span></div>
+    <div class="grid" id="catalog"></div>
+  </div>
+
+  <!-- MODAL: BUY -->
+  <div class="overlay" id="buyOverlay">
     <div class="modal">
-      <div class="modalHead">
-        <div class="modalTitle">
-          <div class="pLogo" id="mLogo"></div>
-          <div style="min-width:0;">
-            <b id="mName">—</b>
-            <small id="mFrom">—</small>
+      <div class="modal-head">
+        <div class="modal-title" id="buyTitle">Покупка</div>
+        <button class="modal-close" data-close="buyOverlay">Закрыть</button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col">
+            <div class="field">
+              <label>Описание</label>
+              <div id="buyDesc" class="muted"></div>
+            </div>
+
+            <div class="field">
+              <label>План</label>
+              <select id="buyPlan"></select>
+            </div>
+
+            <div class="field">
+              <label>К оплате</label>
+              <div class="pill" id="buyPrice">—</div>
+              <div class="muted" style="margin-top:8px">После оплаты вы получите уведомление в боте. Мы начнём работу над созданием аккаунта.</div>
+            </div>
+
+            <button class="btn primary" id="btnPay">Оплатить</button>
+            <div class="muted" id="payHint" style="margin-top:10px"></div>
+          </div>
+
+          <div class="col">
+            <div class="field">
+              <label>Как это работает</label>
+              <div class="muted">
+                1) Нажимаете «Оплатить» — откроется страница YooMoney.<br/>
+                2) После успешной оплаты статус автоматически станет «В обработке».<br/>
+                3) Мы отправим данные в чат по заказу. Гарантия 10 дней после выдачи данных.
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Гарантия</label>
+              <div class="muted">
+                Если аккаунт заблокируют не по вашей вине в течение 10 дней после выдачи данных — сделаем замену бесплатно.
+              </div>
+            </div>
           </div>
         </div>
-        <button class="btn" id="mClose" style="height:36px;border-radius:12px;">✕</button>
-      </div>
-      <div class="modalBody">
-        <p class="hint" id="mDesc">—</p>
-
-        <div>
-          <div class="label">План</div>
-          <div class="seg" id="mPlans"></div>
-        </div>
-
-        <button class="btn primary" id="mPay">Оплатить</button>
-        <p class="hint" id="mPayHint"></p>
       </div>
     </div>
   </div>
 
-  <!-- CABINET -->
+  <!-- MODAL: CABINET -->
   <div class="overlay" id="cabOverlay">
     <div class="modal">
-      <div class="modalHead">
-        <div class="modalTitle">
-          <div class="logoMark" style="width:40px;height:40px;border-radius:16px;">👤</div>
-          <div style="min-width:0;">
-            <b>Личный кабинет</b>
-            <small id="cabSub">—</small>
-          </div>
-        </div>
-        <button class="btn" id="cabClose" style="height:36px;border-radius:12px;">✕</button>
+      <div class="modal-head">
+        <div class="modal-title">Личный кабинет</div>
+        <button class="modal-close" data-close="cabOverlay">Закрыть</button>
       </div>
-      <div class="modalBody">
-        <div style="display:flex;gap:10px;flex-wrap:wrap;">
-          <button class="btn" id="cabReload">⟳ Обновить</button>
-          <button class="btn" id="btnReviews" style="display:none;">⭐ Отзывы</button>
+      <div class="modal-body">
+        <div class="muted" id="meLine" style="margin-bottom:10px"></div>
+        <div class="tabs">
+          <div class="tab active" data-cabfilter="all">Все</div>
+          <div class="tab" data-cabfilter="pending">Ожидает оплаты</div>
+          <div class="tab" data-cabfilter="processing">В обработке</div>
+          <div class="tab" data-cabfilter="delivered">Заказ получен</div>
         </div>
-        <div id="cabList"></div>
-        <p class="hint">Здесь отображаются ваши покупки и статус выполнения.</p>
+        <div class="list" id="myOrders"></div>
       </div>
     </div>
   </div>
 
-  <!-- PRODUCT EDITOR (ADMIN) -->
-  <div class="overlay" id="formOverlay">
+  <!-- MODAL: ADMIN -->
+  <div class="overlay" id="adminOverlay">
     <div class="modal">
-      <div class="modalHead">
-        <div class="modalTitle">
-          <div class="logoMark" style="width:40px;height:40px;border-radius:16px;">✎</div>
-          <div style="min-width:0;">
-            <b id="fTitle">Товар</b>
-            <small style="display:block;margin-top:2px;font-size:12px;color:var(--muted);">Создание / редактирование</small>
-          </div>
-        </div>
-        <button class="btn" id="fClose" style="height:36px;border-radius:12px;">✕</button>
+      <div class="modal-head">
+        <div class="modal-title">Админ‑панель</div>
+        <button class="modal-close" data-close="adminOverlay">Закрыть</button>
       </div>
-
-      <div class="modalBody">
-        <div style="display:flex;gap:12px;align-items:center;">
-          <div class="previewLogo" id="logoPreview">LOGO</div>
-          <div style="display:flex;flex-direction:column;gap:8px;flex:1;">
-            <button class="btn" id="btnUploadLogo">⬆️ Загрузить логотип</button>
-            <small class="hint">Файл уйдёт в Supabase Storage (bucket: market).</small>
-          </div>
-          <input id="logoFile" type="file" accept="image/*" style="display:none;" />
+      <div class="modal-body">
+        <div class="tabs">
+          <div class="tab active" data-admintab="orders">Заявки</div>
+          <div class="tab" data-admintab="products">Товары</div>
+          <div class="tab" data-admintab="settings">Настройки</div>
         </div>
 
-        <div style="display:grid;gap:10px;">
-          <div style="display:flex;flex-direction:column;gap:6px;">
-            <div class="label">Название</div>
-            <input id="fName" type="text" placeholder="Например: ChatGPT" />
+        <!-- orders tab -->
+        <div id="tabOrders">
+          <div class="tabs">
+            <div class="tab active" data-orderfilter="all">Все</div>
+            <div class="tab" data-orderfilter="pending">Ожидает оплаты</div>
+            <div class="tab" data-orderfilter="processing">В обработке</div>
+            <div class="tab" data-orderfilter="delivered">Завершено</div>
+          </div>
+          <div class="row" style="align-items:center; justify-content:space-between; margin-bottom:10px">
+            <button class="btn mini" id="btnAdminReload">Обновить заявки</button>
+            <span class="muted" id="adminOrdersCount"></span>
+          </div>
+          <div class="list" id="adminOrders"></div>
+        </div>
+
+        <!-- products tab -->
+        <div id="tabProducts" style="display:none">
+          <div class="row" style="align-items:center; justify-content:space-between; margin-bottom:10px">
+            <button class="btn mini" id="btnProductsReload">Обновить товары</button>
+            <span class="muted">Логотипы загружаются в Storage bucket <b>logos</b>.</span>
           </div>
 
-          <div style="display:flex;flex-direction:column;gap:6px;">
-            <div class="label">Описание</div>
-            <textarea id="fDesc" placeholder="Краткое описание..."></textarea>
-          </div>
-
-          <div style="display:flex;flex-direction:column;gap:6px;">
-            <div class="label">Цены (RUB)</div>
-            <div class="prices">
-              <input id="p1" type="number" min="0" placeholder="1 месяц" />
-              <input id="p6" type="number" min="0" placeholder="6 месяцев" />
-              <input id="p12" type="number" min="0" placeholder="12 месяцев" />
+          <div class="card" style="margin-bottom:12px">
+            <div class="name">Добавить / обновить товар</div>
+            <div class="row">
+              <div class="col">
+                <div class="field">
+                  <label>slug (латиница, без пробелов)</label>
+                  <input id="pSlug" placeholder="chatgpt" />
+                </div>
+              </div>
+              <div class="col">
+                <div class="field">
+                  <label>Название</label>
+                  <input id="pName" placeholder="ChatGPT" />
+                </div>
+              </div>
+            </div>
+            <div class="field">
+              <label>Описание (видно только в окне «Купить»)</label>
+              <textarea id="pDesc" placeholder="Коротко о продукте..."></textarea>
+            </div>
+            <div class="row">
+              <div class="col">
+                <div class="field">
+                  <label>URL логотипа (или загрузите файл ниже)</label>
+                  <input id="pLogoUrl" placeholder="https://..." />
+                </div>
+              </div>
+              <div class="col">
+                <div class="field">
+                  <label>Загрузить логотип</label>
+                  <input id="pLogoFile" type="file" accept="image/*" />
+                  <div class="muted">После загрузки URL подставится автоматически.</div>
+                </div>
+              </div>
+            </div>
+            <div class="field">
+              <label>Планы (формат: duration=price; пример: 1m=12,6m=0,12m=0)</label>
+              <input id="pPlans" placeholder="1m=12" />
+            </div>
+            <div class="row">
+              <button class="btn primary" id="btnSaveProduct">Сохранить</button>
+              <button class="btn danger" id="btnDeleteProduct">Удалить по slug</button>
             </div>
           </div>
 
-          <div style="display:flex;gap:10px;flex-wrap:wrap;">
-            <button class="btn primary" id="fSave">Сохранить</button>
-            <button class="btn danger" id="fDelete" style="display:none;">Удалить</button>
-          </div>
-
-          <p class="hint">Slug скрыт и создаётся автоматически. Вручную вводить не нужно.</p>
+          <div class="list" id="adminProducts"></div>
         </div>
+
+        <!-- settings tab -->
+        <div id="tabSettings" style="display:none">
+          <div class="card">
+            <div class="name">Настройки оплаты и внешнего вида</div>
+            <div class="field">
+              <label>YooMoney кошелёк (пример: 4100...)</label>
+              <input id="sWallet" placeholder="4100..." />
+              <div class="muted">Нужен для формирования ссылки на оплату.</div>
+            </div>
+            <div class="field">
+              <label>URL логотипа приложения (не bot‑avatar, а обычная картинка)</label>
+              <input id="sAppLogoUrl" placeholder="https://..." />
+              <div class="muted">Можно загрузить в bucket <b>logos</b> и вставить сюда public URL.</div>
+            </div>
+            <div class="row">
+              <button class="btn primary" id="btnSaveSettings">Сохранить настройки</button>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
 
-  <!-- CHAT -->
+  <!-- MODAL: CHAT -->
   <div class="overlay" id="chatOverlay">
     <div class="modal">
-      <div class="modalHead">
-        <div class="modalTitle">
-          <div class="logoMark" style="width:40px;height:40px;border-radius:16px;">💬</div>
-          <div style="min-width:0;">
-            <b id="chatTitle">Чат</b>
-            <small id="chatSub" style="display:block;margin-top:2px;font-size:12px;color:var(--muted);">—</small>
-          </div>
-        </div>
-        <button class="btn" id="chatClose" style="height:36px;border-radius:12px;">✕</button>
+      <div class="modal-head">
+        <div class="modal-title" id="chatTitle">Чат по заказу</div>
+        <button class="modal-close" data-close="chatOverlay">Закрыть</button>
       </div>
-      <div class="modalBody">
-        <div class="chatBox" id="chatBox"></div>
-
-        <div class="chatInput">
-          <button class="btn iconBtn" id="chatAttach" title="Прикрепить">📎</button>
-          <input id="chatText" type="text" placeholder="Сообщение..." style="flex:1;" />
-          <button class="btn primary" id="chatSend" title="Отправить">Отправить</button>
-        </div>
-        <input id="chatFile" type="file" accept="image/*" style="display:none;" />
-
-        <div id="adminMaterialWrap" style="display:none;">
-          <div style="height:6px;"></div>
-          <button class="btn primary" id="btnSendMaterial">✅ Отправить данные аккаунта</button>
-          <p class="hint" id="chatHint">После отправки данных начнётся гарантия 10 дней (при блокировке не по вине пользователя — замена бесплатная).</p>
+      <div class="modal-body">
+        <div class="chat-wrap">
+          <div class="chat-messages" id="chatMessages"></div>
+          <div class="chat-send">
+            <div style="display:flex; gap:10px; align-items:center">
+              <input id="chatFile" type="file" accept="image/*" style="max-width: 210px" />
+            </div>
+            <textarea id="chatText" placeholder="Напишите сообщение..."></textarea>
+            <button class="btn primary" id="btnChatSend">Отправить</button>
+          </div>
+          <div class="muted" style="margin-top:6px">История переписки сохраняется.</div>
         </div>
       </div>
     </div>
@@ -521,934 +605,697 @@
 
   <div class="toast" id="toast"></div>
 
-  <script>
-    /**
-     * CONFIG (обязательно)
-     * - SUPABASE_URL: Supabase Project URL
-     * - SUPABASE_ANON_KEY: Supabase anon public key
-     * - ADMIN_TELEGRAM_ID: твой Telegram ID (число)
-     * - YOOMONEY_WALLET: номер кошелька YooMoney (например 4100...)
-     *
-     * OPTIONAL:
-     * - REVIEWS_ENABLED: включить кнопку "Отзывы"
-     * - REVIEWS_LINK: ссылка на чат/канал с отзывами (t.me/...)
-     */
-    const CONFIG = {
-      SUPABASE_URL: "https://cilnfljlyubwhooxuuob.supabase.co",
-      SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpbG5mbGpseXVid2hvb3h1dW9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExMjMyNDIsImV4cCI6MjA4NjY5OTI0Mn0.030FmUuyL6Ht-C4WlEvA0jL29rvx_m1JH8rQ1V8W6oQ",
-      ADMIN_TELEGRAM_ID: 5017229451,
+<script>
+/**
+ * ===========================
+ *  НАСТРОЙКИ (вставить 1 раз)
+ * ===========================
+ * 1) SUPABASE_URL и SUPABASE_ANON_KEY — берёте в Supabase → Project Settings → API
+ * 2) Edge Function URL: https://<project-ref>.supabase.co/functions/v1/admin-api
+ *    (функция должна быть задеплоена с именем "admin-api")
+ */
+const CONFIG = {
+  SUPABASE_URL: "PASTE_SUPABASE_URL_HERE",
+  SUPABASE_ANON_KEY: "PASTE_SUPABASE_ANON_KEY_HERE",
+  ADMIN_API_URL: "PASTE_SUPABASE_URL_HERE/functions/v1/admin-api",
+};
 
-      // YooMoney (RUB)
-      YOOMONEY_WALLET: "4100117762416009",
+const STATUS_RU = {
+  pending: "Ожидает оплаты",
+  processing: "В обработке",
+  delivered: "Заказ получен",
+  canceled: "Отменён",
+};
 
-      // Reviews
-      REVIEWS_ENABLED: false,
-      REVIEWS_LINK: "" // например: https://t.me/your_channel
-    };
+// ---------- STATE ----------
+const state = {
+  tg: null,
+  initData: "",
+  me: null,
+  isAdmin: false,
+  settings: { yoomoney_wallet: "", app_logo_url: "" },
 
-    const PLAN_LABELS = { "1m":"1 месяц", "6m":"6 месяцев", "12m":"12 месяцев" };
+  products: [],
+  myOrders: [],
+  adminOrders: [],
+  adminProducts: [],
 
-    const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
-    const getTelegramUser = () => { try{ return tg?.initDataUnsafe?.user || null; }catch(e){ return null; } };
-    const getInitData = () => { try{ return tg?.initData || ""; }catch(e){ return ""; } };
+  theme: "dark",
 
-    const el = {
-      btnTheme: document.getElementById("btnTheme"),
-      btnCabinet: document.getElementById("btnCabinet"),
-      btnReviews: document.getElementById("btnReviews"),
-      adminBadge: document.getElementById("adminBadge"),
-      adminPanel: document.getElementById("adminPanel"),
-      adminHint: document.getElementById("adminHint"),
-      btnAdminCollapse: document.getElementById("btnAdminCollapse"),
-      btnApiTest: document.getElementById("btnApiTest"),
+  buy: { product: null, plan: null },
+  cabinetFilter: "all",
+  orderFilter: "all",
 
-      q: document.getElementById("q"),
-      grid: document.getElementById("grid"),
-      countLabel: document.getElementById("countLabel"),
+  chat: { order: null, messages: [] },
+};
 
-      overlay: document.getElementById("overlay"),
-      mClose: document.getElementById("mClose"),
-      mLogo: document.getElementById("mLogo"),
-      mName: document.getElementById("mName"),
-      mFrom: document.getElementById("mFrom"),
-      mDesc: document.getElementById("mDesc"),
-      mPlans: document.getElementById("mPlans"),
-      mPay: document.getElementById("mPay"),
-      mPayHint: document.getElementById("mPayHint"),
+const sb = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 
-      cabOverlay: document.getElementById("cabOverlay"),
-      cabClose: document.getElementById("cabClose"),
-      cabReload: document.getElementById("cabReload"),
-      cabList: document.getElementById("cabList"),
-      cabSub: document.getElementById("cabSub"),
+// ---------- UI Helpers ----------
+const $ = (id) => document.getElementById(id);
+function toast(msg){
+  const el = $("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=>el.classList.remove("show"), 2800);
+}
 
-      tabOrders: document.getElementById("tabOrders"),
-      tabProducts: document.getElementById("tabProducts"),
-      tabSettings: document.getElementById("tabSettings"),
-      panelOrders: document.getElementById("panelOrders"),
-      panelProducts: document.getElementById("panelProducts"),
-      panelSettings: document.getElementById("panelSettings"),
+function show(id){ $(id).classList.add("show"); }
+function hide(id){ $(id).classList.remove("show"); }
 
-      btnLoadOrders: document.getElementById("btnLoadOrders"),
-      btnFilterAll: document.getElementById("btnFilterAll"),
-      btnFilterPending: document.getElementById("btnFilterPending"),
-      btnFilterProcessing: document.getElementById("btnFilterProcessing"),
-      btnFilterDelivered: document.getElementById("btnFilterDelivered"),
-      adminOrdersList: document.getElementById("adminOrdersList"),
+document.querySelectorAll("[data-close]").forEach(btn=>{
+  btn.addEventListener("click", ()=> hide(btn.getAttribute("data-close")));
+});
 
-      btnAddProduct: document.getElementById("btnAddProduct"),
-      btnReloadCatalog: document.getElementById("btnReloadCatalog"),
-      adminProductsList: document.getElementById("adminProductsList"),
+// ---------- Telegram ----------
+function initTelegram(){
+  const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+  state.tg = tg;
+  if (tg){
+    try{
+      tg.ready();
+      tg.expand();
+      state.initData = tg.initData || "";
+    }catch(e){}
+  }
+}
 
-      formOverlay: document.getElementById("formOverlay"),
-      fClose: document.getElementById("fClose"),
-      fTitle: document.getElementById("fTitle"),
-      fName: document.getElementById("fName"),
-      fDesc: document.getElementById("fDesc"),
-      p1: document.getElementById("p1"),
-      p6: document.getElementById("p6"),
-      p12: document.getElementById("p12"),
-      fSave: document.getElementById("fSave"),
-      fDelete: document.getElementById("fDelete"),
+// ---------- Edge API ----------
+async function api(action, payload = {}){
+  const res = await fetch(CONFIG.ADMIN_API_URL, {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ action, initData: state.initData, ...payload })
+  });
+  const data = await res.json().catch(()=> ({}));
+  if (!res.ok || data.ok === false){
+    throw new Error(data?.error || `HTTP ${res.status}`);
+  }
+  return data;
+}
 
-      btnUploadLogo: document.getElementById("btnUploadLogo"),
-      logoFile: document.getElementById("logoFile"),
-      logoPreview: document.getElementById("logoPreview"),
+// ---------- Catalog cache ----------
+const CACHE_KEY = "aimarket_catalog_v1";
+function loadCatalogCache(){
+  try{
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const obj = JSON.parse(raw);
+    if (!obj.ts || !obj.products) return null;
+    // cache 6 часов
+    if (Date.now() - obj.ts > 6*60*60*1000) return null;
+    return obj.products;
+  }catch{ return null; }
+}
+function saveCatalogCache(products){
+  try{ localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), products })); }catch{}
+}
 
-      chatOverlay: document.getElementById("chatOverlay"),
-      chatClose: document.getElementById("chatClose"),
-      chatTitle: document.getElementById("chatTitle"),
-      chatSub: document.getElementById("chatSub"),
-      chatBox: document.getElementById("chatBox"),
-      chatText: document.getElementById("chatText"),
-      chatSend: document.getElementById("chatSend"),
-      chatAttach: document.getElementById("chatAttach"),
-      chatFile: document.getElementById("chatFile"),
-      adminMaterialWrap: document.getElementById("adminMaterialWrap"),
-      btnSendMaterial: document.getElementById("btnSendMaterial"),
-      chatHint: document.getElementById("chatHint"),
+async function fetchCatalog(){
+  // Самое быстрое: сначала покажем cache, потом обновим сетью
+  const cached = loadCatalogCache();
+  if (cached && !state.products.length){
+    state.products = cached;
+    renderCatalog();
+  }
 
-      toast: document.getElementById("toast")
-    };
+  // products + plans через PostgREST (публичное чтение)
+  const { data, error } = await sb
+    .from("products")
+    .select("slug,name,description,logo_url,is_active,product_plans(duration,price_rub)")
+    .eq("is_active", true)
+    .order("created_at", { ascending:false });
 
-    const state = {
-      products: [],
-      modalOpen:false,
-      user:null,
-      isAdmin:false,
-      adminOpen:false,
-      activeTab:"orders",
-      ordersFilter:"all",
-      orders: [],
+  if (error) throw new Error(error.message);
 
-      // product modal state
-      currentProduct:null,
-      selectedPlan:"1m",
+  const products = (data || []).map(p=>{
+    const plans = (p.product_plans || []).map(pl=>({
+      duration: pl.duration,
+      price_rub: Number(pl.price_rub),
+    })).sort((a,b)=> (a.price_rub||0)-(b.price_rub||0));
 
-      // editor
-      editingSlug:null,
-      editingLogoUrl:"",
+    // минимальная цена для карточки
+    const min = plans.length ? Math.min(...plans.map(x=>x.price_rub||Infinity)) : null;
+    return { ...p, plans, min_price: Number.isFinite(min) ? min : null };
+  });
 
-      // cabinet
-      myOrders: [],
+  state.products = products;
+  saveCatalogCache(products);
+  renderCatalog();
+}
 
-      // chat
-      chatOrderId:null,
-      chatOrderMeta:null,
-      chatMessages: [],
-      chatImageUrl:""
-    };
+function renderCatalog(){
+  const q = ($("searchInput").value || "").trim().toLowerCase();
+  const list = state.products.filter(p=>{
+    if (!q) return true;
+    return (p.name||"").toLowerCase().includes(q) || (p.slug||"").toLowerCase().includes(q);
+  });
 
-    function toast(msg){
-      el.toast.textContent = msg;
-      el.toast.classList.add("open");
-      clearTimeout(toast._t);
-      toast._t = setTimeout(()=> el.toast.classList.remove("open"), 2200);
-    }
-    function setTheme(theme){ document.body.setAttribute("data-theme", theme); }
-    function escapeHtml(s){ return String(s ?? "").replace(/[<>&'"]/g, c => ({ "<":"&lt;","&":"&amp;",">":"&gt;","'":"&apos;",'"':"&quot;" }[c])); }
-    function formatRUB(n){ const v = Number(n||0); return "₽" + v.toLocaleString("ru-RU"); }
-    function supabaseConfigured(){
-      return CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY &&
-             !CONFIG.SUPABASE_URL.includes("PASTE_") &&
-             !CONFIG.SUPABASE_ANON_KEY.includes("PASTE_");
-    }
-    function initials(name){
-      const s = String(name||"").trim();
-      if(!s) return "AI";
-      const parts = s.split(/\s+/).slice(0,2);
-      return parts.map(x=>x[0]?.toUpperCase()).join("") || "AI";
-    }
-    function statusRu(st){
-      if(st === "pending") return "Ожидает оплаты";
-      if(st === "processing") return "В работе";
-      if(st === "delivered") return "Заказ получен";
-      if(st === "paid") return "В работе"; // legacy
-      return st;
-    }
-    function planRu(d){ return PLAN_LABELS[d] || d; }
+  $("catalogCount").textContent = `· ${list.length} товаров`;
+  const root = $("catalog");
+  root.innerHTML = "";
 
-    // ===== Supabase REST (public read catalog) =====
-    async function sbFetch(path, { method="GET", body=null, headers={} } = {}){
-      const base = CONFIG.SUPABASE_URL.replace(/\/$/,"") + "/rest/v1/";
-      const url = base + path;
-      const h = {
-        "apikey": CONFIG.SUPABASE_ANON_KEY,
-        "Authorization": "Bearer " + CONFIG.SUPABASE_ANON_KEY,
-        "Content-Type": "application/json",
-        ...headers
-      };
-      const res = await fetch(url, { method, headers:h, body: body ? JSON.stringify(body) : null, cache:"no-store" });
-      const text = await res.text();
-      let json = null; try{ json = text ? JSON.parse(text) : null; }catch(e){}
-      if(!res.ok){
-        const msg = json?.message || json?.error || text || ("HTTP " + res.status);
-        throw new Error(msg);
-      }
-      return json;
-    }
+  list.forEach(p=>{
+    const el = document.createElement("div");
+    el.className = "card";
 
-    // ===== Edge Function API =====
-    async function api(action, payload = {}){
-      if(!supabaseConfigured()) throw new Error("Supabase не настроен");
-      const url = CONFIG.SUPABASE_URL.replace(/\/$/,"") + "/functions/v1/admin-api";
-      const initData = getInitData();
-      if(!initData) throw new Error("Открой Mini App внутри Telegram Desktop/Mobile");
+    const priceText = p.min_price ? `от ₽${p.min_price}` : "цена по запросу";
+    const logo = p.logo_url ? `<img src="${p.logo_url}" alt="">` : "";
 
-      const res = await fetch(url, {
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json",
-          "apikey": CONFIG.SUPABASE_ANON_KEY,
-          "Authorization":"Bearer " + CONFIG.SUPABASE_ANON_KEY
-        },
-        body: JSON.stringify({ action, initData, ...payload })
-      });
-      const text = await res.text();
-      let json = null; try{ json = text ? JSON.parse(text) : null; }catch(e){}
-      if(!res.ok){
-        const msg = json?.error || json?.message || text || ("HTTP " + res.status);
-        throw new Error(msg);
-      }
-      return json;
-    }
-
-    // ===== Telegram init =====
-    function initTelegram(){
-      if(!tg) return;
-      try{ tg.ready(); tg.expand(); }catch(e){}
-      try{
-        tg.BackButton.onClick(() => {
-          if(state.modalOpen) closeModal();
-          if(el.formOverlay.classList.contains("open")) closeForm();
-          if(el.cabOverlay.classList.contains("open")) closeCabinet();
-          if(el.chatOverlay.classList.contains("open")) closeChat();
-        });
-      }catch(e){}
-    }
-
-    // ===== Catalog loading =====
-    async function loadProducts(){
-      const select = encodeURIComponent("slug,name,description,logo_url,is_active,product_plans(duration,price_rub)");
-      const rows = await sbFetch(`products?select=${select}&is_active=eq.true`, { method:"GET" });
-
-      state.products = (rows||[]).map(p => ({
-        id: p.slug,
-        name: p.name,
-        description: p.description || "",
-        logo_url: p.logo_url || "",
-        plans: (p.product_plans||[]).map(pl => ({ duration:pl.duration, price_rub:Number(pl.price_rub) }))
-          .sort((a,b)=> (a.duration>b.duration?1:-1))
-      }));
-    }
-
-    function minPlanPriceRub(p){
-      const prices = (p.plans||[]).map(x => Number(x.price_rub||0)).filter(Boolean);
-      return prices.length ? Math.min(...prices) : 0;
-    }
-
-    function renderCatalog(){
-      const query = (el.q.value || "").trim().toLowerCase();
-      const list = query
-        ? state.products.filter(p =>
-            (p.name||"").toLowerCase().includes(query) ||
-            (p.description||"").toLowerCase().includes(query)
-          )
-        : state.products;
-
-      el.countLabel.textContent = `${list.length} товаров`;
-
-      el.grid.innerHTML = list.map(p => {
-        const from = minPlanPriceRub(p);
-        const logo = p.logo_url
-          ? `<img src="${p.logo_url}" alt="${escapeHtml(p.name)}">`
-          : `<span>${escapeHtml(initials(p.name))}</span>`;
-
-        return `
-          <div class="card">
-            <div class="cardTop">
-              <div class="pLogo">${logo}</div>
-              <div class="pill">${from ? ("от " + formatRUB(from)) : "цена по запросу"}</div>
-            </div>
-            <div>
-              <h3 class="pName">${escapeHtml(p.name)}</h3>
-              <div class="pDesc">${escapeHtml(p.description || "")}</div>
-            </div>
-            <div class="cardFooter">
-              <button class="btn primary" data-open="${escapeHtml(p.id)}">Купить</button>
-            </div>
-          </div>
-        `;
-      }).join("") || `<p class="hint">Ничего не найдено.</p>`;
-
-      el.grid.querySelectorAll("[data-open]").forEach(btn => {
-        btn.addEventListener("click", () => openModal(btn.getAttribute("data-open")));
-      });
-    }
-
-    // ===== Product modal =====
-    function openModal(slug){
-      const p = state.products.find(x => x.id === slug);
-      if(!p) return;
-
-      state.currentProduct = p;
-      state.selectedPlan = (p.plans?.[0]?.duration) || "1m";
-      state.modalOpen = true;
-
-      try{ tg && tg.BackButton.show(); }catch(e){}
-
-      el.mLogo.innerHTML = p.logo_url
-        ? `<img src="${p.logo_url}" alt="${escapeHtml(p.name)}" style="width:100%;height:100%;object-fit:cover;">`
-        : `<span>${escapeHtml(initials(p.name))}</span>`;
-
-      el.mName.textContent = p.name;
-      const from = minPlanPriceRub(p);
-      el.mFrom.textContent = from ? ("от " + formatRUB(from)) : "—";
-      el.mDesc.textContent = p.description || "";
-      el.mPayHint.textContent = "";
-
-      renderPlans();
-      updatePayButton();
-
-      el.overlay.classList.add("open");
-    }
-
-    function renderPlans(){
-      const p = state.currentProduct;
-      el.mPlans.innerHTML = (p.plans||[]).map(pl => `
-        <div class="segBtn ${pl.duration === state.selectedPlan ? "active" : ""}" data-plan="${pl.duration}">
-          ${planRu(pl.duration)}<br>
-          <small style="color:var(--muted);font-size:12px;">${formatRUB(pl.price_rub)}</small>
+    el.innerHTML = `
+      <div class="card-top">
+        <div class="logo">${logo}</div>
+        <div>
+          <div class="name">${escapeHtml(p.name)}</div>
+          <div class="sub">${escapeHtml(p.slug)}</div>
         </div>
-      `).join("");
+      </div>
+      <div class="buy-row">
+        <div class="price">${priceText}</div>
+      </div>
+      <button class="buy">Купить</button>
+    `;
 
-      el.mPlans.querySelectorAll("[data-plan]").forEach(node => {
-        node.addEventListener("click", () => {
-          state.selectedPlan = node.getAttribute("data-plan");
-          el.mPlans.querySelectorAll(".segBtn").forEach(x => x.classList.remove("active"));
-          node.classList.add("active");
-          updatePayButton();
-        });
-      });
+    el.querySelector(".buy").addEventListener("click", ()=> openBuy(p));
+    root.appendChild(el);
+  });
+}
+
+function escapeHtml(s){
+  return String(s ?? "").replace(/[&<>"']/g, (m)=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]));
+}
+
+// ---------- Buy flow ----------
+function openBuy(product){
+  state.buy.product = product;
+
+  $("buyTitle").textContent = `Покупка: ${product.name}`;
+  $("buyDesc").innerHTML = escapeHtml(product.description || "—").replace(/\n/g,"<br/>");
+
+  const planSel = $("buyPlan");
+  planSel.innerHTML = "";
+  (product.plans || []).forEach(pl=>{
+    const opt = document.createElement("option");
+    opt.value = pl.duration;
+    opt.textContent = `${durationRu(pl.duration)} — ₽${pl.price_rub}`;
+    opt.dataset.price = pl.price_rub;
+    planSel.appendChild(opt);
+  });
+  planSel.onchange = ()=> updateBuyPrice();
+  updateBuyPrice();
+
+  $("payHint").textContent = "";
+  show("buyOverlay");
+}
+
+function durationRu(d){
+  const map = { "1m":"1 месяц", "3m":"3 месяца", "6m":"6 месяцев", "12m":"12 месяцев" };
+  return map[d] || d;
+}
+
+function updateBuyPrice(){
+  const planSel = $("buyPlan");
+  const opt = planSel.options[planSel.selectedIndex];
+  const price = Number(opt?.dataset?.price || 0);
+  $("buyPrice").textContent = price ? `₽${price}` : "—";
+}
+
+function yoomoneyPayUrl(wallet, sum, label, targets){
+  const params = new URLSearchParams({
+    receiver: wallet,
+    "quickpay-form": "shop",
+    targets: targets,
+    sum: String(sum),
+    label: label,
+    paymentType: "AC", // карта (можно убрать)
+  });
+  return `https://yoomoney.ru/quickpay/confirm.xml?${params.toString()}`;
+}
+
+$("btnPay").addEventListener("click", async ()=>{
+  try{
+    const product = state.buy.product;
+    const plan_duration = $("buyPlan").value;
+    if (!product) return;
+
+    // получаем актуальные настройки (кошелёк)
+    const me = await api("whoami");
+    state.settings = me.settings || state.settings;
+
+    const wallet = (state.settings.yoomoney_wallet || "").trim();
+    if (!wallet){
+      toast("Админ ещё не указал YooMoney кошелёк. Оплата временно недоступна.");
+      return;
     }
 
-    function updatePayButton(){
-      const p = state.currentProduct;
-      const pl = (p.plans||[]).find(x => x.duration === state.selectedPlan);
-      const amount = Number(pl?.price_rub || 0);
-      el.mPay.textContent = amount ? `Оплатить ${formatRUB(amount)}` : "Оплатить";
-    }
+    const opt = $("buyPlan").options[$("buyPlan").selectedIndex];
+    const sum = Number(opt?.dataset?.price || 0);
+    if (!sum) { toast("Не удалось определить сумму"); return; }
 
-    function closeModal(){
-      state.modalOpen = false;
-      state.currentProduct = null;
-      el.overlay.classList.remove("open");
-      try{ tg && tg.BackButton.hide(); }catch(e){}
-    }
+    const r = await api("create_order", { product_slug: product.slug, plan_duration });
 
-    el.mClose.addEventListener("click", closeModal);
-    el.overlay.addEventListener("click", (e) => { if(e.target === el.overlay) closeModal(); });
+    const label = r.order.payment_label;
+    const url = yoomoneyPayUrl(wallet, sum, label, `${product.name} (${durationRu(plan_duration)})`);
 
-    // YooMoney link builder (RUB)
-    function buildYooMoneyLink({ wallet, amount, label, target }) {
-      const u = new URL("https://yoomoney.ru/quickpay/confirm.xml");
-      u.searchParams.set("receiver", wallet);
-      u.searchParams.set("quickpay-form", "shop");
-      u.searchParams.set("targets", target);
-      u.searchParams.set("label", label);
-      u.searchParams.set("sum", String(amount));
-      u.searchParams.set("paymentType", "AC"); // card
-      return u.toString();
-    }
+    $("payHint").textContent = "Открываю страницу оплаты…";
+    // В Telegram лучше через openLink
+    if (state.tg && state.tg.openLink) state.tg.openLink(url);
+    else window.open(url, "_blank");
 
-    // BUY flow: create_order via Edge Function (secure), then open YooMoney link
-    el.mPay.addEventListener("click", async () => {
-      try{
-        const p = state.currentProduct;
-        if(!p) return;
+    toast("Заказ создан. После оплаты статус обновится автоматически.");
+    // обновим кабинет
+    await refreshMyOrders(true);
+    hide("buyOverlay");
+  }catch(e){
+    toast("Ошибка: " + e.message);
+  }
+});
 
-        if(!CONFIG.YOOMONEY_WALLET){
-          el.mPayHint.textContent = "Админ ещё не указал YooMoney кошелёк. Оплата временно недоступна.";
-          return;
-        }
+// ---------- Cabinet ----------
+$("btnCabinet").addEventListener("click", async ()=>{
+  try{
+    await refreshMyOrders(true);
+    show("cabOverlay");
+  }catch(e){
+    toast("Ошибка: " + e.message);
+  }
+});
 
-        // 1) create order (server computes price)
-        const res = await api("create_order", {
-          product_slug: p.id,
-          plan_duration: state.selectedPlan
-        });
+document.querySelectorAll("[data-cabfilter]").forEach(tab=>{
+  tab.addEventListener("click", async ()=>{
+    document.querySelectorAll("[data-cabfilter]").forEach(t=>t.classList.remove("active"));
+    tab.classList.add("active");
+    state.cabinetFilter = tab.getAttribute("data-cabfilter");
+    renderMyOrders();
+  });
+});
 
-        const order = res.order;
-        const amount = Number(order.amount_rub);
-        const target = `AI MARKET: ${order.product_name} · ${planRu(order.plan_duration)}`;
+async function refreshMyOrders(showToast=false){
+  const me = await api("whoami");
+  state.me = me;
+  state.isAdmin = !!me.is_admin;
+  state.settings = me.settings || state.settings;
+  applyBrandSettings();
 
-        // 2) open payment link
-        const link = buildYooMoneyLink({
-          wallet: CONFIG.YOOMONEY_WALLET,
-          amount,
-          label: order.payment_label,
-          target
-        });
+  $("btnAdmin").style.display = state.isAdmin ? "" : "none";
+  $("meLine").textContent = `Вы: ${me.telegram_name || "-"} · id: ${me.telegram_user_id}`;
 
-        try{
-          if(tg && tg.openLink) tg.openLink(link);
-          else window.open(link, "_blank");
-        }catch(e){
-          window.open(link, "_blank");
-        }
+  const r = await api("list_my_orders");
+  state.myOrders = r.orders || [];
+  renderMyOrders();
+  if (showToast) toast("Кабинет обновлён");
+}
 
-        el.mPayHint.textContent = "Ссылка на оплату открыта. После оплаты статус обновится автоматически (обычно 1–2 минуты).";
-        toast("Заявка создана · ожидаем оплату");
+function renderMyOrders(){
+  const list = $("myOrders");
+  list.innerHTML = "";
 
-      }catch(e){
-        alert("Ошибка: " + e.message);
-      }
-    });
+  let orders = state.myOrders.slice();
+  if (state.cabinetFilter !== "all") orders = orders.filter(o=>o.status === state.cabinetFilter);
 
-    // ===== Cabinet =====
-    function openCabinet(){
-      el.cabOverlay.classList.add("open");
-      try{ tg && tg.BackButton.show(); }catch(e){}
-    }
-    function closeCabinet(){
-      el.cabOverlay.classList.remove("open");
-      try{ tg && tg.BackButton.hide(); }catch(e){}
-    }
-    el.btnCabinet.addEventListener("click", async () => {
-      try{
-        openCabinet();
-        await loadMyOrders();
-      }catch(e){
-        alert("Ошибка: " + e.message);
-      }
-    });
-    el.cabClose.addEventListener("click", closeCabinet);
-    el.cabOverlay.addEventListener("click", (e)=>{ if(e.target===el.cabOverlay) closeCabinet(); });
-    el.cabReload.addEventListener("click", loadMyOrders);
+  if (!orders.length){
+    list.innerHTML = `<div class="muted">Покупок пока нет.</div>`;
+    return;
+  }
 
-    el.btnReviews.addEventListener("click", ()=>{
-      if(!CONFIG.REVIEWS_LINK){ toast("Ссылка на отзывы не настроена"); return; }
-      try{
-        if(tg && tg.openLink) tg.openLink(CONFIG.REVIEWS_LINK);
-        else window.open(CONFIG.REVIEWS_LINK, "_blank");
-      }catch(e){
-        window.open(CONFIG.REVIEWS_LINK, "_blank");
-      }
-    });
+  orders.forEach(o=>{
+    const el = document.createElement("div");
+    el.className = "item";
 
-    function addDays(dateIso, days){
-      const d = new Date(dateIso);
-      d.setDate(d.getDate() + days);
-      return d;
-    }
+    const st = STATUS_RU[o.status] || o.status;
+    const paidLine = o.paid_at ? `Оплата: ${fmtDate(o.paid_at)}` : "Оплата: —";
+    const ordNo = o.order_number ? `№${escapeHtml(o.order_number)}` : "№ —";
 
-    async function loadMyOrders(){
-      const res = await api("list_my_orders", {});
-      state.myOrders = res.orders || [];
-      renderMyOrders();
-    }
+    el.innerHTML = `
+      <div>
+        <b>${escapeHtml(o.product_name || o.product_slug)} · ${durationRu(o.plan_duration)} · ₽${o.amount_rub} <span class="muted">(${st})</span></b>
+        <small>Создан: ${fmtDate(o.created_at)} · ${paidLine}</small>
+        <small>Номер заказа: <b>${ordNo}</b></small>
+      </div>
+      <div class="item-actions">
+        <button class="btn mini" data-chat>Чат</button>
+      </div>
+    `;
+    el.querySelector("[data-chat]").addEventListener("click", ()=> openChat(o));
+    list.appendChild(el);
+  });
+}
 
-    function renderMyOrders(){
-      const u = state.user;
-      el.cabSub.textContent = u ? (`Вы: @${u.username || "—"} · id: ${u.id}`) : "—";
+function fmtDate(iso){
+  if (!iso) return "—";
+  try{
+    const d = new Date(iso);
+    return d.toLocaleString("ru-RU");
+  }catch{ return String(iso); }
+}
 
-      if(CONFIG.REVIEWS_ENABLED) el.btnReviews.style.display = "inline-flex";
+// ---------- Admin ----------
+$("btnAdmin").addEventListener("click", async ()=>{
+  if (!state.isAdmin) return;
+  await refreshAdminOrders(true);
+  await refreshAdminProducts(false);
+  loadAdminSettings();
+  show("adminOverlay");
+});
 
-      const list = state.myOrders || [];
-      if(!list.length){
-        el.cabList.innerHTML = `<p class="hint">Покупок пока нет.</p>`;
-        return;
-      }
+document.querySelectorAll("[data-admintab]").forEach(tab=>{
+  tab.addEventListener("click", ()=>{
+    document.querySelectorAll("[data-admintab]").forEach(t=>t.classList.remove("active"));
+    tab.classList.add("active");
+    const name = tab.getAttribute("data-admintab");
+    $("tabOrders").style.display = name==="orders" ? "" : "none";
+    $("tabProducts").style.display = name==="products" ? "" : "none";
+    $("tabSettings").style.display = name==="settings" ? "" : "none";
+  });
+});
 
-      el.cabList.innerHTML = list.map(o => {
-        const created = new Date(o.created_at).toLocaleString("ru-RU");
-        const paid = o.paid_at ? new Date(o.paid_at).toLocaleString("ru-RU") : "—";
-        const mat = o.material_sent_at ? new Date(o.material_sent_at).toLocaleString("ru-RU") : "—";
+document.querySelectorAll("[data-orderfilter]").forEach(tab=>{
+  tab.addEventListener("click", async ()=>{
+    document.querySelectorAll("[data-orderfilter]").forEach(t=>t.classList.remove("active"));
+    tab.classList.add("active");
+    state.orderFilter = tab.getAttribute("data-orderfilter");
+    await refreshAdminOrders(false);
+  });
+});
 
-        const warranty = o.material_sent_at ? addDays(o.material_sent_at, 10).toLocaleString("ru-RU") : null;
+$("btnAdminReload").addEventListener("click", ()=> refreshAdminOrders(true));
 
-        const canConfirm = (o.status === "processing" || o.status === "paid") && !!o.material_sent_at;
+async function refreshAdminOrders(showToast=false){
+  const r = await api("list_orders", { filter: state.orderFilter });
+  state.adminOrders = r.orders || [];
+  $("adminOrdersCount").textContent = `${state.adminOrders.length} заявок`;
+  renderAdminOrders();
+  if (showToast) toast("Заявки обновлены");
+}
 
-        return `
-          <div class="row" style="flex-direction:column;align-items:stretch;">
-            <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;">
-              <div style="min-width:0;">
-                <b>${escapeHtml(o.product_name)} · ${escapeHtml(planRu(o.plan_duration))} · ${formatRUB(o.amount_rub)}</b>
-                <small>Статус: ${escapeHtml(statusRu(o.status))}${o.order_number ? ` · №${escapeHtml(o.order_number)}` : ""}</small>
-              </div>
-              <button class="btn" data-open-chat="${o.id}">Чат</button>
-            </div>
-            <div style="display:grid;gap:4px;">
-              <small class="hint">Создан: ${escapeHtml(created)}</small>
-              <small class="hint">Оплата: ${escapeHtml(paid)}</small>
-              <small class="hint">Данные отправлены: ${escapeHtml(mat)}</small>
-              ${warranty ? `<small class="hint">Гарантия до: ${escapeHtml(warranty)}</small>` : ``}
-            </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;">
-              ${canConfirm ? `<button class="btn primary" data-confirm="${o.id}">✅ Я получил заказ</button>` : ``}
-            </div>
+function renderAdminOrders(){
+  const list = $("adminOrders");
+  list.innerHTML = "";
+  if (!state.adminOrders.length){
+    list.innerHTML = `<div class="muted">Заявок нет.</div>`;
+    return;
+  }
+
+  state.adminOrders.forEach(o=>{
+    const el = document.createElement("div");
+    el.className = "item";
+
+    const st = STATUS_RU[o.status] || o.status;
+    const userLine = `${escapeHtml(o.telegram_name || "-")} ${o.telegram_username ? `(@${escapeHtml(o.telegram_username)})` : ""} · id:${o.telegram_user_id}`;
+    const paidLine = o.paid_at ? `Оплата: ${fmtDate(o.paid_at)}` : "Оплата: —";
+    const ordNo = o.order_number ? `№${escapeHtml(o.order_number)}` : "№ —";
+
+    el.innerHTML = `
+      <div>
+        <b>${escapeHtml(o.product_name || o.product_slug)} · ${durationRu(o.plan_duration)} · ₽${o.amount_rub} <span class="muted">(${st})</span></b>
+        <small>${userLine}</small>
+        <small>Создан: ${fmtDate(o.created_at)} · ${paidLine} · ${ordNo}</small>
+        <div class="row" style="margin-top:8px">
+          <div class="field" style="margin:0; min-width: 210px">
+            <label>Номер заказа</label>
+            <input data-order-number placeholder="Напр. 322222" value="${escapeHtml(o.order_number || "")}" />
           </div>
-        `;
-      }).join("");
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="btn mini" data-save>Сохранить №</button>
+        <button class="btn mini" data-chat>Чат</button>
+        <button class="btn mini" data-done>Завершить</button>
+      </div>
+    `;
 
-      el.cabList.querySelectorAll("[data-open-chat]").forEach(b=>{
-        b.addEventListener("click", ()=> openChat(b.getAttribute("data-open-chat")));
-      });
-
-      el.cabList.querySelectorAll("[data-confirm]").forEach(b=>{
-        b.addEventListener("click", async ()=>{
-          const id = b.getAttribute("data-confirm");
-          if(!confirm("Подтвердить получение заказа?")) return;
-          try{
-            await api("confirm_received", { orderId:id });
-            toast("Спасибо! Отметили как получено.");
-            await loadMyOrders();
-          }catch(e){
-            alert("Ошибка: " + e.message);
-          }
-        });
-      });
-    }
-
-    // ===== Chat =====
-    function openChat(orderId, meta){
-      state.chatOrderId = orderId;
-      state.chatOrderMeta = meta || null;
-      state.chatImageUrl = "";
-      el.chatText.value = "";
-      el.chatBox.innerHTML = "";
-      el.chatOverlay.classList.add("open");
-      try{ tg && tg.BackButton.show(); }catch(e){}
-
-      el.adminMaterialWrap.style.display = state.isAdmin ? "block" : "none";
-      loadChat();
-    }
-
-    function closeChat(){
-      el.chatOverlay.classList.remove("open");
-      try{ tg && tg.BackButton.hide(); }catch(e){}
-      state.chatOrderId = null;
-      state.chatMessages = [];
-    }
-    el.chatClose.addEventListener("click", closeChat);
-    el.chatOverlay.addEventListener("click", (e)=>{ if(e.target===el.chatOverlay) closeChat(); });
-
-    async function loadChat(){
-      const id = state.chatOrderId;
-      if(!id) return;
-      const res = await api("list_messages", { orderId:id });
-      state.chatMessages = res.messages || [];
-      renderChat();
-    }
-
-    function renderChat(){
-      const msgs = state.chatMessages || [];
-      el.chatTitle.textContent = "Чат по заказу";
-      el.chatSub.textContent = state.chatOrderId ? `orderId: ${state.chatOrderId}` : "—";
-
-      el.chatBox.innerHTML = msgs.map(m=>{
-        const me = (m.sender_role === "admin" && state.isAdmin) || (m.sender_role === "user" && !state.isAdmin);
-        const time = new Date(m.created_at).toLocaleString("ru-RU");
-        const img = m.image_url ? `<img src="${escapeHtml(m.image_url)}" alt="img">` : "";
-        const text = m.message_text ? escapeHtml(m.message_text) : "";
-        return `
-          <div class="bubble ${me ? "me":""}">
-            ${text}
-            ${img}
-            <span class="meta">${escapeHtml(m.sender_role==="admin"?"Админ":"Вы")} · ${escapeHtml(time)}</span>
-          </div>
-        `;
-      }).join("") || `<p class="hint">Сообщений пока нет.</p>`;
-
-      // scroll bottom
-      setTimeout(()=>{ el.chatBox.scrollTop = el.chatBox.scrollHeight; }, 50);
-    }
-
-    el.chatAttach.addEventListener("click", ()=> el.chatFile.click());
-    el.chatFile.addEventListener("change", async ()=>{
-      const file = el.chatFile.files && el.chatFile.files[0];
-      if(!file) return;
-      const reader = new FileReader();
-      reader.onload = async ()=>{
-        try{
-          const fileBase64 = reader.result;
-          const up = await api("upload_chat_image", { fileBase64, mime:file.type || "image/png", originalName:file.name || "image.png" });
-          state.chatImageUrl = up.url;
-          toast("Изображение прикреплено");
-        }catch(e){
-          alert("Ошибка загрузки изображения: " + e.message);
-        }
-      };
-      reader.readAsDataURL(file);
-    });
-
-    el.chatSend.addEventListener("click", async ()=>{
-      const id = state.chatOrderId;
-      if(!id) return;
-      const text = (el.chatText.value||"").trim();
-      const img = state.chatImageUrl || "";
-      if(!text && !img){ toast("Пустое сообщение"); return; }
+    el.querySelector("[data-save]").addEventListener("click", async ()=>{
       try{
-        await api("post_message", { orderId:id, message_text:text, image_url:img });
-        el.chatText.value = "";
-        state.chatImageUrl = "";
-        await loadChat();
-      }catch(e){
-        alert("Ошибка отправки: " + e.message);
-      }
-    });
-
-    el.btnSendMaterial.addEventListener("click", async ()=>{
-      if(!state.isAdmin) return;
-      const id = state.chatOrderId;
-      if(!id) return;
-      const text = (el.chatText.value||"").trim();
-      const img = state.chatImageUrl || "";
-      if(!text && !img){ alert("Вставь данные аккаунта (или прикрепи файл)"); return; }
-      if(!confirm("Отправить пользователю данные аккаунта?")) return;
-      try{
-        await api("send_material", { orderId:id, materialText:text, image_url:img });
-        el.chatText.value = "";
-        state.chatImageUrl = "";
-        toast("Данные отправлены");
-        await loadChat();
-        // refresh admin orders list in background
-        if(state.isAdmin && state.adminOpen) await loadOrders();
-      }catch(e){
-        alert("Ошибка отправки: " + e.message);
-      }
-    });
-
-    // ===== Admin panel =====
-    function openTab(tab){
-      state.activeTab = tab;
-      el.tabOrders.classList.toggle("active", tab === "orders");
-      el.tabProducts.classList.toggle("active", tab === "products");
-      el.tabSettings.classList.toggle("active", tab === "settings");
-
-      el.panelOrders.style.display = tab === "orders" ? "block" : "none";
-      el.panelProducts.style.display = tab === "products" ? "block" : "none";
-      el.panelSettings.style.display = tab === "settings" ? "block" : "none";
-    }
-
-    function showAdminPanel(){
-      state.adminOpen = true;
-      el.adminPanel.classList.add("show");
-      openTab(state.activeTab || "orders");
-    }
-    function hideAdminPanel(){
-      state.adminOpen = false;
-      el.adminPanel.classList.remove("show");
-    }
-
-    el.adminBadge.addEventListener("click", async () => {
-      if(!state.isAdmin) return;
-      if(state.adminOpen) hideAdminPanel();
-      else {
-        showAdminPanel();
-        if(state.activeTab === "orders") await loadOrders();
-        if(state.activeTab === "products") renderAdminProducts();
-      }
-    });
-    el.btnAdminCollapse.addEventListener("click", () => {
-      if(!state.isAdmin) return;
-      hideAdminPanel();
-    });
-
-    el.tabOrders.addEventListener("click", async () => { openTab("orders"); await loadOrders(); });
-    el.tabProducts.addEventListener("click", () => { openTab("products"); renderAdminProducts(); });
-    el.tabSettings.addEventListener("click", () => { openTab("settings"); });
-
-    el.btnApiTest.addEventListener("click", async () => {
-      try{
-        const res = await api("whoami", {});
-        toast(`API OK · userId=${res.telegram_user_id} · admin=${res.is_admin} · skipVerify=${res.skipVerify}`);
-      }catch(e){
-        alert("API ошибка: " + e.message);
-      }
-    });
-
-    // ===== Orders (admin) =====
-    function renderOrders(){
-      const list = state.orders || [];
-      if(!list.length){
-        el.adminOrdersList.innerHTML = `<p class="hint">Заявок нет.</p>`;
-        return;
-      }
-
-      el.adminOrdersList.innerHTML = list.map(o => {
-        const badge = statusRu(o.status);
-        const title = `${o.product_name} · ${planRu(o.plan_duration)} · ${formatRUB(o.amount_rub)}`;
-        const created = new Date(o.created_at).toLocaleString("ru-RU");
-        const who = o.telegram_username ? ("@" + o.telegram_username) : (o.telegram_name || o.telegram_user_id);
-        const num = o.order_number ? `№${o.order_number}` : "—";
-
-        return `
-          <div class="row">
-            <div class="rowLeft">
-              <div style="min-width:0;">
-                <b>${escapeHtml(badge)} — ${escapeHtml(title)}</b>
-                <small>Покупатель: ${escapeHtml(who)} · Создан: ${escapeHtml(created)} · Номер: ${escapeHtml(num)}</small>
-              </div>
-            </div>
-            <div class="rowActions">
-              <button class="btn" data-chat="${o.id}">Чат</button>
-              <button class="btn" data-number="${o.id}">Номер</button>
-            </div>
-          </div>
-        `;
-      }).join("");
-
-      el.adminOrdersList.querySelectorAll("[data-chat]").forEach(b => {
-        b.addEventListener("click", () => openChat(b.getAttribute("data-chat")));
-      });
-
-      el.adminOrdersList.querySelectorAll("[data-number]").forEach(b => {
-        b.addEventListener("click", async () => {
-          const id = b.getAttribute("data-number");
-          const number = prompt("Введи номер заказа (будет виден пользователю):");
-          if(!number) return;
-          try{
-            await api("set_order_number", { orderId:id, order_number:number });
-            toast("Сохранено");
-            await loadOrders();
-          }catch(e){
-            alert("Ошибка: " + e.message);
-          }
-        });
-      });
-    }
-
-    async function loadOrders(){
-      try{
-        const res = await api("list_orders", { filter: state.ordersFilter });
-        state.orders = res.orders || [];
-        renderOrders();
-      }catch(e){
-        el.adminOrdersList.innerHTML = `<p class="hint">Ошибка: ${escapeHtml(e.message)}</p>`;
-      }
-    }
-
-    el.btnLoadOrders.addEventListener("click", loadOrders);
-    el.btnFilterAll.addEventListener("click", async()=>{ state.ordersFilter="all"; await loadOrders(); });
-    el.btnFilterPending.addEventListener("click", async()=>{ state.ordersFilter="pending"; await loadOrders(); });
-    el.btnFilterProcessing.addEventListener("click", async()=>{ state.ordersFilter="processing"; await loadOrders(); });
-    el.btnFilterDelivered.addEventListener("click", async()=>{ state.ordersFilter="delivered"; await loadOrders(); });
-
-    // ===== Products admin =====
-    function renderAdminProducts(){
-      el.adminProductsList.innerHTML = state.products.map(p => {
-        const from = minPlanPriceRub(p);
-        const logo = p.logo_url ? `<img src="${p.logo_url}" alt="${escapeHtml(p.name)}">` : `<span>${escapeHtml(initials(p.name))}</span>`;
-        return `
-          <div class="row">
-            <div class="rowLeft">
-              <div class="pLogo" style="width:42px;height:42px;border-radius:16px;">${logo}</div>
-              <div style="min-width:0;">
-                <b>${escapeHtml(p.name)} <span style="color:var(--muted);font-weight:700;">· от ${formatRUB(from)}</span></b>
-                <small title="${escapeHtml(p.description)}">${escapeHtml(p.description || "")}</small>
-              </div>
-            </div>
-            <div class="rowActions">
-              <button class="btn" data-edit="${escapeHtml(p.id)}">Редактировать</button>
-            </div>
-          </div>
-        `;
-      }).join("") || `<p class="hint">Нет товаров.</p>`;
-
-      el.adminProductsList.querySelectorAll("[data-edit]").forEach(b => {
-        b.addEventListener("click", () => openForm(state.products.find(x => x.id === b.getAttribute("data-edit"))));
-      });
-    }
-
-    el.btnReloadCatalog.addEventListener("click", async () => {
-      await loadProducts();
-      renderCatalog();
-      if(state.isAdmin) renderAdminProducts();
-      toast("Каталог обновлён");
-    });
-    el.btnAddProduct.addEventListener("click", () => openForm(null));
-
-    // ===== Product editor (admin) =====
-    function setLogoPreview(url){
-      state.editingLogoUrl = url || "";
-      el.logoPreview.innerHTML = url ? `<img src="${url}" alt="logo">` : "LOGO";
-    }
-
-    function openForm(product){
-      if(!state.isAdmin){ toast("Нет доступа"); return; }
-      el.formOverlay.classList.add("open");
-      try{ tg && tg.BackButton.show(); }catch(e){}
-
-      if(!product){
-        state.editingSlug = null;
-        el.fTitle.textContent = "Новый товар";
-        el.fDelete.style.display = "none";
-        el.fName.value = "";
-        el.fDesc.value = "";
-        el.p1.value = "";
-        el.p6.value = "";
-        el.p12.value = "";
-        setLogoPreview("");
-        return;
-      }
-
-      state.editingSlug = product.id;
-      el.fTitle.textContent = "Редактирование";
-      el.fDelete.style.display = "inline-flex";
-      el.fName.value = product.name || "";
-      el.fDesc.value = product.description || "";
-      el.p1.value = (product.plans||[]).find(x=>x.duration==="1m")?.price_rub ?? "";
-      el.p6.value = (product.plans||[]).find(x=>x.duration==="6m")?.price_rub ?? "";
-      el.p12.value = (product.plans||[]).find(x=>x.duration==="12m")?.price_rub ?? "";
-      setLogoPreview(product.logo_url || "");
-    }
-
-    function closeForm(){
-      el.formOverlay.classList.remove("open");
-      try{ tg && tg.BackButton.hide(); }catch(e){}
-    }
-    el.fClose.addEventListener("click", closeForm);
-    el.formOverlay.addEventListener("click", (e)=>{ if(e.target === el.formOverlay) closeForm(); });
-
-    // Upload logo (admin)
-    el.btnUploadLogo.addEventListener("click", () => el.logoFile.click());
-    el.logoFile.addEventListener("change", async () => {
-      const file = el.logoFile.files && el.logoFile.files[0];
-      if(!file) return;
-      const reader = new FileReader();
-      reader.onload = async () => {
-        try{
-          const fileBase64 = reader.result;
-          const res = await api("upload_logo", {
-            fileBase64,
-            mime: file.type || "image/png",
-            originalName: file.name || "logo.png"
-          });
-          setLogoPreview(res.url);
-          toast("Логотип загружен");
-        }catch(e){
-          alert("Ошибка загрузки логотипа: " + e.message);
-        }
-      };
-      reader.readAsDataURL(file);
-    });
-
-    
-    // Save / Delete product via Edge Function (admin)
-    el.fSave.addEventListener("click", async () => {
-      try{
-        const name = (el.fName.value||"").trim();
-        const description = (el.fDesc.value||"").trim();
-        const price_1m = Number(el.p1.value||0);
-        const price_6m = Number(el.p6.value||0);
-        const price_12m = Number(el.p12.value||0);
-
-        if(!name){ alert("Укажи название"); return; }
-
-        const res = await api("upsert_product", {
-          slug: state.editingSlug || "",
-          name,
-          description,
-          logo_url: state.editingLogoUrl || "",
-          is_active: true,
-          prices: { "1m": price_1m, "6m": price_6m, "12m": price_12m }
-        });
-
+        const val = el.querySelector("[data-order-number]").value.trim();
+        if (!val) { toast("Введите номер заказа"); return; }
+        await api("set_order_number", { order_id: o.id, order_number: val });
         toast("Сохранено");
-        closeForm();
-        await loadProducts();
-        renderCatalog();
-        if(state.isAdmin) renderAdminProducts();
-
-        // if it was new product
-        state.editingSlug = res.product?.slug || state.editingSlug;
-      }catch(e){
-        alert("Ошибка сохранения: " + e.message);
-      }
+        await refreshAdminOrders(false);
+        await refreshMyOrders(false);
+      }catch(e){ toast("Ошибка: " + e.message); }
     });
 
-    el.fDelete.addEventListener("click", async () => {
-      if(!state.editingSlug){ closeForm(); return; }
-      if(!confirm("Удалить товар?")) return;
+    el.querySelector("[data-chat]").addEventListener("click", ()=> openChat(o));
+    el.querySelector("[data-done]").addEventListener("click", async ()=>{
       try{
-        await api("delete_product", { slug: state.editingSlug });
-        toast("Удалено");
-        closeForm();
-        await loadProducts();
-        renderCatalog();
-        if(state.isAdmin) renderAdminProducts();
-      }catch(e){
-        alert("Ошибка удаления: " + e.message);
-      }
+        await api("confirm_received", { order_id: o.id });
+        toast("Статус: Заказ получен");
+        await refreshAdminOrders(false);
+        await refreshMyOrders(false);
+      }catch(e){ toast("Ошибка: " + e.message); }
     });
-// Theme + Search
-    el.btnTheme.addEventListener("click", () => {
-      const cur = document.body.getAttribute("data-theme");
-      setTheme(cur === "dark" ? "light" : "dark");
+
+    list.appendChild(el);
+  });
+}
+
+// ---------- Products admin ----------
+$("btnProductsReload").addEventListener("click", ()=> refreshAdminProducts(true));
+
+async function refreshAdminProducts(showToast=false){
+  const r = await api("list_products");
+  state.adminProducts = r.products || [];
+  renderAdminProducts();
+  if (showToast) toast("Товары обновлены");
+}
+
+function renderAdminProducts(){
+  const list = $("adminProducts");
+  list.innerHTML = "";
+  if (!state.adminProducts.length){
+    list.innerHTML = `<div class="muted">Товаров нет.</div>`;
+    return;
+  }
+  state.adminProducts.forEach(p=>{
+    const el = document.createElement("div");
+    el.className = "item";
+    el.innerHTML = `
+      <div>
+        <b>${escapeHtml(p.name)} <span class="muted">(${escapeHtml(p.slug)})</span></b>
+        <small>${escapeHtml((p.description||"").slice(0,120))}${(p.description||"").length>120?"…":""}</small>
+        <small class="muted">Планы: ${(p.product_plans||[]).map(pl=>`${pl.duration}=₽${pl.price_rub}`).join(", ") || "—"}</small>
+      </div>
+      <div class="item-actions">
+        <button class="btn mini" data-fill>Заполнить</button>
+      </div>
+    `;
+    el.querySelector("[data-fill]").addEventListener("click", ()=>{
+      $("pSlug").value = p.slug || "";
+      $("pName").value = p.name || "";
+      $("pDesc").value = p.description || "";
+      $("pLogoUrl").value = p.logo_url || "";
+      $("pPlans").value = (p.product_plans||[]).map(pl=>`${pl.duration}=${pl.price_rub}`).join(",");
+      toast("Заполнил форму");
     });
-    el.q.addEventListener("input", renderCatalog);
+    list.appendChild(el);
+  });
+}
 
-    async function boot(){
-      initTelegram();
+$("pLogoFile").addEventListener("change", async ()=>{
+  const f = $("pLogoFile").files?.[0];
+  if (!f) return;
+  try{
+    const b64 = await fileToBase64(f);
+    const r = await api("upload_logo", { fileBase64: b64, mime: f.type, name: f.name, bucket:"logos" });
+    $("pLogoUrl").value = r.url;
+    toast("Логотип загружен");
+  }catch(e){
+    toast("Ошибка загрузки: " + e.message);
+  }
+});
 
-      if(!supabaseConfigured()){
-        alert("Вставь SUPABASE_URL и SUPABASE_ANON_KEY в CONFIG");
-        return;
-      }
+$("btnSaveProduct").addEventListener("click", async ()=>{
+  try{
+    const slug = $("pSlug").value.trim();
+    const name = $("pName").value.trim();
+    if (!slug || !name) { toast("Нужны slug и название"); return; }
+    const desc = $("pDesc").value;
+    const logo_url = $("pLogoUrl").value.trim();
+    const plansRaw = $("pPlans").value.trim();
 
-      // whoami (inside Telegram)
-      try{
-        const initData = getInitData();
-        if(initData){
-          const res = await api("whoami", {});
-          state.user = getTelegramUser();
-          state.isAdmin = !!res.is_admin;
-          if(state.isAdmin){
-            el.adminBadge.classList.add("show");
-            el.adminHint.textContent = `Вы вошли как админ (${res.telegram_user_id})`;
-            showAdminPanel();
-            await loadOrders();
-          }
-        }else{
-          // outside Telegram: allow catalog only
-          el.adminHint.textContent = "Открой Mini App внутри Telegram";
-        }
-      }catch(e){
-        // show error but still try to load catalog
-        console.warn(e);
-      }
-
-      try{
-        await loadProducts();
-        renderCatalog();
-        if(state.isAdmin) renderAdminProducts();
-      }catch(e){
-        el.grid.innerHTML = `<p class="hint">Каталог не загрузился: ${escapeHtml(e.message)}<br>Проверь RLS политики и интернет на телефоне.</p>`;
-      }
+    const plans = [];
+    if (plansRaw){
+      plansRaw.split(",").map(s=>s.trim()).filter(Boolean).forEach(pair=>{
+        const [d, pr] = pair.split("=");
+        if (!d || !pr) return;
+        const price = Number(String(pr).replace(/[^\d.,]/g,"").replace(",","."));
+        if (!price) return;
+        plans.push({ duration: d.trim(), price_rub: Math.round(price) });
+      });
     }
 
-    boot().catch(e => alert("Ошибка запуска: " + e.message));
-  </script>
+    await api("upsert_product", { product: { slug, name, description: desc, logo_url, is_active:true, plans } });
+    toast("Сохранено");
+    await refreshAdminProducts(false);
+    await fetchCatalog();
+  }catch(e){
+    toast("Ошибка: " + e.message);
+  }
+});
+
+$("btnDeleteProduct").addEventListener("click", async ()=>{
+  try{
+    const slug = $("pSlug").value.trim();
+    if (!slug) { toast("Введите slug"); return; }
+    await api("delete_product", { slug });
+    toast("Удалено");
+    await refreshAdminProducts(false);
+    await fetchCatalog();
+  }catch(e){
+    toast("Ошибка: " + e.message);
+  }
+});
+
+// ---------- Settings admin ----------
+function loadAdminSettings(){
+  $("sWallet").value = state.settings.yoomoney_wallet || "";
+  $("sAppLogoUrl").value = state.settings.app_logo_url || "";
+}
+
+$("btnSaveSettings").addEventListener("click", async ()=>{
+  try{
+    const wallet = $("sWallet").value.trim();
+    const appLogoUrl = $("sAppLogoUrl").value.trim();
+    const r = await api("set_settings", { settings: { yoomoney_wallet: wallet, app_logo_url: appLogoUrl } });
+    state.settings = r.settings || state.settings;
+    applyBrandSettings();
+    toast("Настройки сохранены");
+  }catch(e){ toast("Ошибка: " + e.message); }
+});
+
+function applyBrandSettings(){
+  const url = state.settings.app_logo_url || "";
+  const wrap = $("appLogoWrap");
+  if (url){
+    wrap.innerHTML = `<img src="${url}" alt="">`;
+  }else{
+    wrap.textContent = "AI";
+  }
+}
+
+// ---------- Chat ----------
+async function openChat(order){
+  state.chat.order = order;
+  $("chatTitle").textContent = `Чат · ${order.product_name || order.product_slug} · ${durationRu(order.plan_duration)}`;
+  $("chatText").value = "";
+  $("chatFile").value = "";
+  $("chatMessages").innerHTML = `<div class="muted">Загрузка…</div>`;
+  show("chatOverlay");
+  await refreshChat();
+}
+
+async function refreshChat(){
+  const order = state.chat.order;
+  if (!order) return;
+  const r = await api("list_messages", { order_id: order.id });
+  state.chat.messages = r.messages || [];
+  renderChat();
+}
+
+function renderChat(){
+  const box = $("chatMessages");
+  box.innerHTML = "";
+  const msgs = state.chat.messages;
+
+  if (!msgs.length){
+    box.innerHTML = `<div class="muted">Сообщений пока нет. Напишите первым.</div>`;
+    return;
+  }
+
+  msgs.forEach(m=>{
+    const b = document.createElement("div");
+    const isMe = (m.sender_role === "user" && !state.isAdmin) || (m.sender_role === "admin" && state.isAdmin);
+    const cls = isMe ? "bubble me" : (m.sender_role === "admin" ? "bubble admin" : "bubble");
+    b.className = cls;
+
+    let html = "";
+    if (m.text) html += `<div>${escapeHtml(m.text).replace(/\n/g,"<br/>")}</div>`;
+    if (m.image_url) html += `<div style="margin-top:8px"><img src="${m.image_url}" alt=""></div>`;
+    html += `<div class="meta">${m.sender_role === "admin" ? "Администратор" : "Вы"} · ${fmtDate(m.created_at)}</div>`;
+    b.innerHTML = html;
+    box.appendChild(b);
+  });
+
+  // auto scroll to bottom
+  box.scrollTop = box.scrollHeight;
+}
+
+$("btnChatSend").addEventListener("click", async ()=>{
+  const order = state.chat.order;
+  if (!order) return;
+  try{
+    const text = $("chatText").value.trim();
+    let image_url = "";
+
+    const f = $("chatFile").files?.[0];
+    if (f){
+      const b64 = await fileToBase64(f);
+      const up = await api("upload_chat_image", { order_id: order.id, fileBase64: b64, mime: f.type, name: f.name });
+      image_url = up.url;
+    }
+
+    if (!text && !image_url){ toast("Введите сообщение или выберите изображение"); return; }
+
+    await api("post_message", { order_id: order.id, text, image_url });
+    $("chatText").value = "";
+    $("chatFile").value = "";
+    await refreshChat();
+    await refreshMyOrders(false);
+    toast("Отправлено");
+  }catch(e){
+    toast("Ошибка отправки: " + e.message);
+  }
+});
+
+async function fileToBase64(file){
+  const arr = new Uint8Array(await file.arrayBuffer());
+  let s = "";
+  for (let i=0;i<arr.length;i++) s += String.fromCharCode(arr[i]);
+  return btoa(s);
+}
+
+// ---------- Theme (простое переключение) ----------
+$("btnTheme").addEventListener("click", ()=>{
+  state.theme = state.theme === "dark" ? "dark" : "dark"; // пока одна тема, чтобы не ломать UI
+  toast("Тема: тёмная");
+});
+
+// ---------- Reload ----------
+$("btnReload").addEventListener("click", async ()=>{
+  try{
+    await fetchCatalog();
+    toast("Каталог обновлён");
+  }catch(e){
+    toast("Ошибка: " + e.message);
+  }
+});
+
+$("searchInput").addEventListener("input", ()=> renderCatalog());
+
+// ---------- Boot ----------
+(async function boot(){
+  try{
+    initTelegram();
+
+    // пробуем whoami (это же проверка initData). Если не в Telegram — покажем предупреждение.
+    try{
+      const me = await api("whoami");
+      state.me = me;
+      state.isAdmin = !!me.is_admin;
+      state.settings = me.settings || state.settings;
+      applyBrandSettings();
+      $("btnAdmin").style.display = state.isAdmin ? "" : "none";
+      $("appSub").textContent = me.telegram_name ? `Привет, ${me.telegram_name}` : "Mini App";
+    }catch(e){
+      $("appSub").textContent = "Откройте через Telegram";
+    }
+
+    await fetchCatalog();
+  }catch(e){
+    toast("Ошибка запуска: " + e.message);
+  }
+})();
+</script>
 </body>
 </html>
