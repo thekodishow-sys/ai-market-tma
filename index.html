@@ -281,7 +281,18 @@
     }
     [data-theme="light"] .toast{background:rgba(11,16,32,.78);}
     .toast.open{display:block;}
-  </style>
+  
+    .topbar{
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding-top: calc(env(safe-area-inset-top, 0px) + 8px);
+      background: linear-gradient(180deg, rgba(7,10,18,.92), rgba(7,10,18,.0));
+      backdrop-filter: blur(10px);
+    }
+    .topbar .actions{ display:flex; gap:10px; align-items:center; }
+    .topbar .chip{ height: 34px; }
+</style>
 </head>
 
 <body data-theme="dark">
