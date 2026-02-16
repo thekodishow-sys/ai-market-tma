@@ -546,8 +546,8 @@
      * ⚠️ НИКОГДА не вставляй service_role сюда. Он хранится только в Edge Functions → Secrets.
      */
     const CONFIG = {
-      SUPABASE_URL: "https://cilnfljlyubwhooxuuob.supabase.co",
-      SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpbG5mbGpseXVid2hvb3h1dW9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExMjMyNDIsImV4cCI6MjA4NjY5OTI0Mn0.030FmUuyL6Ht-C4WlEvA0jL29rvx_m1JH8rQ1V8W6oQ",
+      SUPABASE_URL: "PASTE_SUPABASE_URL_HERE",
+      SUPABASE_ANON_KEY: "PASTE_SUPABASE_ANON_KEY_HERE",
       ADMIN_TELEGRAM_ID: 5017229451,
 
       // YooMoney (RUB) — можно оставить пустым, тогда оплата будет недоступна
@@ -1571,7 +1571,6 @@ el.cabTabReviews.addEventListener("click", ()=> openCabTab("reviews"));
       setTheme(cur === "dark" ? "light" : "dark");
     });
     el.q.addEventListener("input", renderCatalog);
-    }
 
     async function boot(){
       initTheme();
@@ -1581,10 +1580,13 @@ el.cabTabReviews.addEventListener("click", ()=> openCabTab("reviews"));
         alert("Вставь SUPABASE_URL и SUPABASE_ANON_KEY в CONFIG");
         return;
       }
-
-      // whoami + settings
-      state.me = await api("whoami", {});
-      state.settings = state.me.settings || null;
+      // public settings (для кнопки “Отзывы”) — читаем напрямую из таблицы app_settings
+      try{
+        const srows = await sbFetch("app_settings?select=reviews_enabled,reviews_chat_url&id=eq.1", { method:"GET" });
+        state.settings = (srows && srows[0]) ? srows[0] : null;
+      }catch(e){
+        state.settings = null;
+      }
 
       // cabinet subtitle
       const u = getTelegramUser();
