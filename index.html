@@ -36,7 +36,22 @@
       -moz-osx-font-smoothing: grayscale;
     }
 
-    *{ box-sizing:border-box; }
+    
+
+body[data-theme="light"]{
+  --bg:#f6f7ff;
+  --bg2:#e9ecff;
+  --card:rgba(10, 20, 60, .06);
+  --card2:rgba(10, 20, 60, .08);
+  --stroke:rgba(10, 20, 60, .18);
+  --text:rgba(10, 20, 60, .92);
+  --mut:rgba(10, 20, 60, .55);
+  --mut2:rgba(10, 20, 60, .40);
+  --shadow:0 12px 40px rgba(20, 30, 80, .18);
+  --shadow2:0 8px 24px rgba(20, 30, 80, .14);
+}
+
+*{ box-sizing:border-box; }
     html,body{ height:100%; }
     body{
       margin:0;
@@ -615,8 +630,8 @@
  *    (функция должна быть задеплоена с именем "admin-api")
  */
 const CONFIG = {
-  SUPABASE_URL: "https://cilnfljlyubwhooxuuob.supabase.co",
-  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpbG5mbGpseXVid2hvb3h1dW9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExMjMyNDIsImV4cCI6MjA4NjY5OTI0Mn0.030FmUuyL6Ht-C4WlEvA0jL29rvx_m1JH8rQ1V8W6oQ",
+  SUPABASE_URL: "PASTE_SUPABASE_URL_HERE",
+  SUPABASE_ANON_KEY: "PASTE_SUPABASE_ANON_KEY_HERE",
   ADMIN_API_URL: "PASTE_SUPABASE_URL_HERE/functions/v1/admin-api",
 };
 
@@ -649,7 +664,23 @@ const state = {
   chat: { order: null, messages: [] },
 };
 
-const sb = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+const sb = wi
+
+
+function applyTheme(theme){
+  state.theme = (theme === "light") ? "light" : "dark";
+  document.body.dataset.theme = state.theme;
+  localStorage.setItem("aimarket_theme", state.theme);
+  const tg = state.tg;
+  if (tg){
+    try{
+      tg.setHeaderColor(state.theme === "dark" ? "#070b16" : "#f6f7ff");
+      tg.setBackgroundColor(state.theme === "dark" ? "#070b16" : "#f6f7ff");
+    }catch(e){}
+  }
+}
+
+ndow.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 
 // ---------- UI Helpers ----------
 const $ = (id) => document.getElementById(id);
@@ -1231,13 +1262,14 @@ $("btnChatSend").addEventListener("click", async ()=>{
     const f = $("chatFile").files?.[0];
     if (f){
       const b64 = await fileToBase64(f);
-      const up = await api("upload_chat_image", { order_id: order.id, fileBase64: b64, mime: f.type, name: f.name });
-      image_url = up.url;
-    }
+      const up = awai$("btnTheme").addEventListener("click", ()=>{
+  const next = (state.theme === "dark") ? "light" : "dark";
+  applyTheme(next);
+  toast(state.theme === "dark" ? "Тема: тёмная" : "Тема: светлая");
+});
+те сообщение или выберите изображение"); return; }
 
-    if (!text && !image_url){ toast("Введите сообщение или выберите изображение"); return; }
-
-    await api("post_message", { order_id: order.id, text, image_url });
+    await api("send_message", { order_id: order.id, text, image_url });
     $("chatText").value = "";
     $("chatFile").value = "";
     await refreshChat();
@@ -1255,10 +1287,11 @@ async function fileToBase64(file){
   return btoa(s);
 }
 
-// ---------- Theme (простое переключение) ----------
+// ---------- Theme (переключение) ----------
 $("btnTheme").addEventListener("click", ()=>{
-  state.theme = state.theme === "dark" ? "dark" : "dark"; // пока одна тема, чтобы не ломать UI
-  toast("Тема: тёмная");
+  const next = (state.theme === "dark") ? "light" : "dark";
+  applyTheme(next);
+  toast(state.theme === "dark" ? "Тема: тёмная" : "Тема: светлая");
 });
 
 // ---------- Reload ----------
@@ -1277,6 +1310,10 @@ $("searchInput").addEventListener("input", ()=> renderCatalog());
 (async function boot(){
   try{
     initTelegram();
+  // theme init
+  const savedTheme = localStorage.getItem("aimarket_theme");
+  const tgScheme = (state.tg && state.tg.colorScheme) ? state.tg.colorScheme : null;
+  applyTheme(savedTheme || tgScheme || "dark");
 
     // пробуем whoami (это же проверка initData). Если не в Telegram — покажем предупреждение.
     try{
